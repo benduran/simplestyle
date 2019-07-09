@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "main": "dist/commonjs/index.js",
+  "module": "dist/esm/index.js",
+  "js:next": "dist/esm/index.js",
+  "typings": "dist/commonjs/index.d.ts",
+  "types": "dist/commonjs/index.d.ts",
   "scripts": {
     "build:commonjs": "tsc --outDir ./dist/commonjs",
     "build:esm": "tsc --outDir ./dist/esm -m es6",
