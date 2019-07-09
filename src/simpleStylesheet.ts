@@ -1,15 +1,32 @@
 
 export default class SimpleStylesheet {
-  private stylesheet = document.createElement('style');
   private sheetBuffer = '';
+  private cachedKeySelectorMap: { [classKey: string]: string } = {};
 
-  public addRule(selector: string, style: string) {
-    this.sheetBuffer += `${selector} {${style}}`;
+  public addRule(classKey: string, selector: string, style: string) {
+    if (classKey && selector && style) {
+      if (this.cachedKeySelectorMap[classKey]) throw new Error(`Class Key clash for ${classKey}`);
+      this.cachedKeySelectorMap[classKey] = selector;
+      this.sheetBuffer += `${selector} {${style}}`;
+    }
+  }
+
+  public updateNestedSelectors() {
+    Object.keys(this.cachedKeySelectorMap).forEach((classKey) => {
+      const regex = new RegExp(`\\$${classKey}`, 'gm');
+      this.sheetBuffer = this.sheetBuffer.replace(regex, this.cachedKeySelectorMap[classKey]);
+    });
   }
 
   public attach() {
-    this.stylesheet.innerHTML = this.sheetBuffer;
-    document.head.appendChild(this.stylesheet);
+    const stylesheet = document.createElement('style');
+    stylesheet.innerHTML = this.sheetBuffer;
+    document.head.appendChild(stylesheet);
+  }
+
+  public cleanup() {
+    this.sheetBuffer = '';
+    this.cachedKeySelectorMap = {};
   }
 
   public getStyles() { return this.sheetBuffer; }

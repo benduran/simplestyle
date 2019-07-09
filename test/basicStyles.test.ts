@@ -10,5 +10,5 @@ test('Create baseline tests', () => {
   const [sheet] = getAllSheets();
   expect(styles).toBeDefined();
   expect(sheet.getStyles().indexOf(styles.basic)).toBeGreaterThan(-1);
-  expect(sheet.getStyles().indexOf('background-color: red;')).toBeGreaterThan(-1);
+  expect(sheet.getStyles().indexOf('background-color:red;')).toBeGreaterThan(-1);
 });

@@ -1,8 +1,11 @@
 
 import { Properties as CSSProperties } from 'csstype';
 
+export interface ISimpleStyleSheet<T> {
+  [selector: string]: ISimpleStyleRules<T>;
+}
+
 export interface ISimpleStyleRules<T> extends CSSProperties {
-  $nested?: {
-    [selector: string]: T;
-  };
+  [ruleOrSelector: string]: any;
+  $nested?: ISimpleStyleSheet<T>;
 }

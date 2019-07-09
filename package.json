@@ -1,14 +1,16 @@
 {
-  "name": "simplestyles",
+  "name": "simplestyle-js",
   "version": "0.1.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "main": "dist/commonjs/index.js",
   "scripts": {
     "build:commonjs": "tsc --outDir ./dist/commonjs",
     "build:esm": "tsc --outDir ./dist/esm -m es6",
-    "build": "run-s clean build:commonjs build:esm",
+    "build": "run-s clean build:commonjs build:esm removetests",
+    "removetests": "rimraf ./dist/*/test",
     "clean": "rimraf ./dist",
-    "test": "jest --env jsdom"
+    "test": "jest --env jsdom",
+    "prepublishOnly": "build"
   },
   "keywords": [
     "CSS-in-JS",
