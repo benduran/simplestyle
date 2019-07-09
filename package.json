@@ -10,7 +10,7 @@
     "removetests": "rimraf ./dist/*/test",
     "clean": "rimraf ./dist",
     "test": "jest --env jsdom",
-    "prepublishOnly": "build"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "CSS-in-JS",
