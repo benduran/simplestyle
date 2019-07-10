@@ -40,7 +40,7 @@ function createStylesImpl<
     (prev: O, classKey: string) => {
       const classname = parentSelector ? classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
       const selector = parentSelector ? classname : `.${classname}`;
-      sheet.addRule(classKey, selector, formatRules(sheet, flush, styles[classKey]));
+      sheet.addRule(classKey, selector, formatRules(sheet, flush, styles[classKey]), parentSelector === null);
       formatRules(sheet, flush, styles[classKey], selector);
       return Object.assign(prev, {
         [classKey]: classname,
