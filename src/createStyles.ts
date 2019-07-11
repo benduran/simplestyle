@@ -1,10 +1,9 @@
+
 import createClassName from './createClassName';
+import formatCssRule from './formatCssRule';
+import * as sheetCache from './sheetCache';
 import SimpleStylesheet from './simpleStylesheet';
 import { ISimpleStyleRules } from './styleTypes';
-
-const camelCaseRegex = /([a-z])([A-Z])/g;
-
-const sheets: SimpleStylesheet[] = [];
 
 // TODO: The order of operations here doesn't "feel" right, but it is working for now.
 
@@ -17,7 +16,7 @@ function formatRules<T>(
   if (parentSelector && rules.$nested) createStylesImpl(rules.$nested, flush, new Date().getTime(), sheet, parentSelector);
   return Object.keys(rules).reduce((prev: string, selectorOrRule: string) => {
     if (selectorOrRule === '$nested') return prev;
-    const formattedRule = selectorOrRule.replace(camelCaseRegex, (match, p1, p2) => `${p1}-${p2.toLowerCase()}`);
+    const formattedRule = formatCssRule(selectorOrRule);
     return `${prev}${formattedRule}:${rules[selectorOrRule]};`;
   }, '');
 }
@@ -35,7 +34,7 @@ function createStylesImpl<
 ): O {
   let tseed = seed;
   const sheet = sheetOverride || new SimpleStylesheet();
-  if (parentSelector === null) sheets.push(sheet);
+  if (parentSelector === null) sheetCache.add(sheet);
   const out: O = Object.keys(styles).reduce(
     (prev: O, classKey: string) => {
       const classname = parentSelector ? classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
@@ -51,10 +50,6 @@ function createStylesImpl<
   sheet.updateNestedSelectors();
   if (parentSelector === null && flush) sheet.attach();
   return out;
-}
-
-export function getAllSheets() {
-  return sheets;
 }
 
 export default function createStyles<

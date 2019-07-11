@@ -3,6 +3,10 @@ export default class SimpleStylesheet {
   private sheetBuffer = '';
   private cachedKeySelectorMap: { [classKey: string]: string } = {};
 
+  public raw(raw: string) {
+    this.sheetBuffer += raw;
+  }
+
   public addRule(classKey: string, selector: string, style: string, shouldCache: boolean = false) {
     if (classKey && selector && style) {
       if (this.cachedKeySelectorMap[classKey]) throw new Error(`Class Key clash for ${classKey}`);

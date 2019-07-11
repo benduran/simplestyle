@@ -9,3 +9,11 @@ export interface ISimpleStyleRules<T> extends CSSProperties {
   [ruleOrSelector: string]: any;
   $nested?: ISimpleStyleSheet<T>;
 }
+
+export interface IIndexableCSSProperties extends CSSProperties {
+  [rule: string]: any;
+}
+
+export interface IRawStyles {
+  [rawSelector: string]: IIndexableCSSProperties;
+}

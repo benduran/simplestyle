@@ -1,5 +1,6 @@
 
-import createStyles, { getAllSheets } from '../src';
+import createStyles from '../src';
+import { getAll } from '../src/sheetCache';
 
 test('Test two overlapping styles from separate parent selectors', () => {
   const styles = createStyles({
@@ -19,7 +20,7 @@ test('Test two overlapping styles from separate parent selectors', () => {
       },
     },
   });
-  const [sheet] = getAllSheets();
+  const [sheet] = getAll();
   const rendered = sheet.getStyles();
   expect(styles.root1).toBeDefined();
   expect(styles.root2).toBeDefined();
