@@ -21,5 +21,5 @@ test('Check children selectors had generated class names replaced correctly', ()
   expect(styles.referenceMe).toBeDefined();
   expect(styles.root).toBeDefined();
   expect(rendered).not.toContain('$referenceMe');
-  expect(rendered.indexOf(`.${styles.root} > .${styles.referenceMe} {border:1px solid black;}`)).toBeGreaterThan(-1);
+  expect(rendered.indexOf(`.${styles.root} > .${styles.referenceMe}{border:1px solid black;}`)).toBeGreaterThan(-1);
 });

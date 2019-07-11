@@ -25,6 +25,6 @@ test('Test two overlapping styles from separate parent selectors', () => {
   expect(styles.root1).toBeDefined();
   expect(styles.root2).toBeDefined();
   expect(rendered.length).toBeGreaterThan(0);
-  expect(rendered.indexOf(`${styles.root1} > img {height:auto;width:100%;}`)).toBeGreaterThan(-1);
-  expect(rendered.indexOf(`${styles.root2} > img {background:red;}`)).toBeGreaterThan(-1);
+  expect(rendered.indexOf(`${styles.root1} > img{height:auto;width:100%;}`)).toBeGreaterThan(-1);
+  expect(rendered.indexOf(`${styles.root2} > img{background:red;}`)).toBeGreaterThan(-1);
 });

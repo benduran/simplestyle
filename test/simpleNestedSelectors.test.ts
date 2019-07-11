@@ -18,5 +18,5 @@ test('Simple nested selectors test (no recursive references)', () => {
   expect(styles).toBeDefined();
   expect(rendered.indexOf(styles.root)).toBeGreaterThan(-1);
   expect(rendered.indexOf(`.${styles.root} > span`)).toBeGreaterThan(-1);
-  expect(rendered.indexOf(`.${styles.root} > span {background-color:blue;}`)).toBeGreaterThan(-1);
+  expect(rendered.indexOf(`.${styles.root} > span{background-color:blue;}`)).toBeGreaterThan(-1);
 });

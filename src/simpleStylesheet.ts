@@ -16,7 +16,8 @@ export default class SimpleStylesheet {
   }
 
   public updateNestedSelectors() {
-    Object.keys(this.cachedKeySelectorMap).forEach((classKey) => {
+    // We want to replace bigger / longer keys first
+    Object.keys(this.cachedKeySelectorMap).sort((a, b) => (a > b ? -1 : a < b ? 1 : 0)).forEach((classKey) => {
       const regex = new RegExp(`\\$${classKey}`, 'gm');
       this.sheetBuffer = this.sheetBuffer.replace(regex, this.cachedKeySelectorMap[classKey]);
     });
