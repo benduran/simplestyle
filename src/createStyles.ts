@@ -49,7 +49,7 @@ function createStylesImpl<
     {} as O,
   );
   sheet.updateNestedSelectors();
-  if (flush) sheet.attach();
+  if (parentSelector === null && flush) sheet.attach();
   return out;
 }
 
