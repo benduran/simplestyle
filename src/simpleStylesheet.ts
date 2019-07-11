@@ -6,7 +6,7 @@ export default class SimpleStylesheet {
   public addRule(classKey: string, selector: string, style: string, shouldCache: boolean = false) {
     if (classKey && selector && style) {
       if (this.cachedKeySelectorMap[classKey]) throw new Error(`Class Key clash for ${classKey}`);
-      this.cachedKeySelectorMap[classKey] = selector;
+      if (shouldCache) this.cachedKeySelectorMap[classKey] = selector;
       this.sheetBuffer += `${selector} {${style}}`;
     }
   }
