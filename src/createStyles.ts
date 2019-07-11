@@ -35,7 +35,7 @@ function createStylesImpl<
 ): O {
   let tseed = seed;
   const sheet = sheetOverride || new SimpleStylesheet();
-  sheets.push(sheet);
+  if (parentSelector === null) sheets.push(sheet);
   const out: O = Object.keys(styles).reduce(
     (prev: O, classKey: string) => {
       const classname = parentSelector ? classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
