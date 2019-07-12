@@ -1,32 +1,5 @@
 
-const alphas: string[] = [
-  'a',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-  'g',
-  'h',
-  'i',
-  'j',
-  'k',
-  'l',
-  'm',
-  'n',
-  'o',
-  'p',
-  'q',
-  'r',
-  's',
-  't',
-  'u',
-  'v',
-  'w',
-  'x',
-  'y',
-  'z',
-];
+const alphas: string[] = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
 const alphasLen = alphas.length;
 
@@ -40,10 +13,10 @@ export default function createClassName(seed: number, prefix: string = '') {
     if (i < len - 2) {
       const second = +seedStr[i + 1];
       const pairNum = Number.parseInt(`${first}${second}`, 10);
-      if (pairNum <= alphasLen) out += alphas[pairNum];
+      if (pairNum <= alphasLen - 1) out += alphas[pairNum];
       else out += `${alphas[first]}${alphas[second]}`;
       i++;
     } else out += alphas[first];
   }
-  return `${prefix}${out}`;
+  return `${prefix}_${out}`;
 }
