@@ -1,6 +1,6 @@
 {
   "name": "simplestyle-js",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "main": "dist/commonjs/src/index.js",
   "module": "dist/esm/src/index.js",
