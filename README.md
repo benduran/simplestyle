@@ -6,11 +6,22 @@ A super simple CSS-in-JS solution with friendly TypeScript support
 
 ## Usage
 
-`simplestyle-js` provides two APIs out of the box:
-`createStyles` and `getAllSheets`
+`simplestyle-js` provides three APIs out of the box:
+`createStyles`, `getAllSheets` and `rawStyles`
 
 ```
-import createStyles from 'simplestyle-js`;
+import createStyles, { rawStyles } from 'simplestyle-js`;
+
+// Useful if you want to apply Keyframes, style resets or any other global styles
+rawStyles({
+  html: {
+    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontSize: '16px',
+  },
+  'body *': {
+    boxSizing: 'border-box',
+  },
+});
 
 const styles = createStyles({
   myButton: {
