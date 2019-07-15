@@ -7,6 +7,10 @@
   "js:next": "dist/esm/src/index.js",
   "typings": "dist/commonjs/src/index.d.ts",
   "types": "dist/commonjs/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benduran/simplestyle.git"
+  },
   "scripts": {
     "build:commonjs": "tsc --outDir ./dist/commonjs",
     "build:esm": "tsc --outDir ./dist/esm -m es6",
