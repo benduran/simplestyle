@@ -12,7 +12,7 @@
     "object-literal-sort-keys": [false],
     "jsx-no-multiline-js": [false],
     "align": [false],
-    "max-line-length": [true, 150],
+    "max-line-length": [true, 180],
     "no-increment-decrement": [false]
   }
 }

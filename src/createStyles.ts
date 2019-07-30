@@ -47,10 +47,15 @@ function createStylesImpl<
   if (parentSelector === null) sheetCache.add(sheet);
   const out: O = Object.keys(styles).reduce(
     (prev: O, classKey: string) => {
-      const classname = parentSelector ? classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
-      const selector = parentSelector ? classname : `.${classname}`;
-      sheet.addRule(classKey, selector, formatRules(sheet, flush, styles[classKey]), parentSelector === null);
+      const isMedia = classKey.startsWith('@media');
+      const classname = parentSelector ? isMedia ? parentSelector : classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
+      const selector = parentSelector ? isMedia ? parentSelector : classname : `.${classname}`;
+      if (isMedia) {
+        sheet.startMedia(classKey);
+        sheet.addRule(selector, selector, formatRules(sheet, flush, styles[classKey]), false);
+      } else sheet.addRule(classKey, selector, formatRules(sheet, flush, styles[classKey]), parentSelector === null);
       formatRules(sheet, flush, styles[classKey], selector);
+      if (isMedia) sheet.stopMedia();
       return Object.assign(prev, {
         [classKey]: classname,
       });

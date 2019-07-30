@@ -1,4 +1,4 @@
-# simplestyle-js
+# simplestyle-js [![Build Status](https://travis-ci.org/benduran/simplestyle.svg?branch=master)](https://travis-ci.org/benduran/simplestyle)
 A super simple CSS-in-JS solution with friendly TypeScript support
 
 ## Installation
@@ -33,6 +33,12 @@ const styles = createStyles({
     color: 'white',
   },
   header: {
+    '@media (max-width: 960px)': {
+      '& > $myButton': {
+        padding: '12px', // special padding for header button on mobile
+      },
+      height: '50px', // target smaller height on mobile devices
+    },
     '& > $myButton': {
       padding: '4px 8px',
     },
