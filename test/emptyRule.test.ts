@@ -5,10 +5,8 @@ test('Allow classname generation on empty rulesets', () => {
   const styles = createStyles({
     empty: {},
     emptyRef: {
-      $nested: {
-        '& > $empty > div': {
-          backgroundColor: 'purple',
-        },
+      '& > $empty > div': {
+        backgroundColor: 'purple',
       },
     },
   });

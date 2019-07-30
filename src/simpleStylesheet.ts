@@ -15,6 +15,14 @@ export default class SimpleStylesheet {
     }
   }
 
+  public startMedia(query: string) {
+    this.sheetBuffer += `${query}{`;
+  }
+
+  public stopMedia() {
+    this.sheetBuffer += '}';
+  }
+
   public updateNestedSelectors() {
     // We want to replace bigger / longer keys first
     Object.keys(this.cachedKeySelectorMap).sort((a, b) => (a > b ? -1 : a < b ? 1 : 0)).forEach((classKey) => {

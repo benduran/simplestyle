@@ -11,13 +11,11 @@ test('Check children selectors had generated class names replaced correctly', ()
       left: '100px',
     },
     root: {
-      $nested: {
-        '&:hover > $referenceMe': {
-          borderColor: 'blue',
-        },
-        '& > $reference': {
-          border: '1px solid black',
-        },
+      '&:hover > $referenceMe': {
+        borderColor: 'blue',
+      },
+      '& > $reference': {
+        border: '1px solid black',
       },
       opacity: 0.5,
     },

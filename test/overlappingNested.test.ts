@@ -5,18 +5,14 @@ import { getAll } from '../src/sheetCache';
 test('Test two overlapping styles from separate parent selectors', () => {
   const styles = createStyles({
     root1: {
-      $nested: {
-        '& > img': {
-          height: 'auto',
-          width: '100%',
-        },
+      '& > img': {
+        height: 'auto',
+        width: '100%',
       },
     },
     root2: {
-      $nested: {
-        '& > img': {
-          background: 'red',
-        },
+      '& > img': {
+        background: 'red',
       },
     },
   });

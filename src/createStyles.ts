@@ -13,9 +13,19 @@ function formatRules<T>(
   rules: ISimpleStyleRules<T>,
   parentSelector?: string,
 ): string {
-  if (parentSelector && rules.$nested) createStylesImpl(rules.$nested, flush, new Date().getTime(), sheet, parentSelector);
-  return Object.keys(rules).reduce((prev: string, selectorOrRule: string) => {
-    if (selectorOrRule === '$nested') return prev;
+  const ruleKeys = Object.keys(rules);
+  const nestedStyleKeys = ruleKeys.filter(rk => typeof rules[rk] === 'object');
+  if (parentSelector && nestedStyleKeys.length) {
+    createStylesImpl(
+      nestedStyleKeys.reduce((prev: ISimpleStyleRules<T>, rk: string) => Object.assign(prev, { [rk]: rules[rk] }), {}),
+      flush,
+      new Date().getTime(),
+      sheet,
+      parentSelector,
+    );
+  }
+  return ruleKeys.reduce((prev: string, selectorOrRule: string) => {
+    if (selectorOrRule.startsWith('&') || typeof rules[selectorOrRule] === 'object') return prev;
     const formattedRule = formatCssRule(selectorOrRule);
     return `${prev}${formattedRule}:${rules[selectorOrRule]};`;
   }, '');
@@ -37,10 +47,15 @@ function createStylesImpl<
   if (parentSelector === null) sheetCache.add(sheet);
   const out: O = Object.keys(styles).reduce(
     (prev: O, classKey: string) => {
-      const classname = parentSelector ? classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
-      const selector = parentSelector ? classname : `.${classname}`;
-      sheet.addRule(classKey, selector, formatRules(sheet, flush, styles[classKey]), parentSelector === null);
+      const isMedia = classKey.startsWith('@media');
+      const classname = parentSelector ? isMedia ? parentSelector : classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
+      const selector = parentSelector ? isMedia ? parentSelector : classname : `.${classname}`;
+      if (isMedia) {
+        sheet.startMedia(classKey);
+        sheet.addRule(selector, selector, formatRules(sheet, flush, styles[classKey]), false);
+      } else sheet.addRule(classKey, selector, formatRules(sheet, flush, styles[classKey]), parentSelector === null);
       formatRules(sheet, flush, styles[classKey], selector);
+      if (isMedia) sheet.stopMedia();
       return Object.assign(prev, {
         [classKey]: classname,
       });

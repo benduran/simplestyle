@@ -1,4 +1,4 @@
-# simplestyle-js
+# simplestyle-js [![Build Status](https://travis-ci.org/benduran/simplestyle.svg?branch=master)](https://travis-ci.org/benduran/simplestyle)
 A super simple CSS-in-JS solution with friendly TypeScript support
 
 ## Installation
@@ -25,20 +25,22 @@ rawStyles({
 
 const styles = createStyles({
   myButton: {
-    $nested: {
-      '&:hover': {
-        backgroundColor: 'red',
-      },
+    '&:hover': {
+      backgroundColor: 'red',
     },
     backgroundColor: 'transparent',
     border: '1px solid red',
     color: 'white',
   },
   header: {
-    $nested: {
+    '@media (max-width: 960px)': {
       '& > $myButton': {
-        padding: '4px 8px',
+        padding: '12px', // special padding for header button on mobile
       },
+      height: '50px', // target smaller height on mobile devices
+    },
+    '& > $myButton': {
+      padding: '4px 8px',
     },
     height: '100px',
     left: 0,
