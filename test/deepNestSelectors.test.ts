@@ -5,16 +5,10 @@ import { getAll } from '../src/sheetCache';
 test('Test deeply nested psuedo selectors (fun stuff!)', () => {
   const styles = createStyles({
     deep: {
-      $nested: {
-        '& > span.nest1': {
-          $nested: {
-            '&:hover > svg.nest2': {
-              $nested: {
-                '&:before': {
-                  content: '"deep"',
-                },
-              },
-            },
+      '& > span.nest1': {
+        '&:hover > svg.nest2': {
+          '&:before': {
+            content: '"deep"',
           },
         },
       },

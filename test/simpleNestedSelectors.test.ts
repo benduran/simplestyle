@@ -5,10 +5,8 @@ import { getAll } from '../src/sheetCache';
 test('Simple nested selectors test (no recursive references)', () => {
   const styles = createStyles({
     root: {
-      $nested: {
-        '& > span': {
-          backgroundColor: 'blue',
-        },
+      '& > span': {
+        backgroundColor: 'blue',
       },
       backgroundColor: 'pink',
     },

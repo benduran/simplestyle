@@ -7,7 +7,6 @@ export interface ISimpleStyleSheet<T> {
 
 export interface ISimpleStyleRules<T> extends CSSProperties {
   [ruleOrSelector: string]: any;
-  $nested?: ISimpleStyleSheet<T>;
 }
 
 export interface IIndexableCSSProperties extends CSSProperties {

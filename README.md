@@ -25,20 +25,16 @@ rawStyles({
 
 const styles = createStyles({
   myButton: {
-    $nested: {
-      '&:hover': {
-        backgroundColor: 'red',
-      },
+    '&:hover': {
+      backgroundColor: 'red',
     },
     backgroundColor: 'transparent',
     border: '1px solid red',
     color: 'white',
   },
   header: {
-    $nested: {
-      '& > $myButton': {
-        padding: '4px 8px',
-      },
+    '& > $myButton': {
+      padding: '4px 8px',
     },
     height: '100px',
     left: 0,
