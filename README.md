@@ -6,13 +6,13 @@ A super simple CSS-in-JS solution with friendly TypeScript support
 
 ## Usage
 
-`simplestyle-js` provides three APIs out of the box:
-`createStyles`, `getAllSheets` and `rawStyles`
+`simplestyle-js` provides four APIs out of the box:
+`createStyles`, `getAllSheets`, `rawStyles` and `keyframes`
 
 ```
 import createStyles, { rawStyles } from 'simplestyle-js`;
 
-// Useful if you want to apply Keyframes, style resets or any other global styles
+// Useful if you want to apply style resets or any other global styles
 rawStyles({
   html: {
     fontFamily: 'Arial, Helvetica, sans-serif',
@@ -23,13 +23,26 @@ rawStyles({
   },
 });
 
+const animationName = keyframes({
+  '0%': {
+    borderColor: 'red',
+  },
+  '50%': {
+    borderColor: 'blue',
+  },
+  '100%': {
+    borderColor: 'red',
+  },
+});
+
 const styles = createStyles({
   myButton: {
     '&:hover': {
       backgroundColor: 'red',
     },
+    animation: `${animationName} 1s linear infinite`, // use the generated animation name from the `keyframes` call above
     backgroundColor: 'transparent',
-    border: '1px solid red',
+    border: '1px solid',
     color: 'white',
   },
   header: {
