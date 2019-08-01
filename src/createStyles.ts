@@ -1,11 +1,10 @@
 
+import * as seed from './clasnameSeed';
 import createClassName from './createClassName';
 import formatCssRule from './formatCssRule';
 import * as sheetCache from './sheetCache';
 import SimpleStylesheet from './simpleStylesheet';
 import { ISimpleStyleRules } from './styleTypes';
-
-// TODO: The order of operations here doesn't "feel" right, but it is working for now.
 
 function formatRules<T>(
   sheet: SimpleStylesheet,
@@ -19,7 +18,6 @@ function formatRules<T>(
     createStylesImpl(
       nestedStyleKeys.reduce((prev: ISimpleStyleRules<T>, rk: string) => Object.assign(prev, { [rk]: rules[rk] }), {}),
       flush,
-      new Date().getTime(),
       sheet,
       parentSelector,
     );
@@ -38,17 +36,17 @@ function createStylesImpl<
 >(
   styles: T,
   flush: boolean,
-  seed: number = new Date().getTime(),
   sheetOverride: SimpleStylesheet | null = null,
   parentSelector: string | null = null,
 ): O {
-  let tseed = seed;
   const sheet = sheetOverride || new SimpleStylesheet();
   if (parentSelector === null) sheetCache.add(sheet);
   const out: O = Object.keys(styles).reduce(
     (prev: O, classKey: string) => {
       const isMedia = classKey.startsWith('@media');
-      const classname = parentSelector ? isMedia ? parentSelector : classKey.replace(/&/g, parentSelector) : createClassName(tseed++, classKey);
+      const s = seed.get();
+      seed.increment();
+      const classname = parentSelector ? isMedia ? parentSelector : classKey.replace(/&/g, parentSelector) : createClassName(s, classKey);
       const selector = parentSelector ? isMedia ? parentSelector : classname : `.${classname}`;
       if (isMedia) {
         sheet.startMedia(classKey);
@@ -74,7 +72,6 @@ export default function createStyles<
 >(
   styles: T,
   flush: boolean = true,
-  seed: number = new Date().getTime(),
 ): O {
-  return createStylesImpl<T, K, O>(styles, flush, seed);
+  return createStylesImpl<T, K, O>(styles, flush);
 }
