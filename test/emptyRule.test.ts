@@ -9,7 +9,7 @@ test('Allow classname generation on empty rulesets', () => {
         backgroundColor: 'purple',
       },
     },
-  });
+  }, false);
   const [sheet] = getAllSheets();
   const rendered = sheet.getStyles();
   expect(rendered.indexOf(`.${styles.emptyRef} > .${styles.empty} > div{background-color:purple;}`)).toBeGreaterThan(-1);

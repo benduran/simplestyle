@@ -18,7 +18,7 @@ test('Deeply nested media query with backreferences', () => {
       },
       width: '100px',
     },
-  });
+  }, false);
   const [sheet] = getAllSheets();
   const rendered = sheet.getStyles();
   expect(rendered).toContain(`.${styles.button}{padding:1em;}`);

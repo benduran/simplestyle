@@ -23,6 +23,18 @@ export default class SimpleStylesheet {
     this.sheetBuffer += '}';
   }
 
+  public startKeyframes(name: string) {
+    this.sheetBuffer += `@keyframes ${name}{`;
+  }
+
+  public stopKeyframes() {
+    this.sheetBuffer += '}';
+  }
+
+  public addKeyframe(increment: string, formattedRules: string) {
+    this.sheetBuffer += `${increment}{${formattedRules}}`;
+  }
+
   public updateNestedSelectors() {
     // We want to replace bigger / longer keys first
     Object.keys(this.cachedKeySelectorMap).sort((a, b) => (a > b ? -1 : a < b ? 1 : 0)).forEach((classKey) => {

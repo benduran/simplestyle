@@ -6,17 +6,17 @@ test('Test that using the same classkey does not result in generating the same c
     root: {
       backgroundColor: 'purple',
     },
-  });
+  }, false);
   const s2 = createStyles({
     root: {
       height: '100px',
     },
-  });
+  }, false);
   const s3 = createStyles({
     root: {
       color: 'yellow',
     },
-  });
+  }, false);
   const [sheet1, sheet2, sheet3] = getAllSheets();
   const r1 = sheet1.getStyles();
   const r2 = sheet2.getStyles();

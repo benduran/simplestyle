@@ -10,7 +10,7 @@ test('Simple nested selectors test (no recursive references)', () => {
       },
       backgroundColor: 'pink',
     },
-  });
+  }, false);
   const [sheet] = getAll();
   const rendered = sheet.getStyles();
   expect(styles).toBeDefined();

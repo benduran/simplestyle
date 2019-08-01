@@ -15,7 +15,7 @@ test('Test two overlapping styles from separate parent selectors', () => {
         background: 'red',
       },
     },
-  });
+  }, false);
   const [sheet] = getAll();
   const rendered = sheet.getStyles();
   expect(styles.root1).toBeDefined();

@@ -61,7 +61,10 @@ function createStylesImpl<
     {} as O,
   );
   sheet.updateNestedSelectors();
-  if (parentSelector === null && flush) sheet.attach();
+  if (parentSelector === null && flush) {
+    sheet.attach();
+    sheet.cleanup();
+  }
   return out;
 }
 

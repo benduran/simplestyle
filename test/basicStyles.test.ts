@@ -7,7 +7,7 @@ test('Create baseline tests', () => {
     basic: {
       backgroundColor: 'red',
     },
-  });
+  }, false);
   const [sheet] = getAll();
   expect(styles).toBeDefined();
   expect(sheet.getStyles().indexOf(styles.basic)).toBeGreaterThan(-1);

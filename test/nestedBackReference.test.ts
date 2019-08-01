@@ -22,7 +22,7 @@ test('Check children selectors had generated class names replaced correctly', ()
     zebra: {
       transform: 'translateY(-50%)',
     },
-  });
+  }, false);
   const [sheet] = getAll();
   const rendered = sheet.getStyles();
   expect(styles.referenceMe).toBeDefined();

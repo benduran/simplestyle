@@ -13,7 +13,7 @@ test('Test deeply nested psuedo selectors (fun stuff!)', () => {
         },
       },
     },
-  });
+  }, false);
   const [sheet] = getAll();
   const rendered = sheet.getStyles();
   expect(rendered.length).toBeGreaterThan(0);

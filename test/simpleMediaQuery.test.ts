@@ -9,7 +9,7 @@ test('Super simple media query', () => {
       },
       width: '400px',
     },
-  });
+  }, false);
   const [sheet] = getAllSheets();
   const rendered = sheet.getStyles();
   expect(rendered.indexOf(`.${styles.queryThis}{width:400px;}`)).toBeGreaterThan(-1);
