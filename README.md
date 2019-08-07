@@ -1,5 +1,5 @@
 # simplestyle-js [![Build Status](https://travis-ci.org/benduran/simplestyle.svg?branch=master)](https://travis-ci.org/benduran/simplestyle)
-A super simple CSS-in-JS solution with friendly TypeScript support
+A super simple CSS-in-JS solution with friendly TypeScript support and **zero dependencies**
 
 ## Installation
 `npm install simplestyle-js --save`
