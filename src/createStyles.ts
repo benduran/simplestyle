@@ -29,6 +29,22 @@ function formatRules<T>(
   }, '');
 }
 
+function formatClassName(
+  s: number,
+  classKey: string,
+  parentSelector: string | null,
+  isMedia: boolean,
+): string {
+  if (parentSelector) {
+    if (isMedia) return parentSelector;
+    const sParentSelector = parentSelector.split(',');
+    // Handle the magic case from this issue regarding comma-separate parents: https://github.com/benduran/simplestyle/issues/8
+    if (sParentSelector.length > 1) return sParentSelector.map(pSelector => classKey.replace(/&/g, pSelector)).join(',');
+    return classKey.replace(/&/g, parentSelector);
+  }
+  return createClassName(s, classKey);
+}
+
 function createStylesImpl<
   T extends { [classKey: string]: ISimpleStyleRules<T> },
   K extends keyof T,
@@ -46,7 +62,7 @@ function createStylesImpl<
       const isMedia = classKey.startsWith('@media');
       const s = seed.get();
       seed.increment();
-      const classname = parentSelector ? isMedia ? parentSelector : classKey.replace(/&/g, parentSelector) : createClassName(s, classKey);
+      const classname = formatClassName(s, classKey, parentSelector, isMedia);
       const selector = parentSelector ? isMedia ? parentSelector : classname : `.${classname}`;
       if (isMedia) {
         sheet.startMedia(classKey);
