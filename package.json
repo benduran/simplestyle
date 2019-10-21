@@ -1,21 +1,20 @@
 {
   "name": "simplestyle-js",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
-  "main": "dist/commonjs/src/index.js",
-  "module": "dist/esm/src/index.js",
-  "js:next": "dist/esm/src/index.js",
-  "typings": "dist/commonjs/src/index.d.ts",
-  "types": "dist/commonjs/src/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/esm/index.js",
+  "js:next": "dist/esm/index.js",
+  "typings": "dist/esm/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
   "scripts": {
-    "build:commonjs": "tsc --outDir ./dist/commonjs",
-    "build:esm": "tsc --outDir ./dist/esm -m es6",
-    "build": "run-s clean build:commonjs build:esm removetests",
-    "removetests": "rimraf ./dist/*/test",
+    "build:commonjs": "tsc -p ./tsconfig.json",
+    "build:esm": "tsc -p ./tsconfig.esm.json",
+    "build": "run-s clean build:commonjs build:esm",
     "clean": "rimraf ./dist",
     "test": "jest --env jsdom",
     "prepublishOnly": "npm run build"
@@ -30,19 +29,19 @@
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.15",
+    "@types/jest": "^24.0.19",
     "@types/jsdom": "^12.2.4",
-    "csstype": "^2.6.6",
-    "jest": "^24.8.0",
-    "jsdom": "^15.1.1",
+    "csstype": "^2.6.7",
+    "jest": "^24.9.0",
+    "jsdom": "^15.2.0",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^2.6.3",
-    "ts-jest": "^24.0.2",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
-    "tslint-config-airbnb": "^5.11.1",
-    "tslint-react": "^4.0.0",
-    "typescript": "^3.5.3"
+    "rimraf": "^3.0.0",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.20.0",
+    "tslint-config-airbnb": "^5.11.2",
+    "tslint-react": "^4.1.0",
+    "typescript": "^3.6.4"
   },
   "dependencies": {}
 }
