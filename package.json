@@ -29,19 +29,20 @@
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^24.0.22",
     "@types/jsdom": "^12.2.4",
-    "csstype": "^2.6.7",
     "jest": "^24.9.0",
-    "jsdom": "^15.2.0",
+    "jsdom": "^15.2.1",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.0",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
-    "tslint": "^5.20.0",
+    "tslint": "^5.20.1",
     "tslint-config-airbnb": "^5.11.2",
     "tslint-react": "^4.1.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "csstype": "^2.6.7"
+  }
 }
