@@ -17,6 +17,7 @@
     "build": "run-s clean build:commonjs build:esm",
     "clean": "rimraf ./dist",
     "test": "jest --env jsdom",
+    "test:watch": "jest --env jsdom --watch",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
