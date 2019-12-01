@@ -1,11 +1,25 @@
+/* tslint:disable no-console */
 
 import createStyles, { registerPreHook } from '../src';
 import { clearPostHooks, clearPreHooks, getPostHooks, getPreHooks, registerPostHook } from '../src/pluginHooks';
+import globalSheetCache from '../src/sheetCache';
 import SimpleStylesheet from '../src/simpleStylesheet';
 import { SimpleStylePluginPostHook, SimpleStylePluginPreHook } from '../src/styleTypes';
 
+function generatePreHooks(count: number) {
+  const preHooks: SimpleStylePluginPreHook[] = [];
+  for (let i = 0; i < count; i++) preHooks.push(jest.fn((s, r) => { console.info('pre hook number', i); return r; }));
+  return preHooks;
+}
+function generatePostHooks(count: number) {
+  const postHooks: SimpleStylePluginPostHook[] = [];
+  for (let i = 0; i < count; i++) postHooks.push(jest.fn((s, r) => { console.info('post hook number', i); return r; }));
+  return postHooks;
+}
+
 describe('Plugin hooks registration and execution', () => {
   beforeEach(() => {
+    globalSheetCache.clean();
     clearPreHooks();
     clearPostHooks();
   });
@@ -30,15 +44,55 @@ describe('Plugin hooks registration and execution', () => {
         position: 'absolute',
       },
     };
-    const preHook: SimpleStylePluginPreHook = jest.fn((s, rules) => {
+    const preHook: SimpleStylePluginPreHook = jest.fn((s, rules, sheetCache) => {
       const styles = s.getStyles();
       expect(s).toBeInstanceOf(SimpleStylesheet);
       expect(styles.length).toBe(0);
       expect(rules).toBe(r.preHookRoot);
+      expect(sheetCache.getAll().length).toBe(1);
+      expect(typeof sheetCache.add).toBe('function');
+      expect(typeof sheetCache.clean).toBe('function');
       return rules;
     });
     registerPreHook(preHook);
     createStyles(r as any);
     expect(preHook).toBeCalled();
+  });
+  it('Posthook should accept the correct arguments', () => {
+    const r = {
+      postHookRoot: {
+        backgroundColor: 'pink',
+        width: '50%',
+      },
+    };
+    const postHook: SimpleStylePluginPostHook = jest.fn((s, rules, className, sheetCache) => {
+      const styles = s.getStyles();
+      expect(s).toBeInstanceOf(SimpleStylesheet);
+      expect(styles.length).toBeGreaterThan(1);
+      expect(styles).toContain('.postHookRoot');
+      expect(styles).toContain('background-color:pink;');
+      expect(styles).toContain('width:50%;');
+      expect(rules).toBe(r.postHookRoot);
+      expect(className).toContain('postHookRoot');
+      expect(sheetCache.getAll().length).toBe(1);
+      expect(typeof sheetCache.add).toBe('function');
+      expect(typeof sheetCache.clean).toBe('function');
+    });
+    registerPostHook(postHook);
+    createStyles(r as any);
+    expect(postHook).toBeCalled();
+  });
+  it('Should register multiple pre and post hooks', () => {
+    const preHooks = generatePreHooks(5);
+    const postHooks = generatePostHooks(8);
+    preHooks.forEach(p => registerPreHook(p));
+    postHooks.forEach(p => registerPostHook(p));
+    const registeredPreHooks = getPreHooks();
+    const registeredPostHooks = getPostHooks();
+
+    expect(registeredPreHooks.length).toBe(preHooks.length);
+    expect(registeredPostHooks.length).toBe(postHooks.length);
+    registeredPreHooks.forEach((p, i) => expect(p).toBe(preHooks[i]));
+    registeredPostHooks.forEach((p, i) => expect(p).toBe(postHooks[i]));
   });
 });

@@ -1,11 +1,10 @@
 import SimpleStylesheet from './simpleStylesheet';
+import { ISheetCache } from './styleTypes';
 
 let sheets: SimpleStylesheet[] = [];
 
-export function add(sheet: SimpleStylesheet) {
-  sheets.push(sheet);
-}
-
-export function getAll() { return sheets; }
-
-export function clean() { sheets = []; }
+export default {
+  add(sheet: SimpleStylesheet) { sheets.push(sheet); },
+  getAll() { return sheets; },
+  clean() { sheets = []; },
+} as ISheetCache;
