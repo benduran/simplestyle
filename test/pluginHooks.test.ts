@@ -95,4 +95,28 @@ describe('Plugin hooks registration and execution', () => {
     registeredPreHooks.forEach((p, i) => expect(p).toBe(preHooks[i]));
     registeredPostHooks.forEach((p, i) => expect(p).toBe(postHooks[i]));
   });
+  it('Should validate that a prehook transforms the rules properly', () => {
+    const r = {
+      preHookRoot: {
+        boxSizing: 'border-box',
+      },
+    };
+    const preHook: SimpleStylePluginPreHook = jest.fn((s, rules, sc) => {
+      if (rules.boxSizing) {
+        rules['-webkit-box-sizing'] = rules.boxSizing;
+        rules['-moz-box-sizing'] = rules.boxSizing;
+        rules['-ms-box-sizing'] = rules.boxSizing;
+      }
+      return rules;
+    });
+    registerPreHook(preHook);
+    const styles = createStyles(r as any, false);
+    const [sheet] = globalSheetCache.getAll();
+    const rendered = sheet.getStyles();
+    expect(rendered).toContain(`.${styles.preHookRoot}`);
+    expect(rendered).toContain('box-sizing:border-box;');
+    expect(rendered).toContain('-webkit-box-sizing:border-box;');
+    expect(rendered).toContain('-moz-box-sizing:border-box;');
+    expect(rendered).toContain('-ms-box-sizing:border-box;');
+  });
 });
