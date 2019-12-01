@@ -62,7 +62,7 @@ function createStylesImpl<
     (prev: O, classKey: string) => {
       let preProcessedRules: ISimpleStyleRules<T> = styles[classKey];
       getPreHooks().forEach((p) => {
-        preProcessedRules = p<T>(sheet, styles[classKey], sheetCache);
+        preProcessedRules = p<T>(sheet, preProcessedRules, sheetCache);
       });
       const isMedia = classKey.startsWith('@media');
       const s = seed.get();
@@ -75,7 +75,7 @@ function createStylesImpl<
       } else sheet.addRule(classKey, selector, formatRules(sheet, flush, preProcessedRules), parentSelector === null);
       formatRules(sheet, flush, preProcessedRules, selector);
       if (isMedia) sheet.stopMedia();
-      getPostHooks().forEach(p => p<T>(sheet, styles[classKey], classname, sheetCache));
+      getPostHooks().forEach(p => p<T>(sheet, preProcessedRules, classname, sheetCache));
       return Object.assign(prev, {
         [classKey]: classname,
       });
