@@ -1,5 +1,5 @@
 import formatCssRule from './formatCssRule';
-import { add as addSheet } from './sheetCache';
+import sheetCache from './sheetCache';
 import SimpleStyleSheet from './simpleStylesheet';
 import { IRawStyles } from './styleTypes';
 
@@ -19,7 +19,7 @@ export default function rawStyles(
       )}}`,
     );
   });
-  addSheet(sheet);
+  sheetCache.add(sheet);
   if (flush) sheet.attach();
   return sheet;
 }

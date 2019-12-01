@@ -1,6 +1,5 @@
 
-import createStyles from '../src';
-import { getAll } from '../src/sheetCache';
+import createStyles, { getAllSheets } from '../src';
 
 test('Test deeply nested psuedo selectors (fun stuff!)', () => {
   const styles = createStyles({
@@ -14,7 +13,7 @@ test('Test deeply nested psuedo selectors (fun stuff!)', () => {
       },
     },
   }, false);
-  const [sheet] = getAll();
+  const [sheet] = getAllSheets();
   const rendered = sheet.getStyles();
   expect(rendered.length).toBeGreaterThan(0);
   expect(rendered.indexOf(styles.deep)).toBeGreaterThan(-1);

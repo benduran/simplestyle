@@ -2,7 +2,7 @@
 import * as seed from './clasnameSeed';
 import createClassName from './createClassName';
 import formatCssRule from './formatCssRule';
-import * as sheetCache from './sheetCache';
+import sheetCache from './sheetCache';
 import SimpleStylesheet from './simpleStylesheet';
 import { IRawStyles } from './styleTypes';
 

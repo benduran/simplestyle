@@ -1,6 +1,5 @@
 
-import createStyles from '../src';
-import { getAll } from '../src/sheetCache';
+import createStyles, { getAllSheets } from '../src';
 
 test('Simple nested selectors test (no recursive references)', () => {
   const styles = createStyles({
@@ -11,7 +10,7 @@ test('Simple nested selectors test (no recursive references)', () => {
       backgroundColor: 'pink',
     },
   }, false);
-  const [sheet] = getAll();
+  const [sheet] = getAllSheets();
   const rendered = sheet.getStyles();
   expect(styles).toBeDefined();
   expect(rendered.indexOf(styles.root)).toBeGreaterThan(-1);
