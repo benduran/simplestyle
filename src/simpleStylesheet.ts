@@ -1,6 +1,6 @@
 
 export default class SimpleStylesheet {
-  private sheetBuffer = '';
+  public sheetBuffer = '';
   private cachedKeySelectorMap: { [classKey: string]: string } = {};
 
   public raw(raw: string) {

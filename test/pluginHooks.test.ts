@@ -1,5 +1,8 @@
 /* tslint:disable no-console */
 
+import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
+
 import createStyles, { registerPreHook } from '../src';
 import { clearPostHooks, clearPreHooks, getPostHooks, getPreHooks, registerPostHook } from '../src/pluginHooks';
 import globalSheetCache from '../src/sheetCache';
@@ -95,28 +98,56 @@ describe('Plugin hooks registration and execution', () => {
     registeredPreHooks.forEach((p, i) => expect(p).toBe(preHooks[i]));
     registeredPostHooks.forEach((p, i) => expect(p).toBe(postHooks[i]));
   });
-  it('Should validate that a prehook transforms the rules properly', () => {
+  it('Should validate that each prehook transforms the rules properly', () => {
     const r = {
       preHookRoot: {
         boxSizing: 'border-box',
       },
     };
-    const preHook: SimpleStylePluginPreHook = jest.fn((s, rules, sc) => {
-      if (rules.boxSizing) {
-        rules['-webkit-box-sizing'] = rules.boxSizing;
-        rules['-moz-box-sizing'] = rules.boxSizing;
-        rules['-ms-box-sizing'] = rules.boxSizing;
-      }
+    const preHook1: SimpleStylePluginPreHook = jest.fn((s, rules, sc) => {
+      if (rules.boxSizing) rules['-webkit-box-sizing'] = rules.boxSizing;
       return rules;
     });
-    registerPreHook(preHook);
+    const preHook2: SimpleStylePluginPreHook = jest.fn((s, rules, sc) => {
+      if (rules['-webkit-box-sizing']) rules['-moz-box-sizing'] = rules.boxSizing;
+      return rules;
+    });
+    const preHook3: SimpleStylePluginPreHook = jest.fn((s, rules, sc) => {
+      if (rules['-webkit-box-sizing'] && rules['-moz-box-sizing']) rules['-ms-box-sizing'] = rules.boxSizing;
+      return rules;
+    });
+    registerPreHook(preHook1);
+    registerPreHook(preHook2);
+    registerPreHook(preHook3);
     const styles = createStyles(r as any, false);
     const [sheet] = globalSheetCache.getAll();
     const rendered = sheet.getStyles();
+    expect(preHook1).toBeCalled();
+    expect(preHook2).toBeCalled();
+    expect(preHook3).toBeCalled();
     expect(rendered).toContain(`.${styles.preHookRoot}`);
     expect(rendered).toContain('box-sizing:border-box;');
     expect(rendered).toContain('-webkit-box-sizing:border-box;');
     expect(rendered).toContain('-moz-box-sizing:border-box;');
     expect(rendered).toContain('-ms-box-sizing:border-box;');
+  });
+  it('Should validate that the posthook transform the rules properly', () => {
+    const r = {
+      postHookRoot: {
+        userSelect: 'none',
+      },
+    };
+    const posthook1: SimpleStylePluginPostHook = jest.fn((s, rules, generatedSelector) => {
+      s.sheetBuffer = postcss([autoprefixer()]).process(s.getStyles()).css;
+    });
+    registerPostHook(posthook1);
+    createStyles(r as any, false);
+    const [sheet] = globalSheetCache.getAll();
+    const rendered = sheet.getStyles();
+    expect(posthook1).toBeCalled();
+    expect(rendered).toContain('user-select:none;');
+    expect(rendered).toContain('-webkit-user-select:none;');
+    expect(rendered).toContain('-moz-user-select:none;');
+    expect(rendered).toContain('-ms-user-select:none;');
   });
 });
