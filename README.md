@@ -40,6 +40,9 @@ const styles = createStyles({
     '&:hover': {
       backgroundColor: 'red',
     },
+    '&:active, &:focus': {
+      borderColor: 'blue',
+    },
     animation: `${animationName} 1s linear infinite`, // use the generated animation name from the `keyframes` call above
     backgroundColor: 'transparent',
     border: '1px solid',
@@ -90,6 +93,81 @@ getAllSheets().forEach((s) => {
   s.attach(); // Attaches to the head and cleans up the sheet buffer and the cache of class keys to generated CSS class selectors
 });
 ```
+
+## Authoring Plugins
+SimpleStyle does one thing out of the box well, and that's providing an intuitive way for you to write your CSS-in-JS in ways that are very similar to popular CSS Preprocessors like LESS, SASS, Stylus, among others. If you need to provide additional functionality that's not offered in the core library, `simplestyle-js` provides easy ways to tie into lifecycle hooks in the style rendering process if you need to stub out additional behavior. This allows you to create and chain an infinite number of plugins, based on your needs. 
+
+In order to use a plugin, you need to **register** each plugin you'd like to use *before* you issue any calls to `createStyles`. Plugins will be executed in the order in which they were registered. The methods available for you to register plugins are as follows:
+
+- `registerPreHook(preHookFnc)`
+  - `SimpleStylePluginPreHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, sheetCache: ISheetCache) => ISimpleStyleRules<T>;`
+  - `preHookFnc` is a function that accepts three parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
+    - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
+    - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`)
+    - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM.
+  - A valid `preHookFnc` is expected expected to return the `rules` object it was provided. This allows you to do additional transforms on the rules before they're flushed to a CSS string and then written to the DOM. A perfect example of this would be to use something like `postcss` with `autoprefixer` to apply all valid vendor-specific CSS properties.
+
+- `registerPostHook(postHookFnc)`
+  - `SimpleStylePluginPostHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, generatedSelector: string, sheetCache: ISheetCache) => void;`
+  - `postHookFnc` is a function that accepts four parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
+  - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
+  - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`).
+    **NOTE** The rules object, at this point, will already have all of its transforms applied to it from any executed **PreHook** functions. Modifying this object here is essentially a **NO-OP**, as the styles from this rules object will have already been written as a CSS string to this `sheet` instance (but *not* yet rendered to the DOM).
+  - `generatedSelector` - `string` - The dynamically-generated CSS selector that applies to this level of the rules object. This is the selector that will have been written to a CSS string and placed inside the current `sheet` instance.
+  - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM after this stage.
+
+### Prehook Plugin Example *Poor Man's Autoprefixer*
+```javascript
+import createStyles, { registerPreHook } from 'simplestyle-js';
+
+// Poor-man's autoprefixer
+function prehookVendorPrefix(sheet, rules, sheetCache) {
+  if (rules.boxSizing) {
+    rules['-webkit-box-sizing'] = rules.boxSizing;
+    rules['-moz-box-sizing'] = rules.boxSizing;
+    rules['-ms-box-sizing'] = rules.boxSizing;
+  }
+  return rules;
+}
+registerPreHook(prehookVendorPrefix);
+const styles = createStyles({
+  preHookRoot: {
+    boxSizing: 'border-box',
+  },
+});
+const div = document.createElement('div');
+div.classList.add(styles.prehookRoot); // This div will have box-sizing: border-box; as well as all of the vendor prefixes provided in the preHook transformation
+document.body.appendChild(div);
+
+// Or in a React / JSX-style component
+
+const MyComponent = () => <div className={styles.preHookRoot}>Some stuff here</div>
+```
+
+### Posthook Plugin Example *Full Autoprefixer and PostCSS integration*
+```javascript
+import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
+import createStyles, { registerPostHook } from 'simplestyle-js';
+
+function posthookVendorPrefix(sheet, rules, className, sheetCache) {
+  s.sheetBuffer = postcss([autoprefixer()]).process(s.getStyles()).css
+}
+registerPostHook(posthookVendorPrefix);
+const styles = createStyles({
+  postHookRoot: {
+    userSelect: 'none',
+  },
+});
+const div = document.createElement('div');
+div.classList.add(styles.posthookRoot); // This div will have all vendor prefixed CSS properties based on how PostCSS and Autoprefixer transform the CSS
+document.body.appendChild(div);
+
+// Or in a React / JSX-style component
+
+const MyComponent = () => <div className={styles.postHookRoot}>Some stuff here</div>
+```
+
 
 ## What this library isn't
 This library isn't trying to make grandiose assumption about how your styles should be rendered. Its goal is to simply provide a typed way of 

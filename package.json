@@ -1,6 +1,6 @@
 {
   "name": "simplestyle-js",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "main": "dist/commonjs/index.js",
   "typings": "dist/commonjs/index.d.ts",
@@ -17,6 +17,7 @@
     "build": "run-s clean build:commonjs build:esm",
     "clean": "rimraf ./dist",
     "test": "jest --env jsdom",
+    "test:watch": "jest --env jsdom --watch",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -29,14 +30,17 @@
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.22",
+    "@types/autoprefixer": "^9.6.1",
+    "@types/jest": "^24.0.23",
     "@types/jsdom": "^12.2.4",
+    "autoprefixer": "^9.7.3",
     "jest": "^24.9.0",
     "jsdom": "^15.2.1",
     "npm-run-all": "^4.1.5",
+    "postcss": "^7.0.23",
     "rimraf": "^3.0.0",
-    "ts-jest": "^24.1.0",
-    "ts-node": "^8.4.1",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
     "tslint": "^5.20.1",
     "tslint-config-airbnb": "^5.11.2",
     "tslint-react": "^4.1.0",

@@ -2,7 +2,8 @@
 import * as seed from './clasnameSeed';
 import createClassName from './createClassName';
 import formatCssRule from './formatCssRule';
-import * as sheetCache from './sheetCache';
+import { getPostHooks, getPreHooks } from './pluginHooks';
+import sheetCache from './sheetCache';
 import SimpleStylesheet from './simpleStylesheet';
 import { ISimpleStyleRules } from './styleTypes';
 
@@ -59,6 +60,10 @@ function createStylesImpl<
   if (parentSelector === null) sheetCache.add(sheet);
   const out: O = Object.keys(styles).reduce(
     (prev: O, classKey: string) => {
+      let preProcessedRules: ISimpleStyleRules<T> = styles[classKey];
+      getPreHooks().forEach((p) => {
+        preProcessedRules = p<T>(sheet, preProcessedRules, sheetCache);
+      });
       const isMedia = classKey.startsWith('@media');
       const s = seed.get();
       seed.increment();
@@ -66,10 +71,11 @@ function createStylesImpl<
       const selector = parentSelector ? isMedia ? parentSelector : classname : `.${classname}`;
       if (isMedia) {
         sheet.startMedia(classKey);
-        sheet.addRule(selector, selector, formatRules(sheet, flush, styles[classKey]), false);
-      } else sheet.addRule(classKey, selector, formatRules(sheet, flush, styles[classKey]), parentSelector === null);
-      formatRules(sheet, flush, styles[classKey], selector);
+        sheet.addRule(selector, selector, formatRules(sheet, flush, preProcessedRules), false);
+      } else sheet.addRule(classKey, selector, formatRules(sheet, flush, preProcessedRules), parentSelector === null);
+      formatRules(sheet, flush, preProcessedRules, selector);
       if (isMedia) sheet.stopMedia();
+      getPostHooks().forEach(p => p<T>(sheet, preProcessedRules, classname, sheetCache));
       return Object.assign(prev, {
         [classKey]: classname,
       });

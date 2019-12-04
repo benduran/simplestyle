@@ -1,6 +1,5 @@
 
-import createStyles from '../src';
-import { getAll } from '../src/sheetCache';
+import createStyles, { getAllSheets } from '../src';
 
 test('Check children selectors had generated class names replaced correctly', () => {
   const styles = createStyles({
@@ -23,7 +22,7 @@ test('Check children selectors had generated class names replaced correctly', ()
       transform: 'translateY(-50%)',
     },
   }, false);
-  const [sheet] = getAll();
+  const [sheet] = getAllSheets();
   const rendered = sheet.getStyles();
   expect(styles.referenceMe).toBeDefined();
   expect(styles.root).toBeDefined();
