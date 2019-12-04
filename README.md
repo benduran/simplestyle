@@ -4,12 +4,38 @@ A super simple CSS-in-JS solution with friendly TypeScript support and **zero de
 ## Installation
 `npm install simplestyle-js --save`
 
-## Usage
+## Basic Usage
+```javascript
+import createStyles from 'simplestyle-js';
+const styles = createStyles({
+  myButton: {
+    '&:hover': {
+      backgroundColor: 'red',
+    },
+    '&:active, &:focus': {
+      borderColor: 'blue',
+    },
+    backgroundColor: 'black',
+    border: '1px solid',
+    boxSizing: 'border-box',
+    color: 'white',
+  },
+});
+const btn = document.createElement('button');
+btn.classList.add(styles.myButton);
+document.body.appendChild(btn);
+
+// Or React / JSX style component
+
+const Button = (props) => <button {...props} className={styles.myButton}>Awesome button</button>
+```
+
+## Advanced Usage
 
 `simplestyle-js` provides four APIs out of the box:
 `createStyles`, `getAllSheets`, `rawStyles` and `keyframes`
 
-```
+```javascript
 import createStyles, { rawStyles } from 'simplestyle-js`;
 
 // Useful if you want to apply style resets or any other global styles
@@ -95,26 +121,11 @@ getAllSheets().forEach((s) => {
 ```
 
 ## Authoring Plugins
-SimpleStyle does one thing out of the box well, and that's providing an intuitive way for you to write your CSS-in-JS in ways that are very similar to popular CSS Preprocessors like LESS, SASS, Stylus, among others. If you need to provide additional functionality that's not offered in the core library, `simplestyle-js` provides easy ways to tie into lifecycle hooks in the style rendering process if you need to stub out additional behavior. This allows you to create and chain an infinite number of plugins, based on your needs. 
-
-In order to use a plugin, you need to **register** each plugin you'd like to use *before* you issue any calls to `createStyles`. Plugins will be executed in the order in which they were registered. The methods available for you to register plugins are as follows:
-
-- `registerPreHook(preHookFnc)`
-  - `SimpleStylePluginPreHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, sheetCache: ISheetCache) => ISimpleStyleRules<T>;`
-  - `preHookFnc` is a function that accepts three parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
-    - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
-    - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`)
-    - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM.
-  - A valid `preHookFnc` is expected expected to return the `rules` object it was provided. This allows you to do additional transforms on the rules before they're flushed to a CSS string and then written to the DOM. A perfect example of this would be to use something like `postcss` with `autoprefixer` to apply all valid vendor-specific CSS properties.
-
-- `registerPostHook(postHookFnc)`
-  - `SimpleStylePluginPostHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, generatedSelector: string, sheetCache: ISheetCache) => void;`
-  - `postHookFnc` is a function that accepts four parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
-  - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
-  - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`).
-    **NOTE** The rules object, at this point, will already have all of its transforms applied to it from any executed **PreHook** functions. Modifying this object here is essentially a **NO-OP**, as the styles from this rules object will have already been written as a CSS string to this `sheet` instance (but *not* yet rendered to the DOM).
-  - `generatedSelector` - `string` - The dynamically-generated CSS selector that applies to this level of the rules object. This is the selector that will have been written to a CSS string and placed inside the current `sheet` instance.
-  - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM after this stage.
+There are two types of plugins:
+- `prehook`
+  - Called on all style rule objects *before* generating the CSS string to be used
+- `posthook`
+  - Called on all style rule objects *after* the CSS string has been generated, but before it has been written to the DOM in a `<style />` tag
 
 ### Prehook Plugin Example *Poor Man's Autoprefixer*
 ```javascript
@@ -167,6 +178,27 @@ document.body.appendChild(div);
 
 const MyComponent = () => <div className={styles.postHookRoot}>Some stuff here</div>
 ```
+### Plugin API
+SimpleStyle does one thing out of the box well, and that's providing an intuitive way for you to write your CSS-in-JS in ways that are very similar to popular CSS Preprocessors like LESS, SASS, Stylus, among others. If you need to provide additional functionality that's not offered in the core library, `simplestyle-js` provides easy ways to tie into lifecycle hooks in the style rendering process if you need to stub out additional behavior. This allows you to create and chain an infinite number of plugins, based on your needs. 
+
+In order to use a plugin, you need to **register** each plugin you'd like to use *before* you issue any calls to `createStyles`. Plugins will be executed in the order in which they were registered. The methods available for you to register plugins are as follows:
+
+- `registerPreHook(preHookFnc)`
+  - `SimpleStylePluginPreHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, sheetCache: ISheetCache) => ISimpleStyleRules<T>;`
+  - `preHookFnc` is a function that accepts three parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
+    - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
+    - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`)
+    - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM.
+  - A valid `preHookFnc` is expected expected to return the `rules` object it was provided. This allows you to do additional transforms on the rules before they're flushed to a CSS string and then written to the DOM. A perfect example of this would be to use something like `postcss` with `autoprefixer` to apply all valid vendor-specific CSS properties.
+
+- `registerPostHook(postHookFnc)`
+  - `SimpleStylePluginPostHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, generatedSelector: string, sheetCache: ISheetCache) => void;`
+  - `postHookFnc` is a function that accepts four parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
+  - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
+  - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`).
+    **NOTE** The rules object, at this point, will already have all of its transforms applied to it from any executed **PreHook** functions. Modifying this object here is essentially a **NO-OP**, as the styles from this rules object will have already been written as a CSS string to this `sheet` instance (but *not* yet rendered to the DOM).
+  - `generatedSelector` - `string` - The dynamically-generated CSS selector that applies to this level of the rules object. This is the selector that will have been written to a CSS string and placed inside the current `sheet` instance.
+  - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM after this stage.
 
 
 ## What this library isn't
