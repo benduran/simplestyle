@@ -3,8 +3,8 @@
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 
-import createStyles, { registerPreHook } from '../src';
-import { clearPostHooks, clearPreHooks, getPostHooks, getPreHooks, registerPostHook } from '../src/pluginHooks';
+import createStyles, { registerPostHook, registerPreHook } from '../src';
+import { clearPostHooks, clearPreHooks, getPostHooks, getPreHooks } from '../src/pluginHooks';
 import globalSheetCache from '../src/sheetCache';
 import SimpleStylesheet from '../src/simpleStylesheet';
 import { SimpleStylePluginPostHook, SimpleStylePluginPreHook } from '../src/styleTypes';
