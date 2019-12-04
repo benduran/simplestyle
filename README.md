@@ -67,7 +67,7 @@ const styles = createStyles({
 }); // A new <style /> tag will appear in the header immediately after calling this function
 
 const myHeader = document.createElement('header');
-myHeader.class = styles.header; // Will have a generated CSS classname in the format of '.header<unique_identifier>' ex .headerumdoaudnaoqwu
+myHeader.classList.add(styles.header); // Will have a generated CSS classname in the format of '.header<unique_identifier>' ex .headerumdoaudnaoqwu
 ```
 
 ```
