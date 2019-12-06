@@ -5,7 +5,7 @@ A super simple CSS-in-JS solution with friendly TypeScript support and **zero de
 `npm install simplestyle-js --save`
 
 ## Basic Usage
-```javascript
+```
 import createStyles from 'simplestyle-js';
 const styles = createStyles({
   myButton: {
@@ -35,7 +35,7 @@ const Button = (props) => <button {...props} className={styles.myButton}>Awesome
 `simplestyle-js` provides four APIs out of the box:
 `createStyles`, `getAllSheets`, `rawStyles` and `keyframes`
 
-```javascript
+```
 import createStyles, { rawStyles } from 'simplestyle-js`;
 
 // Useful if you want to apply style resets or any other global styles
@@ -128,7 +128,7 @@ There are two types of plugins:
   - Called on all style rule objects *after* the CSS string has been generated, but before it has been written to the DOM in a `<style />` tag
 
 ### Prehook Plugin Example *Poor Man's Autoprefixer*
-```javascript
+```
 import createStyles, { registerPreHook } from 'simplestyle-js';
 
 // Poor-man's autoprefixer
@@ -156,7 +156,7 @@ const MyComponent = () => <div className={styles.preHookRoot}>Some stuff here</d
 ```
 
 ### Posthook Plugin Example *Full Autoprefixer and PostCSS integration*
-```javascript
+```
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 import createStyles, { registerPostHook } from 'simplestyle-js';
