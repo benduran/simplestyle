@@ -126,6 +126,8 @@ There are two types of plugins:
   - Called on all style rule objects *before* generating the CSS string to be used
 - `posthook`
   - Called on all style rule objects *after* the CSS string has been generated, but before it has been written to the DOM in a `<style />` tag
+- When creating a plugin, for improved SEO, it is **highly recommended** that you prefix the plugin package name with `simplestyle-js-plugin-*`.
+  - See the official `postcss` Simplestyle plugin as an example: [simplestyle-js-plugin-postcss](https://www.npmjs.com/package/simplestyle-js-plugin-postcss)
 
 ### Prehook Plugin Example *Poor Man's Autoprefixer*
 ```
@@ -199,7 +201,6 @@ In order to use a plugin, you need to **register** each plugin you'd like to use
     **NOTE** The rules object, at this point, will already have all of its transforms applied to it from any executed **PreHook** functions. Modifying this object here is essentially a **NO-OP**, as the styles from this rules object will have already been written as a CSS string to this `sheet` instance (but *not* yet rendered to the DOM).
   - `generatedSelector` - `string` - The dynamically-generated CSS selector that applies to this level of the rules object. This is the selector that will have been written to a CSS string and placed inside the current `sheet` instance.
   - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM after this stage.
-
 
 ## What this library isn't
 This library isn't trying to make grandiose assumption about how your styles should be rendered. Its goal is to simply provide a typed way of 
