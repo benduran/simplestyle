@@ -1,34 +1,11 @@
 
 import * as seed from './clasnameSeed';
 import createClassName from './createClassName';
-import formatCssRule from './formatCssRule';
+import { formatRules } from './formatCssRule';
 import { getPostHooks, getPreHooks } from './pluginHooks';
 import sheetCache from './sheetCache';
 import SimpleStylesheet from './simpleStylesheet';
-import { ISimpleStyleRules } from './styleTypes';
-
-function formatRules<T>(
-  sheet: SimpleStylesheet,
-  flush: boolean,
-  rules: ISimpleStyleRules<T>,
-  parentSelector?: string,
-): string {
-  const ruleKeys = Object.keys(rules);
-  const nestedStyleKeys = ruleKeys.filter(rk => typeof rules[rk] === 'object');
-  if (parentSelector && nestedStyleKeys.length) {
-    createStylesImpl(
-      nestedStyleKeys.reduce((prev: ISimpleStyleRules<T>, rk: string) => Object.assign(prev, { [rk]: rules[rk] }), {}),
-      flush,
-      sheet,
-      parentSelector,
-    );
-  }
-  return ruleKeys.reduce((prev: string, selectorOrRule: string) => {
-    if (selectorOrRule.startsWith('&') || typeof rules[selectorOrRule] === 'object') return prev;
-    const formattedRule = formatCssRule(selectorOrRule);
-    return `${prev}${formattedRule}:${rules[selectorOrRule]};`;
-  }, '');
-}
+import { SimpleStyleRules } from './styleTypes';
 
 function formatClassName(
   s: number,
@@ -47,7 +24,7 @@ function formatClassName(
 }
 
 function createStylesImpl<
-  T extends { [classKey: string]: ISimpleStyleRules<T> },
+  T extends { [classKey: string]: SimpleStyleRules<T> },
   K extends keyof T,
   O extends { [classKey in K]: string }
 >(
@@ -60,7 +37,7 @@ function createStylesImpl<
   if (parentSelector === null) sheetCache.add(sheet);
   const out: O = Object.keys(styles).reduce(
     (prev: O, classKey: string) => {
-      let preProcessedRules: ISimpleStyleRules<T> = styles[classKey];
+      let preProcessedRules: SimpleStyleRules<T> = styles[classKey];
       getPreHooks().forEach((p) => {
         preProcessedRules = p<T>(sheet, preProcessedRules, sheetCache);
       });
@@ -73,7 +50,7 @@ function createStylesImpl<
         sheet.startMedia(classKey);
         sheet.addRule(selector, selector, formatRules(sheet, flush, preProcessedRules), false);
       } else sheet.addRule(classKey, selector, formatRules(sheet, flush, preProcessedRules), parentSelector === null);
-      formatRules(sheet, flush, preProcessedRules, selector);
+      formatRules(sheet, flush, preProcessedRules, selector, createStylesImpl);
       if (isMedia) sheet.stopMedia();
       getPostHooks().forEach(p => p<T>(sheet, preProcessedRules, classname, sheetCache));
       return Object.assign(prev, {
@@ -91,7 +68,7 @@ function createStylesImpl<
 }
 
 export default function createStyles<
-  T extends { [classKey: string]: ISimpleStyleRules<T> },
+  T extends { [classKey: string]: SimpleStyleRules<T> },
   K extends keyof T,
   O extends { [classKey in K]: string }
 >(

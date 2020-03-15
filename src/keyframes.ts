@@ -1,12 +1,12 @@
 
 import * as seed from './clasnameSeed';
 import createClassName from './createClassName';
-import formatCssRule from './formatCssRule';
+import { formatCssRule } from './formatCssRule';
 import sheetCache from './sheetCache';
 import SimpleStylesheet from './simpleStylesheet';
-import { IRawStyles } from './styleTypes';
+import { RawStyles } from './styleTypes';
 
-export default function keyframes(frameStyles: IRawStyles, flush: boolean = true) {
+export default function keyframes(frameStyles: RawStyles, flush: boolean = true) {
   const sheet = new SimpleStylesheet();
   sheetCache.add(sheet);
   const s = seed.get();

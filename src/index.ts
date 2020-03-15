@@ -5,7 +5,7 @@ import sheetCache from './sheetCache';
 export { default as rawStyles } from './rawStyles';
 export { setSeed } from './clasnameSeed';
 export { default as keyframes } from './keyframes';
-export { IIndexableCSSProperties, IRawStyles, ISimpleStyleRules } from './styleTypes';
+export { IndexableCSSProperties as IIndexableCSSProperties, RawStyles as IRawStyles, SimpleStyleRules as ISimpleStyleRules } from './styleTypes';
 export { registerPreHook, registerPostHook } from './pluginHooks';
 
 export const getAllSheets = sheetCache.getAll;

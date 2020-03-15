@@ -3,27 +3,27 @@ import { Properties as CSSProperties } from 'csstype';
 
 import SimpleStylesheet from './simpleStylesheet';
 
-export interface ISheetCache {
+export interface SheetCache {
   add: (sheet: SimpleStylesheet) => void;
   clean: () => void;
   getAll: () => SimpleStylesheet[];
 }
 
-export interface ISimpleStyleSheet<T> {
-  [selector: string]: ISimpleStyleRules<T>;
+export interface SimpleStyleSheet<T> {
+  [selector: string]: SimpleStyleRules<T>;
 }
 
-export interface ISimpleStyleRules<T> extends CSSProperties {
+export interface SimpleStyleRules<T> extends CSSProperties {
   [ruleOrSelector: string]: any;
 }
 
-export interface IIndexableCSSProperties extends CSSProperties {
+export interface IndexableCSSProperties extends CSSProperties {
   [rule: string]: any;
 }
 
-export interface IRawStyles {
-  [rawSelector: string]: IIndexableCSSProperties;
+export interface RawStyles {
+  [rawSelector: string]: IndexableCSSProperties;
 }
 
-export type SimpleStylePluginPreHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, sheetCache: ISheetCache) => ISimpleStyleRules<T>;
-export type SimpleStylePluginPostHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, generatedSelector: string, sheetCache: ISheetCache) => void;
+export type SimpleStylePluginPreHook = <T>(sheet: SimpleStylesheet, rules: SimpleStyleRules<T>, sheetCache: SheetCache) => SimpleStyleRules<T>;
+export type SimpleStylePluginPostHook = <T>(sheet: SimpleStylesheet, rules: SimpleStyleRules<T>, generatedSelector: string, sheetCache: SheetCache) => void;

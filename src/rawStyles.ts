@@ -1,10 +1,10 @@
-import formatCssRule from './formatCssRule';
+import { formatCssRule } from './formatCssRule';
 import sheetCache from './sheetCache';
 import SimpleStyleSheet from './simpleStylesheet';
-import { IRawStyles } from './styleTypes';
+import { RawStyles } from './styleTypes';
 
 export default function rawStyles(
-  raw: IRawStyles,
+  raw: RawStyles,
   flush: boolean = true,
   sheet: SimpleStyleSheet = new SimpleStyleSheet(),
 ) {
@@ -13,8 +13,7 @@ export default function rawStyles(
   Object.keys(raw).forEach((selector) => {
     sheet.raw(
       `${selector}{${Object.keys(raw[selector]).reduce(
-        (prev: string, rule: string) =>
-          `${prev}${formatCssRule(rule)}:${raw[selector][rule]};`,
+        (prev: string, rule: string) => `${prev}${formatCssRule(rule)}:${raw[selector][rule]};`,
         '',
       )}}`,
     );
