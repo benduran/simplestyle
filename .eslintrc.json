@@ -2,7 +2,8 @@
   "env": {
     "browser": true,
     "es6": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "extends": ["airbnb-base"],
   "globals": {
@@ -16,6 +17,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "arrow-parens": ["error", "as-needed"],
     "max-len": ["error", 180],
     "no-unused-vars": ["off"],
     "import/no-unresolved": ["off"],

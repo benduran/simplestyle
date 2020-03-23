@@ -20,7 +20,6 @@
     "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
 
     /* Additional Checks */
-    "noUnusedLocals": true,                /* Report errors on unused locals. */
     "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
 
     /* Module Resolution Options */

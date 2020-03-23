@@ -18,6 +18,5 @@ describe('generateClassName tests', () => {
     expect(output[1]).not.toBe(output[3]);
     expect(output[2]).not.toBe(output[0]);
     expect(output[2]).not.toBe(output[3]);
-    console.info(output);
   });
 });

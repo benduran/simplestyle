@@ -15,7 +15,10 @@ export function getUniqueSuffix(): string {
   let out = '_';
   numPairs.forEach((pair) => {
     const val = +pair;
-    out += numToAlpha(val);
+    if (val > 25) {
+      const [first, second] = pair.split('');
+      out += `${numToAlpha(+first)}${numToAlpha(+second)}`;
+    } else out += numToAlpha(val);
   });
   inc += 1;
   return out;
