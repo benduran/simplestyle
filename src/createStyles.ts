@@ -69,9 +69,18 @@ export default function createStyles<
     flush: options?.flush || true,
   };
   const [out, toRender] = execCreateStyles<T, K, O, { [selector: string]: Properties }>(rules, coerced, null);
+  let sheetContents = Object.entries(toRender).reduce((prev, [selector, props]) => `${prev}${selector}{${formatCSSRules(props)}}`, '');
+  Object.entries(out).sort(([selectorA], [selectorB]) => selectorA.length - selectorB.length).forEach(([classKey, selector]) => {
+    sheetContents = sheetContents.replace(new RegExp(`\\$${classKey}`, 'g'), `.${selector}`);
+  });
+  if (coerced.flush) {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = sheetContents;
+    document.head.appendChild(styleTag);
+  }
   return [
     out,
-    Object.entries(toRender).reduce((prev, [selector, props]) => `${prev}${selector}{${formatCSSRules(props)}}`, ''),
+    sheetContents,
   ];
 }
 

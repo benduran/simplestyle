@@ -54,4 +54,26 @@ describe('createStyles tests', () => {
     expect(styleContents).toContain(`.${styles.yarg}:hover{top:-1px;}`);
     expect(styleContents).toContain(`.${styles.yarg}:focus{background-color:purple;}`);
   });
+  it('Should allow backreferences', () => {
+    const rules: SimpleStyleRules = {
+      a: {
+        textAlign: 'center',
+      },
+      b: {
+        '& $a': {
+          '&:hover': {
+            fontSize: '99px',
+          },
+          fontSize: '30px',
+        },
+        lineHeight: '1.5',
+      },
+    };
+    const [styles, styleContents] = createStyles(rules);
+
+    expect(styleContents).toContain(`.${styles.a}{text-align:center;}`);
+    expect(styleContents).toContain(`.${styles.b}{line-height:1.5;}`);
+    expect(styleContents).toContain(`.${styles.b} .${styles.a}{font-size:30px;}`);
+    expect(styleContents).toContain(`.${styles.b} .${styles.a}:hover{font-size:99px;}`);
+  });
 });
