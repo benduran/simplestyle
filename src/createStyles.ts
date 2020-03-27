@@ -1,4 +1,4 @@
-
+/* eslint-disable no-param-reassign */
 import { Properties } from 'csstype';
 
 import { SimpleStyleRules } from './types';
@@ -27,30 +27,31 @@ function execCreateStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
   O extends { [classKey in K]: string },
+  O2 extends SimpleStyleRules,
 >(
   rules: T,
   options: CreateStylesOptions,
   parentSelector: ParentSelector,
-): [O, string] {
-  let sheetContents = '';
+): [O, O2] {
   const out = {} as O;
+  let toRender = {} as O2;
   const styleEntries = Object.entries(rules);
   for (const [classNameOrCSSRule, classNameRules] of styleEntries) {
     // if the classNameRules is a string, we are dealing with a display: none; type rule
-    if (typeof classNameRules === 'string') {
-      sheetContents += `${formatCSSRuleName(classNameOrCSSRule)}:${classNameRules};`;
-    } else if (isNestedSelector(classNameOrCSSRule)) {
-      if (!parentSelector) throw new Error('Unablet to generate nested rule because parentSelector is missing');
+    if (isNestedSelector(classNameOrCSSRule)) {
+      if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
       // format of { '& > span': { display: 'none' } } (or further nesting)
       const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
-      sheetContents += `${replaced}{${execCreateStyles(classNameRules as T, options, replaced)[1]}}`;
+      toRender = { ...toRender, [replaced]: execCreateStyles(classNameRules as T, options, replaced)[1] };
     } else if (!parentSelector && typeof classNameRules === 'object') {
       const generated = generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
-      sheetContents += `.${generated}{${execCreateStyles(classNameRules as T, options, generated)[1]}}`;
+      toRender = { [`.${generated}`]: execCreateStyles(classNameRules as T, options, `.${generated}`)[1], ...toRender };
+    } else {
+      (toRender as any)[classNameOrCSSRule] = classNameRules;
     }
   }
-  return [out, sheetContents];
+  return [out, toRender];
 }
 
 export default function createStyles<
@@ -65,7 +66,11 @@ export default function createStyles<
     accumulate: options?.accumulate || false,
     flush: options?.flush || true,
   };
-  return execCreateStyles<T, K, O>(rules, coerced, null);
+  const [out, toRender] = execCreateStyles<T, K, O, { [selector: string]: Properties }>(rules, coerced, null);
+  return [
+    out,
+    createStyleSheet(toRender),
+  ];
 }
 
 export type CreateStylesArgs = Parameters<typeof createStyles>;

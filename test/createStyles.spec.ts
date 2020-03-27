@@ -7,6 +7,7 @@ describe('createStyles tests', () => {
     const rules: SimpleStyleRules = {
       one: {
         display: 'flex',
+        position: 'fixed',
       },
       two: {
         backgroundColor: 'red',
@@ -19,7 +20,23 @@ describe('createStyles tests', () => {
       expect(styles[key].length).toBeGreaterThan(0);
       expect(styles[key]).toContain(key);
     });
-    expect(styleContents).toContain(`.${styles.one}{display:flex;}`);
+    expect(styleContents).toContain(`.${styles.one}{display:flex;position:fixed;}`);
     expect(styleContents).toContain(`.${styles.two}{background-color:red;}`);
+  });
+  it.only('Should generate some basic styles for a simple nested structure', () => {
+    const rules: SimpleStyleRules = {
+      nested: {
+        '& > span': {
+          fontFamily: 'Arial',
+        },
+        // fontSize: '20px',
+      },
+    };
+    const [styles, styleContents] = createStyles(rules);
+    expect(styles.nested).toBeDefined();
+    expect(styles.nested.length).toBeGreaterThan(0);
+    expect(styles.nested).toContain('nested');
+
+    expect(styleContents).toBe(`.${styles.nested} > span{font-family:Arial;}.${styles.nested}{font-size:20px;}`);
   });
 });
