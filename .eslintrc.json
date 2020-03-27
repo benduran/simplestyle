@@ -17,7 +17,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
-    "arrow-parens": ["error", "as-needed"],
+    "arrow-parens": ["error", "as-needed", { "requireForBlockBody": true }],
     "max-len": ["error", 180],
     "no-unused-vars": ["off"],
     "import/no-unresolved": ["off"],
