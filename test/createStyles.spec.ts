@@ -76,4 +76,18 @@ describe('createStyles tests', () => {
     expect(styleContents).toContain(`.${styles.b} .${styles.a}{font-size:30px;}`);
     expect(styleContents).toContain(`.${styles.b} .${styles.a}:hover{font-size:99px;}`);
   });
+  it.only('Should allow simple media queries', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@media (max-width: 960px)': {
+          padding: '24px',
+        },
+        padding: '8px',
+      },
+    };
+    const [styles, styleContents] = createStyles(rules);
+
+    expect(styleContents.startsWith(`.${styles.responsive}{padding:8px;}`)).toBeTruthy();
+    expect(styleContents.endsWith(`@media (max-width: 960px){.${styles.responsive}{padding:24px;}}`)).toBeTruthy();
+  });
 });
