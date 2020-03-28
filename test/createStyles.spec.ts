@@ -76,7 +76,7 @@ describe('createStyles tests', () => {
     expect(styleContents).toContain(`.${styles.b} .${styles.a}{font-size:30px;}`);
     expect(styleContents).toContain(`.${styles.b} .${styles.a}:hover{font-size:99px;}`);
   });
-  it.only('Should allow simple media queries', () => {
+  it('Should allow simple media queries', () => {
     const rules: SimpleStyleRules = {
       responsive: {
         '@media (max-width: 960px)': {
