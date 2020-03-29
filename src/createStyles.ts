@@ -36,6 +36,7 @@ function execCreateStyles<
   rules: T,
   options: CreateStylesOptions,
   parentSelector: ParentSelector,
+  noGenerateClassName: boolean = false,
 ): [O, O2] {
   const out = {} as O;
   let toRender = {} as O2;
@@ -57,13 +58,10 @@ function execCreateStyles<
           else (toRender as any)[ruleKey] = rs[ruleKey];
         });
       });
-      // replaced.split(/,\s*/).forEach((selector) => {
-      //   toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, selector)[1] };
-      // });
     } else if (!parentSelector && typeof classNameRules === 'object') {
-      const generated = generateClassName(classNameOrCSSRule);
+      const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
-      toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, `.${generated}`)[1] };
+      toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, `${noGenerateClassName ? '' : '.'}${generated}`)[1] };
     } else {
       if (!parentSelector) throw new Error('Unable to write css props because parent selector is null');
       if (!(toRender as any)[parentSelector]) (toRender as any)[parentSelector] = {};
@@ -87,6 +85,42 @@ function mapRenderableToSheet<T extends { [selector: string]: Properties | Prope
   }, '');
 }
 
+function generateSheetContents<O extends any, T extends { [selector: string]: Properties | Properties[] }>(out: O, toRender: T): string {
+  let sheetContents = mapRenderableToSheet(toRender);
+  Object.entries(out).forEach(([classKey, selector]) => {
+    sheetContents = sheetContents.replace(new RegExp(`\\$${classKey}`, 'g'), `.${selector}`);
+  });
+  return sheetContents;
+}
+
+function flushSheetContents(sheetContents: string) {
+  // In case we're in come weird test environment that doesn't support JSDom
+  if (typeof document !== 'undefined' && document.head && document.head.appendChild) {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = sheetContents;
+    document.head.appendChild(styleTag);
+  }
+}
+
+function coerceCreateStylesOptions(options?: Partial<CreateStylesOptions>): CreateStylesOptions {
+  return {
+    accumulate: options?.accumulate || false,
+    flush: options && typeof options.flush === 'boolean' ? options.flush : true,
+  };
+}
+
+export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [key in K]: string }>(
+  rules: T,
+  options?: Partial<CreateStylesOptions>,
+) {
+  const coerced = coerceCreateStylesOptions(options);
+  const [out, toRender] = execCreateStyles(rules, coerced, null, true);
+  const sheetContents = generateSheetContents(out, toRender);
+
+  if (coerced.flush) flushSheetContents(sheetContents);
+  return sheetContents;
+}
+
 export default function createStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
@@ -95,21 +129,12 @@ export default function createStyles<
   rules: T,
   options?: Partial<CreateStylesOptions>,
 ): [O, string] {
-  const coerced: CreateStylesOptions = {
-    accumulate: options?.accumulate || false,
-    flush: options?.flush || true,
-  };
+  const coerced = coerceCreateStylesOptions(options);
   const [out, toRender] = execCreateStyles(rules, coerced, null);
 
-  let sheetContents = mapRenderableToSheet(toRender);
-  Object.entries(out).forEach(([classKey, selector]) => {
-    sheetContents = sheetContents.replace(new RegExp(`\\$${classKey}`, 'g'), `.${selector}`);
-  });
-  if (coerced.flush) {
-    const styleTag = document.createElement('style');
-    styleTag.innerHTML = sheetContents;
-    document.head.appendChild(styleTag);
-  }
+  const sheetContents = generateSheetContents(out, toRender);
+
+  if (coerced.flush) flushSheetContents(sheetContents);
   return [
     out as unknown as O,
     sheetContents,

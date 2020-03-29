@@ -1,5 +1,5 @@
 
-import createStyles from '../src/createStyles';
+import createStyles, { rawStyles } from '../src/createStyles';
 import { SimpleStyleRules } from '../src/types';
 
 describe('createStyles tests', () => {
@@ -117,5 +117,37 @@ describe('createStyles tests', () => {
     expect(styleContents).toContain(`.${styles.deep} > div button{padding:1em;}`);
     expect(styleContents).toContain(`@media(max-width: 600px){.${styles.deep} > div button{padding:0.5em;}}`);
     expect(styleContents).toContain(`@media(max-width: 600px){.${styles.deep} > span button{padding:0.5em;}}`);
+  });
+  it('Should allow creation of top-level "raw" styles that can generically apply globally to HTML tags', () => {
+    const rules: SimpleStyleRules = {
+      body: {
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        fontSize: '16px',
+      },
+      a: {
+        '&:hover': {
+          textDecoration: 'none',
+        },
+      },
+    };
+    const styleContents = rawStyles(rules);
+    expect(styleContents).toContain('body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}');
+    expect(styleContents).toContain('a:hover{text-decoration:none;}');
+  });
+  it('Should allow creation of top-level "raw" styles with nested media queries', () => {
+    const rules: SimpleStyleRules = {
+      button: {
+        '@media(max-width:300px)': {
+          '& > svg': {
+            fontSize: '1em',
+          },
+          maxWidth: '100%',
+        },
+        minWidth: '300px',
+      },
+    };
+    const styleContents = rawStyles(rules);
+    expect(styleContents).toContain('button{min-width:300px;}');
+    expect(styleContents).toContain('@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}');
   });
 });
