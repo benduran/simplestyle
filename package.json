@@ -12,7 +12,7 @@
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
   "scripts": {
-    "build:commonjs": "tsc -p ./tsconfig.json",
+    "build:commonjs": "tsc -p ./tsconfig.build.json",
     "build": "run-s clean build:commonjs",
     "clean": "rimraf ./dist",
     "test": "jest --env jsdom",
