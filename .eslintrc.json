@@ -22,6 +22,7 @@
     "no-unused-vars": ["off"],
     "import/no-unresolved": ["off"],
     "import/extensions": ["off"],
-    "no-restricted-syntax": ["off"]
+    "no-restricted-syntax": ["off"],
+    "no-loop-func": ["off"]
   }
 }

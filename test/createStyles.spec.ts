@@ -23,7 +23,7 @@ describe('createStyles tests', () => {
     expect(styleContents).toContain(`.${styles.one}{display:flex;position:fixed;}`);
     expect(styleContents).toContain(`.${styles.two}{background-color:red;}`);
   });
-  it.only('Should generate some basic styles for a simple nested structure', () => {
+  it('Should generate some basic styles for a simple nested structure', () => {
     const rules: SimpleStyleRules = {
       nested: {
         '& > span': {
@@ -90,5 +90,34 @@ describe('createStyles tests', () => {
 
     expect(styleContents.startsWith(`.${styles.responsive}{padding:8px;}`)).toBeTruthy();
     expect(styleContents.endsWith(`@media (max-width: 960px){.${styles.responsive}{padding:24px;}}`)).toBeTruthy();
+  });
+  it.only('Should allow multiple media queries, including deeply-nested selector', () => {
+    const rules: SimpleStyleRules = {
+      simple: {
+        width: '100%',
+      },
+      deep: {
+        '& > span, & > div': {
+          '& button': {
+            '@media(max-width: 600px)': {
+              padding: '0.5em',
+            },
+            padding: '1em',
+          },
+        },
+        color: 'pink',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+      },
+    };
+    const [styles, styleContents] = createStyles(rules);
+
+    console.info(styleContents);
+
+    expect(styleContents).toContain(`.${styles.simple}{width:100%;}`);
+    expect(styleContents).toContain(`.${styles.deep}{color:pink;grid-template-columns:repeat(4, 1fr);}`);
+    expect(styleContents).toContain(`.${styles.deep} > span button{padding:1em;}`);
+    expect(styleContents).toContain(`.${styles.deep} > div button{padding:1em;}`);
+    expect(styleContents).toContain(`@media(max-width: 600px){.${styles.deep} > div button{padding:0.5em;}}`);
+    expect(styleContents).toContain(`@media(max-width: 600px){.${styles.deep} > span button{padding:0.5em;}}`);
   });
 });

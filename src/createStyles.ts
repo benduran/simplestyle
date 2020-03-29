@@ -44,12 +44,15 @@ function execCreateStyles<
     // if the classNameRules is a string, we are dealing with a display: none; type rule
     if (isMedia(classNameOrCSSRule)) {
       if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
+      console.warn(`OVERWRITING ${classNameOrCSSRule}`);
       toRender = { ...toRender, [classNameOrCSSRule]: execCreateStyles(classNameRules as T, options, parentSelector)[1] };
     } else if (isNestedSelector(classNameOrCSSRule)) {
       if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
       // format of { '& > span': { display: 'none' } } (or further nesting)
       const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
-      toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, replaced)[1] };
+      replaced.split(/,\s*/).forEach((selector) => {
+        toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, selector)[1] };
+      });
     } else if (!parentSelector && typeof classNameRules === 'object') {
       const generated = generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
@@ -66,7 +69,7 @@ function execCreateStyles<
 function mapRenderableToSheet<T extends { [selector: string]: Properties }>(toRender: T): string {
   const entries = Object.entries(toRender);
   const mediaEntries = entries.filter(([selector]) => isMedia(selector));
-  const nonMediaEntries = entries.filter(([selector]) => !isMedia(selector)).sort(([selectorA], [selectorB]) => selectorA.length - selectorB.length);
+  const nonMediaEntries = entries.filter(([selector]) => !isMedia(selector));
   return nonMediaEntries.concat(mediaEntries).reduce((prev, [selector, props]) => {
     if (isMedia(selector)) return `${prev}${selector}{${mapRenderableToSheet(props as T)}}`;
     return `${prev}${selector}{${formatCSSRules(props)}}`;
@@ -88,7 +91,7 @@ export default function createStyles<
   const [out, toRender] = execCreateStyles<T, K, O, { [selector: string]: Properties }>(rules, coerced, null);
 
   let sheetContents = mapRenderableToSheet(toRender);
-  Object.entries(out).sort(([selectorA], [selectorB]) => selectorA.length - selectorB.length).forEach(([classKey, selector]) => {
+  Object.entries(out).forEach(([classKey, selector]) => {
     sheetContents = sheetContents.replace(new RegExp(`\\$${classKey}`, 'g'), `.${selector}`);
   });
   if (coerced.flush) {
