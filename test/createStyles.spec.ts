@@ -1,5 +1,5 @@
 
-import createStyles, { rawStyles } from '../src/createStyles';
+import { createStyles, rawStyles } from '../src';
 import { SimpleStyleRules } from '../src/types';
 
 describe('createStyles tests', () => {
