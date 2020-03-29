@@ -3,6 +3,9 @@ import { createStyles, rawStyles } from '../src';
 import { SimpleStyleRules } from '../src/types';
 
 describe('createStyles tests', () => {
+  beforeEach(() => {
+    Array.from(document.head.querySelectorAll('style')).forEach(s => s.remove());
+  });
   it('Should generate some basic styles', () => {
     const rules: SimpleStyleRules = {
       one: {
@@ -150,4 +153,35 @@ describe('createStyles tests', () => {
     expect(styleContents).toContain('button{min-width:300px;}');
     expect(styleContents).toContain('@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}');
   });
+  it('Should accumulate all calls to createStyles() and write a single sheet to the DOM', () => new Promise((resolve, reject) => {
+    try {
+      const [s1] = createStyles({
+        one: {
+          display: 'flex',
+        },
+      }, { accumulate: true });
+      const [s2] = createStyles({
+        two: {
+          height: '400px',
+          width: '400px',
+        },
+      }, { accumulate: true });
+      const [s3] = createStyles({
+        three: {
+          transform: 'translateY(-50%)',
+        },
+      }, { accumulate: true });
+      setTimeout(() => {
+        try {
+          const styleTag = document.head.querySelector('style');
+          expect(styleTag).not.toBe(null);
+          const contents = styleTag!.innerHTML;
+          expect(contents).toContain(`.${s1.one}{display:flex;}`);
+          expect(contents).toContain(`.${s2.two}{height:400px;width:400px;}`);
+          expect(contents).toContain(`.${s3.three}{transform:translateY(-50%);}`);
+          resolve();
+        } catch (error) { reject(error); }
+      }, 0);
+    } catch (error) { reject(error); }
+  }));
 });

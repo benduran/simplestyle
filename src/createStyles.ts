@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import { Properties } from 'csstype';
 
 import { SimpleStyleRules } from './types';
@@ -8,6 +7,8 @@ export interface CreateStylesOptions {
   accumulate: boolean;
   flush: boolean;
 }
+
+let accumulatedSheetContents: string[] | null = null;
 
 function isNestedSelector(r: string): boolean {
   return /&/g.test(r);
@@ -25,8 +26,6 @@ function formatCSSRules(cssRules: Properties): string {
   return Object.entries(cssRules).reduce((prev, [cssProp, cssVal]) => `${prev}${formatCSSRuleName(cssProp)}:${cssVal};`, '');
 }
 
-type ParentSelector = string | null;
-
 function execCreateStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
@@ -35,7 +34,7 @@ function execCreateStyles<
 >(
   rules: T,
   options: CreateStylesOptions,
-  parentSelector: ParentSelector,
+  parentSelector: string | null,
   noGenerateClassName: boolean = false,
 ): [O, O2] {
   const out = {} as O;
@@ -109,6 +108,17 @@ function coerceCreateStylesOptions(options?: Partial<CreateStylesOptions>): Crea
   };
 }
 
+let accumulatedTimeout: any;
+function accumulateSheetContents(sheetContents: string, options: CreateStylesOptions): void {
+  if (!accumulatedSheetContents) accumulatedSheetContents = [];
+  accumulatedSheetContents.push(sheetContents);
+  if (accumulatedTimeout) accumulatedTimeout = clearTimeout(accumulatedTimeout);
+  accumulatedTimeout = setTimeout(() => {
+    flushSheetContents(accumulatedSheetContents!.reduce((prev, contents) => `${prev}${contents}`, ''));
+    accumulatedSheetContents = null;
+  }, 0);
+}
+
 export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [key in K]: string }>(
   rules: T,
   options?: Partial<CreateStylesOptions>,
@@ -117,7 +127,8 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   const [out, toRender] = execCreateStyles(rules, coerced, null, true);
   const sheetContents = generateSheetContents(out, toRender);
 
-  if (coerced.flush) flushSheetContents(sheetContents);
+  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
+  else if (coerced.flush) flushSheetContents(sheetContents);
   return sheetContents;
 }
 
@@ -134,7 +145,8 @@ export default function createStyles<
 
   const sheetContents = generateSheetContents(out, toRender);
 
-  if (coerced.flush) flushSheetContents(sheetContents);
+  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
+  else if (coerced.flush) flushSheetContents(sheetContents);
   return [
     out as unknown as O,
     sheetContents,
