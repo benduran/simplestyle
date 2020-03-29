@@ -31,7 +31,7 @@ function execCreateStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
   O extends { [classKey in K]: string },
-  O2 extends SimpleStyleRules,
+  O2 extends SimpleStyleRules & { [selector: string]: Properties[] },
 >(
   rules: T,
   options: CreateStylesOptions,
@@ -44,15 +44,22 @@ function execCreateStyles<
     // if the classNameRules is a string, we are dealing with a display: none; type rule
     if (isMedia(classNameOrCSSRule)) {
       if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
-      console.warn(`OVERWRITING ${classNameOrCSSRule}`);
       toRender = { ...toRender, [classNameOrCSSRule]: execCreateStyles(classNameRules as T, options, parentSelector)[1] };
     } else if (isNestedSelector(classNameOrCSSRule)) {
       if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
       // format of { '& > span': { display: 'none' } } (or further nesting)
       const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
-      replaced.split(/,\s*/).forEach((selector) => {
-        toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, selector)[1] };
+      const toMerge = replaced.split(/,\s*/).map(selector => execCreateStyles(classNameRules as T, options, selector)[1]);
+      toMerge.forEach((rs) => {
+        const rulesKeys = Object.keys(rs);
+        rulesKeys.forEach((ruleKey) => {
+          if (toRender[ruleKey]) (toRender as any)[ruleKey] = [toRender[ruleKey], rs[ruleKey]];
+          else (toRender as any)[ruleKey] = rs[ruleKey];
+        });
       });
+      // replaced.split(/,\s*/).forEach((selector) => {
+      //   toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, selector)[1] };
+      // });
     } else if (!parentSelector && typeof classNameRules === 'object') {
       const generated = generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
@@ -66,12 +73,16 @@ function execCreateStyles<
   return [out, toRender];
 }
 
-function mapRenderableToSheet<T extends { [selector: string]: Properties }>(toRender: T): string {
+function mapRenderableToSheet<T extends { [selector: string]: Properties | Properties[] }>(toRender: T): string {
   const entries = Object.entries(toRender);
   const mediaEntries = entries.filter(([selector]) => isMedia(selector));
   const nonMediaEntries = entries.filter(([selector]) => !isMedia(selector));
   return nonMediaEntries.concat(mediaEntries).reduce((prev, [selector, props]) => {
-    if (isMedia(selector)) return `${prev}${selector}{${mapRenderableToSheet(props as T)}}`;
+    if (isMedia(selector)) {
+      if (Array.isArray(props)) return props.reduce((multiPrev, multiProps) => `${multiPrev}${selector}{${mapRenderableToSheet(multiProps as T)}}`, prev);
+      return `${prev}${selector}{${mapRenderableToSheet(props as T)}}`;
+    }
+    if (Array.isArray(props)) return props.reduce((multiPrev, multiProps) => `${multiPrev}${selector}${formatCSSRules(multiProps)}`, prev);
     return `${prev}${selector}{${formatCSSRules(props)}}`;
   }, '');
 }
@@ -88,7 +99,7 @@ export default function createStyles<
     accumulate: options?.accumulate || false,
     flush: options?.flush || true,
   };
-  const [out, toRender] = execCreateStyles<T, K, O, { [selector: string]: Properties }>(rules, coerced, null);
+  const [out, toRender] = execCreateStyles(rules, coerced, null);
 
   let sheetContents = mapRenderableToSheet(toRender);
   Object.entries(out).forEach(([classKey, selector]) => {
@@ -100,7 +111,7 @@ export default function createStyles<
     document.head.appendChild(styleTag);
   }
   return [
-    out,
+    out as unknown as O,
     sheetContents,
   ];
 }

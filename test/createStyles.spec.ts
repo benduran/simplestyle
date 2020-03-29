@@ -91,7 +91,7 @@ describe('createStyles tests', () => {
     expect(styleContents.startsWith(`.${styles.responsive}{padding:8px;}`)).toBeTruthy();
     expect(styleContents.endsWith(`@media (max-width: 960px){.${styles.responsive}{padding:24px;}}`)).toBeTruthy();
   });
-  it.only('Should allow multiple media queries, including deeply-nested selector', () => {
+  it('Should allow multiple media queries, including deeply-nested selector', () => {
     const rules: SimpleStyleRules = {
       simple: {
         width: '100%',
@@ -110,8 +110,6 @@ describe('createStyles tests', () => {
       },
     };
     const [styles, styleContents] = createStyles(rules);
-
-    console.info(styleContents);
 
     expect(styleContents).toContain(`.${styles.simple}{width:100%;}`);
     expect(styleContents).toContain(`.${styles.deep}{color:pink;grid-template-columns:repeat(4, 1fr);}`);
