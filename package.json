@@ -13,8 +13,7 @@
   },
   "scripts": {
     "build:commonjs": "tsc -p ./tsconfig.json",
-    "build:esm": "tsc -p ./tsconfig.esm.json",
-    "build": "run-s clean build:commonjs build:esm",
+    "build": "run-s clean build:commonjs",
     "clean": "rimraf ./dist",
     "test": "jest --env jsdom",
     "test:watch": "jest --env jsdom --watch",
