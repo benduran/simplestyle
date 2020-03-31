@@ -1,6 +1,7 @@
 
 export {
   default as createStyles,
+  keyframes,
   rawStyles,
   CreateStylesArgs,
   CreateStylesOptions,
