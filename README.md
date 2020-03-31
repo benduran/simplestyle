@@ -1,4 +1,4 @@
-# simplestyle-js [![Build Status](https://travis-ci.org/benduran/simplestyle.svg?branch=master)](https://travis-ci.org/benduran/simplestyle)
+# simplestyle-js [![Build Status](https://travis-ci.org/benduran/simplestyle.svg?branch=master)](https://travis-ci.org/benduran/simplestyle) [![Coverage Status](https://coveralls.io/repos/github/benduran/simplestyle/badge.svg?branch=master)](https://coveralls.io/github/benduran/simplestyle?branch=master)
 A super simple CSS-in-JS solution with friendly TypeScript support and **zero dependencies**
 
 ## Installation
