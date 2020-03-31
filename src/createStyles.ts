@@ -86,9 +86,16 @@ function mapRenderableToSheet<T extends { [selector: string]: Properties | Prope
 
 function generateSheetContents<O extends any, T extends { [selector: string]: Properties | Properties[] }>(out: O, toRender: T): string {
   let sheetContents = mapRenderableToSheet(toRender);
-  Object.entries(out).forEach(([classKey, selector]) => {
-    sheetContents = sheetContents.replace(new RegExp(`\\$${classKey}`, 'g'), `.${selector}`);
-  });
+  const toReplace: string[] = [];
+  const toReplaceRegex = /\$\w([a-zA-Z0-9_-]+)?/gm;
+  let matches = toReplaceRegex.exec(sheetContents);
+  while (matches) {
+    toReplace.push(matches[0].valueOf());
+    matches = toReplaceRegex.exec(sheetContents);
+  }
+  for (const r of toReplace) {
+    sheetContents = sheetContents.replace(r, `.${out[r.substring(1)]}`);
+  }
   return sheetContents;
 }
 
