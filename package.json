@@ -13,8 +13,9 @@
     "build:commonjs": "tsc -p ./tsconfig.build.json",
     "build": "run-s clean build:commonjs",
     "clean": "rimraf ./dist",
-    "coveralls": "run-s test:coverage",
-    "test:coverage": "jest --env jsdom && cat ./coverage/lcov.info | coveralls",
+    "coveralls": "run-s test:coverage coverage:pipe",
+    "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
+    "test:coverage": "jest --coverage --env jsdom",
     "test": "jest --env jsdom",
     "test:watch": "jest --env jsdom --watch",
     "prepublishOnly": "npm run build"
