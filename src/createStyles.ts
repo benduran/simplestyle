@@ -2,6 +2,7 @@ import { Properties } from 'csstype';
 
 import { SimpleStyleRules } from './types';
 import generateClassName from './generateClassName';
+import { getPrehooks, getPosthooks } from './plugins';
 
 export interface CreateStylesOptions {
   accumulate: boolean;
@@ -67,6 +68,7 @@ function execCreateStyles<
       (toRender as any)[parentSelector][classNameOrCSSRule] = classNameRules;
     }
   }
+  if (!parentSelector) getPrehooks().forEach((p) => { toRender = p(toRender) as O2; });
   return [out, toRender];
 }
 
@@ -96,7 +98,7 @@ function generateSheetContents<O extends any, T extends { [selector: string]: Pr
   for (const r of toReplace) {
     sheetContents = sheetContents.replace(r, `.${out[r.substring(1)]}`);
   }
-  return sheetContents;
+  return getPosthooks().reduce((prev, hook) => hook(prev), sheetContents);
 }
 
 function flushSheetContents(sheetContents: string) {
