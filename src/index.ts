@@ -8,5 +8,10 @@ export {
 } from './createStyles';
 
 export {
+  registerPosthook,
+  registerPrehook,
+} from './plugins';
+
+export {
   SimpleStyleRules,
 } from './types';

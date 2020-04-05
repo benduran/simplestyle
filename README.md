@@ -5,9 +5,9 @@ A super simple CSS-in-JS solution with friendly TypeScript support and **zero de
 `npm install simplestyle-js --save`
 
 ## Basic Usage
-```
-import createStyles from 'simplestyle-js';
-const styles = createStyles({
+```javascript
+import { createStyles } from 'simplestyle-js';
+const [styles] = createStyles({
   myButton: {
     '&:hover': {
       backgroundColor: 'red',
@@ -32,11 +32,10 @@ const Button = (props) => <button {...props} className={styles.myButton}>Awesome
 
 ## Advanced Usage
 
-`simplestyle-js` provides four APIs out of the box:
-`createStyles`, `getAllSheets`, `rawStyles` and `keyframes`
+`simplestyle-js` provides three APIs out of the box: `createStyles`, `keyframes` and `rawStyles`.
 
-```
-import createStyles, { rawStyles } from 'simplestyle-js`;
+```javascript
+import { createStyles, rawStyles } from 'simplestyle-js`;
 
 // Useful if you want to apply style resets or any other global styles
 rawStyles({
@@ -47,9 +46,15 @@ rawStyles({
   'body *': {
     boxSizing: 'border-box',
   },
+  a: {
+    '&:hover': {
+      color: 'red',
+      textDecoration: 'none',
+    },
+  },
 });
 
-const animationName = keyframes({
+const [animationName] = keyframes({
   '0%': {
     borderColor: 'red',
   },
@@ -61,7 +66,7 @@ const animationName = keyframes({
   },
 });
 
-const styles = createStyles({
+const [styles] = createStyles({
   myButton: {
     '&:hover': {
       backgroundColor: 'red',
@@ -96,28 +101,38 @@ const myHeader = document.createElement('header');
 myHeader.classList.add(styles.header); // Will have a generated CSS classname in the format of '.header<unique_identifier>' ex .headerumdoaudnaoqwu
 ```
 
-```
-import createStyles, { getAllSheets } from 'simplestyle-js';
+```javascript
+import { createStyles } from 'simplestyle-js';
 
-const styles = createStyles({
+const [styles, sheetContents] = createStyles({
   nav: {
     backgroundColor: '#ccaa00',
     width: '24em',
   },
-}, false); // prevents immediate flushing of the <style /> tag to the DOM
-const moreStyles = createStyles({
+}, { flush: false }); // prevents immediate flushing of the <style /> tag to the DOM
+const [moreStyles, moreSheetContents] = createStyles({
   navButtons: {
     padding: '.5em',
   },
 }, false); // prevents immediate flushing of the <style /> tag to the DOM
-getAllSheets().forEach((s) => {
-  const styleTag = document.createElement('style');
-  styleTag.innerHTML = s.getStyles();
-  document.header.appendChild(styleTag);
-  s.cleanup(); // Frees up memory for the stylesheet buffer and the internal cache of class keys to generated CSS class selectors
-  // OR you can use the sheet's helper method for both of these things
-  s.attach(); // Attaches to the head and cleans up the sheet buffer and the cache of class keys to generated CSS class selectors
-});
+
+const styleTag = document.createElement('style');
+styleTag.innerHTML = `${sheetContents}${moreSheetContents}`;
+```
+
+```javascript
+import { createStyles } from 'simplestyle-js';
+const [style1] = createStyles({
+  nav: {
+    backgroundColor: '#ccaa00',
+    width: '24em',
+  },
+}, { accumulate: true }); // will make this sheet, and any other sheets where "accumulate: true" is used, aggregated into a single output `<style />`
+const [style2] = createStyles({
+  navButtons: {
+    padding: '.5em',
+  },
+}, { accumulate: true }); // accumulating is useful if you want to minimize DOM writes
 ```
 
 ## Authoring Plugins
@@ -130,26 +145,20 @@ There are two types of plugins:
   - See the official `postcss` Simplestyle plugin as an example: [simplestyle-js-plugin-postcss](https://www.npmjs.com/package/simplestyle-js-plugin-postcss)
 
 ### Prehook Plugin Example *Poor Man's Autoprefixer*
-```
-import createStyles, { registerPreHook } from 'simplestyle-js';
+```javascript
+import { createStyles, registerPreHook } from 'simplestyle-js';
 
 // Poor-man's autoprefixer
-function prehookVendorPrefix(sheet, rules, sheetCache) {
-  if (rules.boxSizing) {
-    rules['-webkit-box-sizing'] = rules.boxSizing;
-    rules['-moz-box-sizing'] = rules.boxSizing;
-    rules['-ms-box-sizing'] = rules.boxSizing;
-  }
-  return rules;
-}
-registerPreHook(prehookVendorPrefix);
+
+const prehook = toRender => Object.entries(toRender).reduce((prev, [key, obj]) => ({ ...prev, [key]: { ...obj, '-webkit-transform': obj.transform } }), toRender);
+registerPrehook(prehook);
 const styles = createStyles({
   preHookRoot: {
     boxSizing: 'border-box',
   },
 });
 const div = document.createElement('div');
-div.classList.add(styles.prehookRoot); // This div will have box-sizing: border-box; as well as all of the vendor prefixes provided in the preHook transformation
+div.classList.add(styles.prehookRoot); // This div will have box-sizing: border-box; as well as the -webkit-box-sizing vendor prefix provided in the preHook transformation
 document.body.appendChild(div);
 
 // Or in a React / JSX-style component
@@ -158,14 +167,12 @@ const MyComponent = () => <div className={styles.preHookRoot}>Some stuff here</d
 ```
 
 ### Posthook Plugin Example *Full Autoprefixer and PostCSS integration*
-```
+```javascript
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
-import createStyles, { registerPostHook } from 'simplestyle-js';
+import { createStyles, registerPostHook } from 'simplestyle-js';
 
-function posthookVendorPrefix(sheet, rules, className, sheetCache) {
-  s.sheetBuffer = postcss([autoprefixer()]).process(s.getStyles()).css
-}
+const posthookVendorPrefix = sheetContents => postcss([autoprefixer()]).process(s.getStyles()).css;
 registerPostHook(posthookVendorPrefix);
 const styles = createStyles({
   postHookRoot: {
@@ -186,21 +193,11 @@ SimpleStyle does one thing out of the box well, and that's providing an intuitiv
 In order to use a plugin, you need to **register** each plugin you'd like to use *before* you issue any calls to `createStyles`. Plugins will be executed in the order in which they were registered. The methods available for you to register plugins are as follows:
 
 - `registerPreHook(preHookFnc)`
-  - `SimpleStylePluginPreHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, sheetCache: ISheetCache) => ISimpleStyleRules<T>;`
-  - `preHookFnc` is a function that accepts three parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
-    - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
-    - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`)
-    - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM.
-  - A valid `preHookFnc` is expected expected to return the `rules` object it was provided. This allows you to do additional transforms on the rules before they're flushed to a CSS string and then written to the DOM. A perfect example of this would be to use something like `postcss` with `autoprefixer` to apply all valid vendor-specific CSS properties.
+  - `preHookFnc` is a function that accepts one parameter of an object whose keys are the generated classnames that will be outputted, and the values are the CSS properties that will be transformed and written to a sheet.
+  - A valid `preHookFnc` is expected to return the `toRender` object it was provided, after you've done any manipulations. This allows you to do additional transforms on the rules before they're flushed to a CSS string and then written to the DOM.
 
 - `registerPostHook(postHookFnc)`
-  - `SimpleStylePluginPostHook = <T>(sheet: SimpleStylesheet, rules: ISimpleStyleRules<T>, generatedSelector: string, sheetCache: ISheetCache) => void;`
-  - `postHookFnc` is a function that accepts four parameters and has the format of the above TypeScript definition. The provided parameters are as follows:
-  - `sheet` - `SimpleStylesheet` - Current instance of a `SimpleStylesheet` class that corresponds to the calling `createStyles` context. Each call to `createStyles` has its own `SimplStylesheet` instance created.
-  - `rules` - `ISimpleStyleRules<T>` - The CSS rules object, which is an object that consists of either valid camelCased CSS properties, vendor-prefixed CSS properties (ex. `-webkit-transform`), or nested CSS selectors that further map to more `ISimpleStyleRule<T>` (like `'&:hover': { /* more rules */ }`).
-    **NOTE** The rules object, at this point, will already have all of its transforms applied to it from any executed **PreHook** functions. Modifying this object here is essentially a **NO-OP**, as the styles from this rules object will have already been written as a CSS string to this `sheet` instance (but *not* yet rendered to the DOM).
-  - `generatedSelector` - `string` - The dynamically-generated CSS selector that applies to this level of the rules object. This is the selector that will have been written to a CSS string and placed inside the current `sheet` instance.
-  - `sheetCache` - `ISheetCache` - The global `simplestyle-js` StyleSheet cache being used to keep track of all style sheets that will be rendered to the DOM after this stage.
+  - `postHookFnc` is a function that accepts one parameter, which is the string contents of the sheet that should eventually be written to the DOM. This function should return a string, after you've done any desired transformations to the sheetContents.
 
 ## What this library isn't
 This library isn't trying to make grandiose assumption about how your styles should be rendered. Its goal is to simply provide a typed way of 
