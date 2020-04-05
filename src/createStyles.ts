@@ -1,102 +1,176 @@
+import { Properties } from 'csstype';
 
-import * as seed from './clasnameSeed';
-import createClassName from './createClassName';
-import formatCssRule from './formatCssRule';
-import { getPostHooks, getPreHooks } from './pluginHooks';
-import sheetCache from './sheetCache';
-import SimpleStylesheet from './simpleStylesheet';
-import { ISimpleStyleRules } from './styleTypes';
+import { SimpleStyleRules } from './types';
+import generateClassName from './generateClassName';
+import { getPrehooks, getPosthooks } from './plugins';
 
-function formatRules<T>(
-  sheet: SimpleStylesheet,
-  flush: boolean,
-  rules: ISimpleStyleRules<T>,
-  parentSelector?: string,
-): string {
-  const ruleKeys = Object.keys(rules);
-  const nestedStyleKeys = ruleKeys.filter(rk => typeof rules[rk] === 'object');
-  if (parentSelector && nestedStyleKeys.length) {
-    createStylesImpl(
-      nestedStyleKeys.reduce((prev: ISimpleStyleRules<T>, rk: string) => Object.assign(prev, { [rk]: rules[rk] }), {}),
-      flush,
-      sheet,
-      parentSelector,
-    );
+export interface CreateStylesOptions {
+  accumulate: boolean;
+  flush: boolean;
+}
+
+let accumulatedSheetContents: string[] | null = null;
+
+function isNestedSelector(r: string): boolean {
+  return /&/g.test(r);
+}
+
+function isMedia(r: string): boolean {
+  return r.toLowerCase().startsWith('@media');
+}
+
+function formatCSSRuleName(rule: string): string {
+  return rule.replace(/([A-Z])/g, p1 => `-${p1.toLowerCase()}`);
+}
+
+function formatCSSRules(cssRules: Properties): string {
+  return Object.entries(cssRules).reduce((prev, [cssProp, cssVal]) => `${prev}${formatCSSRuleName(cssProp)}:${cssVal};`, '');
+}
+
+function execCreateStyles<
+  T extends SimpleStyleRules,
+  K extends keyof T,
+  O extends { [classKey in K]: string },
+  O2 extends SimpleStyleRules & { [selector: string]: Properties[] },
+>(
+  rules: T,
+  options: CreateStylesOptions,
+  parentSelector: string | null,
+  noGenerateClassName: boolean = false,
+): [O, O2] {
+  const out = {} as O;
+  let toRender = {} as O2;
+  const styleEntries = Object.entries(rules);
+  for (const [classNameOrCSSRule, classNameRules] of styleEntries) {
+    // if the classNameRules is a string, we are dealing with a display: none; type rule
+    if (isMedia(classNameOrCSSRule)) {
+      if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
+      toRender = { ...toRender, [classNameOrCSSRule]: execCreateStyles(classNameRules as T, options, parentSelector)[1] };
+    } else if (isNestedSelector(classNameOrCSSRule)) {
+      if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
+      // format of { '& > span': { display: 'none' } } (or further nesting)
+      const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
+      const toMerge = replaced.split(/,\s*/).map(selector => execCreateStyles(classNameRules as T, options, selector)[1]);
+      toMerge.forEach((rs) => {
+        const rulesKeys = Object.keys(rs);
+        rulesKeys.forEach((ruleKey) => {
+          if (toRender[ruleKey]) (toRender as any)[ruleKey] = [toRender[ruleKey], rs[ruleKey]];
+          else (toRender as any)[ruleKey] = rs[ruleKey];
+        });
+      });
+    } else if (!parentSelector && typeof classNameRules === 'object') {
+      const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
+      (out as any)[classNameOrCSSRule] = generated;
+      toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, `${noGenerateClassName ? '' : '.'}${generated}`)[1] };
+    } else {
+      if (!parentSelector) throw new Error('Unable to write css props because parent selector is null');
+      if (!(toRender as any)[parentSelector]) (toRender as any)[parentSelector] = {};
+      (toRender as any)[parentSelector][classNameOrCSSRule] = classNameRules;
+    }
   }
-  return ruleKeys.reduce((prev: string, selectorOrRule: string) => {
-    if (selectorOrRule.startsWith('&') || typeof rules[selectorOrRule] === 'object') return prev;
-    const formattedRule = formatCssRule(selectorOrRule);
-    return `${prev}${formattedRule}:${rules[selectorOrRule]};`;
+  if (!parentSelector) getPrehooks().forEach((p) => { toRender = p(toRender) as O2; });
+  return [out, toRender];
+}
+
+function mapRenderableToSheet<T extends { [selector: string]: Properties | Properties[] }>(toRender: T): string {
+  const entries = Object.entries(toRender);
+  const mediaEntries = entries.filter(([selector]) => isMedia(selector));
+  const nonMediaEntries = entries.filter(([selector]) => !isMedia(selector));
+  return nonMediaEntries.concat(mediaEntries).reduce((prev, [selector, props]) => {
+    if (isMedia(selector)) {
+      if (Array.isArray(props)) return props.reduce((multiPrev, multiProps) => `${multiPrev}${selector}{${mapRenderableToSheet(multiProps as T)}}`, prev);
+      return `${prev}${selector}{${mapRenderableToSheet(props as T)}}`;
+    }
+    if (Array.isArray(props)) return props.reduce((multiPrev, multiProps) => `${multiPrev}${selector}${formatCSSRules(multiProps)}`, prev);
+    return `${prev}${selector}{${formatCSSRules(props)}}`;
   }, '');
 }
 
-function formatClassName(
-  s: number,
-  classKey: string,
-  parentSelector: string | null,
-  isMedia: boolean,
-): string {
-  if (parentSelector) {
-    if (isMedia) return parentSelector;
-    const sParentSelector = parentSelector.split(',');
-    // Handle the magic case from this issue regarding comma-separate parents: https://github.com/benduran/simplestyle/issues/8
-    if (sParentSelector.length > 1) return sParentSelector.map(pSelector => classKey.replace(/&/g, pSelector)).join(',');
-    return classKey.replace(/&/g, parentSelector);
+function generateSheetContents<O extends any, T extends { [selector: string]: Properties | Properties[] }>(out: O, toRender: T): string {
+  let sheetContents = mapRenderableToSheet(toRender);
+  const toReplace: string[] = [];
+  const toReplaceRegex = /\$\w([a-zA-Z0-9_-]+)?/gm;
+  let matches = toReplaceRegex.exec(sheetContents);
+  while (matches) {
+    toReplace.push(matches[0].valueOf());
+    matches = toReplaceRegex.exec(sheetContents);
   }
-  return createClassName(s, classKey);
+  for (const r of toReplace) {
+    sheetContents = sheetContents.replace(r, `.${out[r.substring(1)]}`);
+  }
+  return getPosthooks().reduce((prev, hook) => hook(prev), sheetContents);
 }
 
-function createStylesImpl<
-  T extends { [classKey: string]: ISimpleStyleRules<T> },
-  K extends keyof T,
-  O extends { [classKey in K]: string }
->(
-  styles: T,
-  flush: boolean,
-  sheetOverride: SimpleStylesheet | null = null,
-  parentSelector: string | null = null,
-): O {
-  const sheet = sheetOverride || new SimpleStylesheet();
-  if (parentSelector === null) sheetCache.add(sheet);
-  const out: O = Object.keys(styles).reduce(
-    (prev: O, classKey: string) => {
-      let preProcessedRules: ISimpleStyleRules<T> = styles[classKey];
-      getPreHooks().forEach((p) => {
-        preProcessedRules = p<T>(sheet, preProcessedRules, sheetCache);
-      });
-      const isMedia = classKey.startsWith('@media');
-      const s = seed.get();
-      seed.increment();
-      const classname = formatClassName(s, classKey, parentSelector, isMedia);
-      const selector = parentSelector ? isMedia ? parentSelector : classname : `.${classname}`;
-      if (isMedia) {
-        sheet.startMedia(classKey);
-        sheet.addRule(selector, selector, formatRules(sheet, flush, preProcessedRules), false);
-      } else sheet.addRule(classKey, selector, formatRules(sheet, flush, preProcessedRules), parentSelector === null);
-      formatRules(sheet, flush, preProcessedRules, selector);
-      if (isMedia) sheet.stopMedia();
-      getPostHooks().forEach(p => p<T>(sheet, preProcessedRules, classname, sheetCache));
-      return Object.assign(prev, {
-        [classKey]: classname,
-      });
-    },
-    {} as O,
-  );
-  sheet.updateNestedSelectors();
-  if (parentSelector === null && flush) {
-    sheet.attach();
-    sheet.cleanup();
+function flushSheetContents(sheetContents: string) {
+  // In case we're in come weird test environment that doesn't support JSDom
+  if (typeof document !== 'undefined' && document.head && document.head.appendChild) {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = sheetContents;
+    document.head.appendChild(styleTag);
   }
-  return out;
+}
+
+function coerceCreateStylesOptions(options?: Partial<CreateStylesOptions>): CreateStylesOptions {
+  return {
+    accumulate: options?.accumulate || false,
+    flush: options && typeof options.flush === 'boolean' ? options.flush : true,
+  };
+}
+
+let accumulatedTimeout: any;
+function accumulateSheetContents(sheetContents: string, options: CreateStylesOptions): void {
+  if (!accumulatedSheetContents) accumulatedSheetContents = [];
+  accumulatedSheetContents.push(sheetContents);
+  if (accumulatedTimeout) accumulatedTimeout = clearTimeout(accumulatedTimeout);
+  accumulatedTimeout = setTimeout(() => {
+    flushSheetContents(accumulatedSheetContents!.reduce((prev, contents) => `${prev}${contents}`, ''));
+    accumulatedSheetContents = null;
+  }, 0);
+}
+
+export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [key in K]: string }>(
+  rules: T,
+  options?: Partial<CreateStylesOptions>,
+) {
+  const coerced = coerceCreateStylesOptions(options);
+  const [out, toRender] = execCreateStyles(rules, coerced, null, true);
+  const sheetContents = generateSheetContents(out, toRender);
+
+  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
+  else if (coerced.flush) flushSheetContents(sheetContents);
+  return sheetContents;
+}
+
+export function keyframes<T extends { [increment: string]: Properties }>(frames: T, options?: CreateStylesOptions): [string, string] {
+  const coerced = coerceCreateStylesOptions(options);
+  const keyframeName = generateClassName('keyframes_');
+  const [out, toRender] = execCreateStyles(frames, coerced, null, true);
+  const keyframesContents = generateSheetContents(out, toRender);
+  const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
+  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
+  if (coerced.flush) flushSheetContents(sheetContents);
+  return [keyframeName, sheetContents];
 }
 
 export default function createStyles<
-  T extends { [classKey: string]: ISimpleStyleRules<T> },
+  T extends SimpleStyleRules,
   K extends keyof T,
-  O extends { [classKey in K]: string }
+  O extends { [classKey in K]: string },
 >(
-  styles: T,
-  flush: boolean = true,
-): O {
-  return createStylesImpl<T, K, O>(styles, flush);
+  rules: T,
+  options?: Partial<CreateStylesOptions>,
+): [O, string] {
+  const coerced = coerceCreateStylesOptions(options);
+  const [out, toRender] = execCreateStyles(rules, coerced, null);
+
+  const sheetContents = generateSheetContents(out, toRender);
+
+  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
+  else if (coerced.flush) flushSheetContents(sheetContents);
+  return [
+    out as unknown as O,
+    sheetContents,
+  ];
 }
+
+export type CreateStylesArgs = Parameters<typeof createStyles>;

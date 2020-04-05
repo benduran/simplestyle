@@ -3,13 +3,12 @@
     "target": "es5",
     "module": "commonjs",
     "lib": [
-      "es2017",
-      "dom"
+      "ES2020",
+      "DOM"
     ],
     "declaration": true,
-    "declarationDir": "./dist/commonjs",
     "sourceMap": true,
-    "outDir": "./dist/commonjs",
+    "outDir": "./dist",
 
     /* Strict Type-Checking Options */
     "strict": true,                           /* Enable all strict type-checking options. */
@@ -21,7 +20,6 @@
     "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
 
     /* Additional Checks */
-    "noUnusedLocals": true,                /* Report errors on unused locals. */
     "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
 
     /* Module Resolution Options */
@@ -30,7 +28,8 @@
     "moduleResolution": "node"
   },
   "include": [
-    "./src"
+    "./src",
+    "./test"
   ],
   "exclude": ["./node_modules"]
 }
