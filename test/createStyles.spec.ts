@@ -121,6 +121,47 @@ describe('createStyles tests', () => {
     expect(styleContents).toContain(`@media(max-width: 600px){.${styles.deep} > div button{padding:0.5em;}}`);
     expect(styleContents).toContain(`@media(max-width: 600px){.${styles.deep} > span button{padding:0.5em;}}`);
   });
+  it('Should allow a media query with multiple children', () => {
+    const rules: SimpleStyleRules = {
+      appHeaderHomeLink: {
+        '@media (max-width: 600px)': {
+          '& > b': {
+            display: 'none',
+          },
+          '& > i': {
+            marginLeft: '0 !important',
+          },
+        },
+        position: 'relative',
+        transition: 'background-color .2s ease',
+      },
+    };
+    const [styles, styleContents] = createStyles(rules);
+
+    expect(styleContents.startsWith(`.${styles.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}`)).toBeTruthy();
+    expect(styleContents).toContain(`@media (max-width: 600px){.${styles.appHeaderHomeLink} > b{display:none;}.${styles.appHeaderHomeLink} > i{margin-left:0 !important;}}`);
+  });
+  it('Should ensure that multiple media queries of the same type aren\'t clobbered', () => {
+    const mediaQuery = '@media (max-width: 600px)';
+    const rules: SimpleStyleRules = {
+      appBarGrid: {
+        [mediaQuery]: {
+          gridTemplateColumns: '1fr 2fr',
+        },
+      },
+      appHeaderHomeLink: {
+        [mediaQuery]: {
+          '& > b': {
+            display: 'none',
+          },
+        },
+      },
+    };
+    const [styles, styleContents] = createStyles(rules);
+
+    expect(styleContents).toContain(`${mediaQuery}{.${styles.appBarGrid}{grid-template-columns:1fr 2fr;}}`);
+    expect(styleContents).toContain(`${mediaQuery}{.${styles.appHeaderHomeLink} > b{display:none;}}`);
+  });
   it('Should allow creation of top-level "raw" styles that can generically apply globally to HTML tags', () => {
     const rules: SimpleStyleRules = {
       body: {
