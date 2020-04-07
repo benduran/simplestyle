@@ -45,7 +45,12 @@ function execCreateStyles<
     // if the classNameRules is a string, we are dealing with a display: none; type rule
     if (isMedia(classNameOrCSSRule)) {
       if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
-      toRender = { ...toRender, [classNameOrCSSRule]: execCreateStyles(classNameRules as T, options, parentSelector)[1] };
+      const mediaQueryExecResult = execCreateStyles(classNameRules as T, options, parentSelector)[1];
+      if (toRender[classNameOrCSSRule]) (toRender as any)[classNameOrCSSRule] = [toRender[classNameOrCSSRule]];
+      toRender = {
+        ...toRender,
+        [classNameOrCSSRule]: Array.isArray(toRender[classNameOrCSSRule]) ? toRender[classNameOrCSSRule].concat(mediaQueryExecResult) : mediaQueryExecResult,
+      };
     } else if (isNestedSelector(classNameOrCSSRule)) {
       if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
       // format of { '& > span': { display: 'none' } } (or further nesting)
@@ -61,7 +66,11 @@ function execCreateStyles<
     } else if (!parentSelector && typeof classNameRules === 'object') {
       const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
-      toRender = { ...toRender, ...execCreateStyles(classNameRules as T, options, `${noGenerateClassName ? '' : '.'}${generated}`)[1] };
+      const toMerge = execCreateStyles(classNameRules as T, options, `${noGenerateClassName ? '' : '.'}${generated}`)[1];
+      Object.keys(toMerge).forEach((keyToMerge) => {
+        if (toRender[keyToMerge]) (toRender as any)[keyToMerge] = [toRender[keyToMerge]];
+        toRender = { ...toRender, [keyToMerge]: Array.isArray(toRender[keyToMerge]) ? toRender[keyToMerge].concat(toMerge[keyToMerge]) : toMerge[keyToMerge] };
+      });
     } else {
       if (!parentSelector) throw new Error('Unable to write css props because parent selector is null');
       if (!(toRender as any)[parentSelector]) (toRender as any)[parentSelector] = {};
