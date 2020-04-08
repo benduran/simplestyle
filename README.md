@@ -136,35 +136,12 @@ const [style2] = createStyles({
 ```
 
 ## Authoring Plugins
-There are two types of plugins:
-- `prehook`
-  - Called on all style rule objects *before* generating the CSS string to be used
+A recent update has removed the need for a "prehook" plugin (see previous [documentation](https://github.com/benduran/simplestyle/blob/276aac7fd8b64c6cbfced152249aac7024351092/README.md#prehook-plugin-example-poor-mans-autoprefixer) for historical purposes).
+There is a single type of plugin:
 - `posthook`
   - Called on all style rule objects *after* the CSS string has been generated, but before it has been written to the DOM in a `<style />` tag
 - When creating a plugin, for improved SEO, it is **highly recommended** that you prefix the plugin package name with `simplestyle-js-plugin-*`.
   - See the official `postcss` Simplestyle plugin as an example: [simplestyle-js-plugin-postcss](https://www.npmjs.com/package/simplestyle-js-plugin-postcss)
-
-### Prehook Plugin Example *Poor Man's Autoprefixer*
-```javascript
-import { createStyles, registerPreHook } from 'simplestyle-js';
-
-// Poor-man's autoprefixer
-
-const prehook = toRender => Object.entries(toRender).reduce((prev, [key, obj]) => ({ ...prev, [key]: { ...obj, '-webkit-transform': obj.transform } }), toRender);
-registerPrehook(prehook);
-const styles = createStyles({
-  preHookRoot: {
-    boxSizing: 'border-box',
-  },
-});
-const div = document.createElement('div');
-div.classList.add(styles.prehookRoot); // This div will have box-sizing: border-box; as well as the -webkit-box-sizing vendor prefix provided in the preHook transformation
-document.body.appendChild(div);
-
-// Or in a React / JSX-style component
-
-const MyComponent = () => <div className={styles.preHookRoot}>Some stuff here</div>
-```
 
 ### Posthook Plugin Example *Full Autoprefixer and PostCSS integration*
 ```javascript
@@ -191,10 +168,6 @@ const MyComponent = () => <div className={styles.postHookRoot}>Some stuff here</
 SimpleStyle does one thing out of the box well, and that's providing an intuitive way for you to write your CSS-in-JS in ways that are very similar to popular CSS Preprocessors like LESS, SASS, Stylus, among others. If you need to provide additional functionality that's not offered in the core library, `simplestyle-js` provides easy ways to tie into lifecycle hooks in the style rendering process if you need to stub out additional behavior. This allows you to create and chain an infinite number of plugins, based on your needs. 
 
 In order to use a plugin, you need to **register** each plugin you'd like to use *before* you issue any calls to `createStyles`. Plugins will be executed in the order in which they were registered. The methods available for you to register plugins are as follows:
-
-- `registerPreHook(preHookFnc)`
-  - `preHookFnc` is a function that accepts one parameter of an object whose keys are the generated classnames that will be outputted, and the values are the CSS properties that will be transformed and written to a sheet.
-  - A valid `preHookFnc` is expected to return the `toRender` object it was provided, after you've done any manipulations. This allows you to do additional transforms on the rules before they're flushed to a CSS string and then written to the DOM.
 
 - `registerPostHook(postHookFnc)`
   - `postHookFnc` is a function that accepts one parameter, which is the string contents of the sheet that should eventually be written to the DOM. This function should return a string, after you've done any desired transformations to the sheetContents.

@@ -84,15 +84,18 @@ describe('createStyles tests', () => {
     const rules: SimpleStyleRules = {
       responsive: {
         '@media (max-width: 960px)': {
-          padding: '24px',
+          '& button': {
+            padding: '24px',
+          },
         },
-        padding: '8px',
+        '& button': {
+          padding: '8px',
+        },
       },
     };
     const [styles, styleContents] = createStyles(rules);
 
-    expect(styleContents.startsWith(`.${styles.responsive}{padding:8px;}`)).toBeTruthy();
-    expect(styleContents.endsWith(`@media (max-width: 960px){.${styles.responsive}{padding:24px;}}`)).toBeTruthy();
+    expect(styleContents).toBe(`@media (max-width: 960px){.${styles.responsive} button{padding:24px;}}.${styles.responsive} button{padding:8px;}`);
   });
   it('Should allow multiple media queries, including deeply-nested selector', () => {
     const rules: SimpleStyleRules = {
@@ -138,8 +141,7 @@ describe('createStyles tests', () => {
     };
     const [styles, styleContents] = createStyles(rules);
 
-    expect(styleContents.startsWith(`.${styles.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}`)).toBeTruthy();
-    expect(styleContents).toContain(`@media (max-width: 600px){.${styles.appHeaderHomeLink} > b{display:none;}.${styles.appHeaderHomeLink} > i{margin-left:0 !important;}}`);
+    expect(styleContents).toBe(`@media (max-width: 600px){.${styles.appHeaderHomeLink} > b{display:none;}.${styles.appHeaderHomeLink} > i{margin-left:0 !important;}}.${styles.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}`);
   });
   it('Should ensure that multiple media queries of the same type aren\'t clobbered', () => {
     const mediaQuery = '@media (max-width: 600px)';
