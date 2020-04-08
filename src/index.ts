@@ -9,9 +9,7 @@ export {
 
 export {
   registerPosthook,
-  registerPrehook,
   PosthookPlugin,
-  PrehookPlugin,
 } from './plugins';
 
 export {

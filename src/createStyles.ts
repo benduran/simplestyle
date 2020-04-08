@@ -2,7 +2,7 @@ import { Properties } from 'csstype';
 
 import { SimpleStyleRules } from './types';
 import generateClassName from './generateClassName';
-import { getPrehooks, getPosthooks } from './plugins';
+import { getPosthooks } from './plugins';
 
 export interface CreateStylesOptions {
   accumulate: boolean;
@@ -31,83 +31,66 @@ function execCreateStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
   O extends { [classKey in K]: string },
-  O2 extends SimpleStyleRules & { [selector: string]: Properties[] },
 >(
   rules: T,
   options: CreateStylesOptions,
   parentSelector: string | null,
   noGenerateClassName: boolean = false,
-): [O, O2] {
+): [O, string] {
   const out = {} as O;
-  let toRender = {} as O2;
+  let sheetBuffer = '';
   const styleEntries = Object.entries(rules);
+  let ruleWriteOpen = false;
+  const guardCloseRuleWrite = () => {
+    if (ruleWriteOpen) sheetBuffer += '}';
+    ruleWriteOpen = false;
+  };
   for (const [classNameOrCSSRule, classNameRules] of styleEntries) {
     // if the classNameRules is a string, we are dealing with a display: none; type rule
     if (isMedia(classNameOrCSSRule)) {
       if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
-      const mediaQueryExecResult = execCreateStyles(classNameRules as T, options, parentSelector)[1];
-      if (toRender[classNameOrCSSRule]) (toRender as any)[classNameOrCSSRule] = [toRender[classNameOrCSSRule]];
-      toRender = {
-        ...toRender,
-        [classNameOrCSSRule]: Array.isArray(toRender[classNameOrCSSRule]) ? toRender[classNameOrCSSRule].concat(mediaQueryExecResult) : mediaQueryExecResult,
-      };
+      guardCloseRuleWrite();
+      sheetBuffer += `${classNameOrCSSRule}{`;
+      sheetBuffer += execCreateStyles(classNameRules as T, options, parentSelector)[1];
+      sheetBuffer += '}';
     } else if (isNestedSelector(classNameOrCSSRule)) {
       if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
+      guardCloseRuleWrite();
       // format of { '& > span': { display: 'none' } } (or further nesting)
       const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
-      const toMerge = replaced.split(/,\s*/).map(selector => execCreateStyles(classNameRules as T, options, selector)[1]);
-      toMerge.forEach((rs) => {
-        const rulesKeys = Object.keys(rs);
-        rulesKeys.forEach((ruleKey) => {
-          if (toRender[ruleKey]) (toRender as any)[ruleKey] = [toRender[ruleKey], rs[ruleKey]];
-          else (toRender as any)[ruleKey] = rs[ruleKey];
-        });
-      });
+      sheetBuffer += replaced.split(/,\s*/).reduce((prev, selector) => `${prev}${execCreateStyles(classNameRules as T, options, selector)[1]}`, '');
     } else if (!parentSelector && typeof classNameRules === 'object') {
+      guardCloseRuleWrite();
       const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
-      const toMerge = execCreateStyles(classNameRules as T, options, `${noGenerateClassName ? '' : '.'}${generated}`)[1];
-      Object.keys(toMerge).forEach((keyToMerge) => {
-        if (toRender[keyToMerge]) (toRender as any)[keyToMerge] = [toRender[keyToMerge]];
-        toRender = { ...toRender, [keyToMerge]: Array.isArray(toRender[keyToMerge]) ? toRender[keyToMerge].concat(toMerge[keyToMerge]) : toMerge[keyToMerge] };
-      });
+      const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
+      sheetBuffer += execCreateStyles(classNameRules as T, options, generatedSelector)[1];
     } else {
       if (!parentSelector) throw new Error('Unable to write css props because parent selector is null');
-      if (!(toRender as any)[parentSelector]) (toRender as any)[parentSelector] = {};
-      (toRender as any)[parentSelector][classNameOrCSSRule] = classNameRules;
+      if (!ruleWriteOpen) {
+        sheetBuffer += `${parentSelector}{${formatCSSRules({ [classNameOrCSSRule]: classNameRules })}`;
+        ruleWriteOpen = true;
+      } else sheetBuffer += formatCSSRules({ [classNameOrCSSRule]: classNameRules });
     }
   }
-  if (!parentSelector) getPrehooks().forEach((p) => { toRender = p(toRender) as O2; });
-  return [out, toRender];
+  guardCloseRuleWrite();
+  // if (!parentSelector) getPrehooks().forEach((p) => { toRender = p(toRender) as O2; });
+  return [out, sheetBuffer];
 }
 
-function mapRenderableToSheet<T extends { [selector: string]: Properties | Properties[] }>(toRender: T): string {
-  const entries = Object.entries(toRender);
-  const mediaEntries = entries.filter(([selector]) => isMedia(selector));
-  const nonMediaEntries = entries.filter(([selector]) => !isMedia(selector));
-  return nonMediaEntries.concat(mediaEntries).reduce((prev, [selector, props]) => {
-    if (isMedia(selector)) {
-      if (Array.isArray(props)) return props.reduce((multiPrev, multiProps) => `${multiPrev}${selector}{${mapRenderableToSheet(multiProps as T)}}`, prev);
-      return `${prev}${selector}{${mapRenderableToSheet(props as T)}}`;
-    }
-    if (Array.isArray(props)) return props.reduce((multiPrev, multiProps) => `${multiPrev}${selector}${formatCSSRules(multiProps)}`, prev);
-    return `${prev}${selector}{${formatCSSRules(props)}}`;
-  }, '');
-}
-
-function generateSheetContents<O extends any, T extends { [selector: string]: Properties | Properties[] }>(out: O, toRender: T): string {
-  let sheetContents = mapRenderableToSheet(toRender);
+function replaceBackReferences<O extends any>(out: O, sheetContents: string): string {
+  let outputSheetContents = sheetContents;
   const toReplace: string[] = [];
   const toReplaceRegex = /\$\w([a-zA-Z0-9_-]+)?/gm;
-  let matches = toReplaceRegex.exec(sheetContents);
+  let matches = toReplaceRegex.exec(outputSheetContents);
   while (matches) {
     toReplace.push(matches[0].valueOf());
-    matches = toReplaceRegex.exec(sheetContents);
+    matches = toReplaceRegex.exec(outputSheetContents);
   }
   for (const r of toReplace) {
-    sheetContents = sheetContents.replace(r, `.${out[r.substring(1)]}`);
+    outputSheetContents = outputSheetContents.replace(r, `.${out[r.substring(1)]}`);
   }
-  return getPosthooks().reduce((prev, hook) => hook(prev), sheetContents);
+  return getPosthooks().reduce((prev, hook) => hook(prev), outputSheetContents);
 }
 
 function flushSheetContents(sheetContents: string) {
@@ -142,8 +125,7 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   options?: Partial<CreateStylesOptions>,
 ) {
   const coerced = coerceCreateStylesOptions(options);
-  const [out, toRender] = execCreateStyles(rules, coerced, null, true);
-  const sheetContents = generateSheetContents(out, toRender);
+  const [out, sheetContents] = execCreateStyles(rules, coerced, null, true);
 
   if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
   else if (coerced.flush) flushSheetContents(sheetContents);
@@ -153,8 +135,8 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
 export function keyframes<T extends { [increment: string]: Properties }>(frames: T, options?: CreateStylesOptions): [string, string] {
   const coerced = coerceCreateStylesOptions(options);
   const keyframeName = generateClassName('keyframes_');
-  const [out, toRender] = execCreateStyles(frames, coerced, null, true);
-  const keyframesContents = generateSheetContents(out, toRender);
+  const [out, keyframesContents] = execCreateStyles(frames, coerced, null, true);
+  // const keyframesContents = generateSheetContents(out, toRender);
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
   if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
   if (coerced.flush) flushSheetContents(sheetContents);
@@ -170,15 +152,15 @@ export default function createStyles<
   options?: Partial<CreateStylesOptions>,
 ): [O, string] {
   const coerced = coerceCreateStylesOptions(options);
-  const [out, toRender] = execCreateStyles(rules, coerced, null);
+  const [out, sheetContents] = execCreateStyles(rules, coerced, null);
 
-  const sheetContents = generateSheetContents(out, toRender);
+  const replacedSheetContents = replaceBackReferences(out, sheetContents);
 
-  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
-  else if (coerced.flush) flushSheetContents(sheetContents);
+  if (coerced.accumulate) accumulateSheetContents(replacedSheetContents, coerced);
+  else if (coerced.flush) flushSheetContents(replacedSheetContents);
   return [
     out as unknown as O,
-    sheetContents,
+    replacedSheetContents,
   ];
 }
 

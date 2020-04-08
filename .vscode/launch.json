@@ -12,7 +12,9 @@
       "args": [
         "${fileBasenameNoExtension}",
         "--config",
-        "jest.config.js"
+        "jest.config.js",
+        "--env",
+        "jsdom"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
