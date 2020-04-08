@@ -95,7 +95,7 @@ describe('createStyles tests', () => {
     };
     const [styles, styleContents] = createStyles(rules);
 
-    expect(styleContents).toBe(`@media (max-width: 960px){.${styles.responsive} button{padding:24px;}}.${styles.responsive} button{padding:8px;}`);
+    expect(styleContents).toBe(`.${styles.responsive} button{padding:8px;}@media (max-width: 960px){.${styles.responsive} button{padding:24px;}}`);
   });
   it('Should allow multiple media queries, including deeply-nested selector', () => {
     const rules: SimpleStyleRules = {
@@ -141,7 +141,7 @@ describe('createStyles tests', () => {
     };
     const [styles, styleContents] = createStyles(rules);
 
-    expect(styleContents).toBe(`@media (max-width: 600px){.${styles.appHeaderHomeLink} > b{display:none;}.${styles.appHeaderHomeLink} > i{margin-left:0 !important;}}.${styles.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}`);
+    expect(styleContents).toBe(`.${styles.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}@media (max-width: 600px){.${styles.appHeaderHomeLink} > b{display:none;}.${styles.appHeaderHomeLink} > i{margin-left:0 !important;}}`);
   });
   it('Should ensure that multiple media queries of the same type aren\'t clobbered', () => {
     const mediaQuery = '@media (max-width: 600px)';
@@ -161,8 +161,7 @@ describe('createStyles tests', () => {
     };
     const [styles, styleContents] = createStyles(rules);
 
-    expect(styleContents).toContain(`${mediaQuery}{.${styles.appBarGrid}{grid-template-columns:1fr 2fr;}}`);
-    expect(styleContents).toContain(`${mediaQuery}{.${styles.appHeaderHomeLink} > b{display:none;}}`);
+    expect(styleContents).toBe(`${mediaQuery}{.${styles.appBarGrid}{grid-template-columns:1fr 2fr;}}${mediaQuery}{.${styles.appHeaderHomeLink} > b{display:none;}}`);
   });
   it('Should allow creation of top-level "raw" styles that can generically apply globally to HTML tags', () => {
     const rules: SimpleStyleRules = {
@@ -177,6 +176,7 @@ describe('createStyles tests', () => {
       },
     };
     const styleContents = rawStyles(rules);
+
     expect(styleContents).toContain('body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}');
     expect(styleContents).toContain('a:hover{text-decoration:none;}');
   });
@@ -193,8 +193,7 @@ describe('createStyles tests', () => {
       },
     };
     const styleContents = rawStyles(rules);
-    expect(styleContents).toContain('button{min-width:300px;}');
-    expect(styleContents).toContain('@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}');
+    expect(styleContents).toBe('button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}');
   });
   it('Should accumulate all calls to createStyles() and write a single sheet to the DOM', () => new Promise((resolve, reject) => {
     try {

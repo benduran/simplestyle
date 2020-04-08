@@ -36,9 +36,10 @@ function execCreateStyles<
   options: CreateStylesOptions,
   parentSelector: string | null,
   noGenerateClassName: boolean = false,
-): [O, string] {
+): [O, string, string] {
   const out = {} as O;
   let sheetBuffer = '';
+  let mediaQueriesbuffer = '';
   const styleEntries = Object.entries(rules);
   let ruleWriteOpen = false;
   const guardCloseRuleWrite = () => {
@@ -50,21 +51,29 @@ function execCreateStyles<
     if (isMedia(classNameOrCSSRule)) {
       if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
       guardCloseRuleWrite();
-      sheetBuffer += `${classNameOrCSSRule}{`;
-      sheetBuffer += execCreateStyles(classNameRules as T, options, parentSelector)[1];
-      sheetBuffer += '}';
+      mediaQueriesbuffer += `${classNameOrCSSRule}{`;
+      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, parentSelector);
+      mediaQueriesbuffer += regularOutput;
+      mediaQueriesbuffer += '}';
+      mediaQueriesbuffer += mediaQueriesOutput;
     } else if (isNestedSelector(classNameOrCSSRule)) {
       if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
       guardCloseRuleWrite();
       // format of { '& > span': { display: 'none' } } (or further nesting)
       const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
-      sheetBuffer += replaced.split(/,\s*/).reduce((prev, selector) => `${prev}${execCreateStyles(classNameRules as T, options, selector)[1]}`, '');
+      replaced.split(/,\s*/).forEach((selector) => {
+        const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, selector);
+        sheetBuffer += regularOutput;
+        mediaQueriesbuffer += mediaQueriesOutput;
+      });
     } else if (!parentSelector && typeof classNameRules === 'object') {
       guardCloseRuleWrite();
       const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
       const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
-      sheetBuffer += execCreateStyles(classNameRules as T, options, generatedSelector)[1];
+      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, generatedSelector);
+      sheetBuffer += regularOutput;
+      mediaQueriesbuffer += mediaQueriesOutput;
     } else {
       if (!parentSelector) throw new Error('Unable to write css props because parent selector is null');
       if (!ruleWriteOpen) {
@@ -74,8 +83,7 @@ function execCreateStyles<
     }
   }
   guardCloseRuleWrite();
-  // if (!parentSelector) getPrehooks().forEach((p) => { toRender = p(toRender) as O2; });
-  return [out, sheetBuffer];
+  return [out, sheetBuffer, mediaQueriesbuffer];
 }
 
 function replaceBackReferences<O extends any>(out: O, sheetContents: string): string {
@@ -125,11 +133,13 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   options?: Partial<CreateStylesOptions>,
 ) {
   const coerced = coerceCreateStylesOptions(options);
-  const [out, sheetContents] = execCreateStyles(rules, coerced, null, true);
+  const [, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null, true);
 
-  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
-  else if (coerced.flush) flushSheetContents(sheetContents);
-  return sheetContents;
+  const mergedContents = `${sheetContents}${mediaQueriesContents}`;
+
+  if (coerced.accumulate) accumulateSheetContents(mergedContents, coerced);
+  else if (coerced.flush) flushSheetContents(mergedContents);
+  return mergedContents;
 }
 
 export function keyframes<T extends { [increment: string]: Properties }>(frames: T, options?: CreateStylesOptions): [string, string] {
@@ -152,9 +162,11 @@ export default function createStyles<
   options?: Partial<CreateStylesOptions>,
 ): [O, string] {
   const coerced = coerceCreateStylesOptions(options);
-  const [out, sheetContents] = execCreateStyles(rules, coerced, null);
+  const [out, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null);
 
-  const replacedSheetContents = replaceBackReferences(out, sheetContents);
+  const mergedContents = `${sheetContents}${mediaQueriesContents}`;
+
+  const replacedSheetContents = replaceBackReferences(out, mergedContents);
 
   if (coerced.accumulate) accumulateSheetContents(replacedSheetContents, coerced);
   else if (coerced.flush) flushSheetContents(replacedSheetContents);
