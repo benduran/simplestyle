@@ -161,7 +161,7 @@ describe('createStyles tests', () => {
     };
     const [styles, styleContents] = createStyles(rules);
 
-    expect(styleContents).toBe(`${mediaQuery}{.${styles.appBarGrid}{grid-template-columns:1fr 2fr;}}${mediaQuery}{.${styles.appHeaderHomeLink} > b{display:none;}}`)
+    expect(styleContents).toBe(`${mediaQuery}{.${styles.appBarGrid}{grid-template-columns:1fr 2fr;}}${mediaQuery}{.${styles.appHeaderHomeLink} > b{display:none;}}`);
   });
   it('Should allow creation of top-level "raw" styles that can generically apply globally to HTML tags', () => {
     const rules: SimpleStyleRules = {
