@@ -42,7 +42,6 @@ const Button = (props) => <button {...props} className={styles.myButton}>Awesome
 ```javascript
 import { createStyles, rawStyles } from 'simplestyle-js`;
 
-// Useful if you want to apply style resets or any other global styles
 rawStyles({
   html: {
     fontFamily: 'Arial, Helvetica, sans-serif',
@@ -58,7 +57,9 @@ rawStyles({
     },
   },
 });
+```
 
+```javascript
 const [animationName] = keyframes({
   '0%': {
     borderColor: 'red',
