@@ -40,7 +40,7 @@ const Button = (props) => <button {...props} className={styles.myButton}>Awesome
 `simplestyle-js` provides three APIs out of the box: `createStyles`, `keyframes` and `rawStyles`.
 
 ```javascript
-import { createStyles, rawStyles } from 'simplestyle-js`;
+import { createStyles, rawStyles } from 'simplestyle-js';
 
 rawStyles({
   html: {
@@ -57,9 +57,7 @@ rawStyles({
     },
   },
 });
-```
 
-```javascript
 const [animationName] = keyframes({
   '0%': {
     borderColor: 'red',
