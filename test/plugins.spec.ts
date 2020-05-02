@@ -2,20 +2,13 @@ import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 import { Properties } from 'csstype';
 
-import {
-  registerPosthook,
-  PosthookPlugin,
-  SimpleStyleRules,
-  createStyles,
-} from '../src';
+import { registerPosthook, PosthookPlugin, SimpleStyleRules, createStyles } from '../src';
 
-import {
-  getPosthooks,
-} from '../src/plugins';
+import { getPosthooks } from '../src/plugins';
 
 describe('Plugin hooks', () => {
   beforeEach(() => {
-    Array.from(document.head.querySelectorAll('style')).forEach(s => s.remove());
+    Array.from(document.head.querySelectorAll('style')).forEach((s) => s.remove());
     getPosthooks().length = 0;
   });
   it('Should execute a posthook with the proper arguments', () => {
@@ -41,7 +34,7 @@ describe('Plugin hooks', () => {
         userSelect: 'none',
       },
     };
-    const posthook: PosthookPlugin = sheetContents => postcss([autoprefixer()]).process(sheetContents).css;
+    const posthook: PosthookPlugin = (sheetContents) => postcss([autoprefixer()]).process(sheetContents).css;
     registerPosthook(posthook);
     const [styles, sheetContents] = createStyles(rules);
     expect(sheetContents).toBe(`.${styles.posthook}{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}`);

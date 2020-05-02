@@ -1,13 +1,12 @@
-
 import generateClassName from '../src/generateClassName';
 
 describe('generateClassName tests', () => {
   it('Should generate multiple unique classnames', () => {
     const input = [
-      'one',
-      'deux',
-      'tres',
-      'four',
+      ['one', '123456789'],
+      ['deux', null],
+      ['tres', '123456789'],
+      ['four', null],
     ];
     const output = input.map(generateClassName);
     expect(output[0]).not.toBe(output[1]);

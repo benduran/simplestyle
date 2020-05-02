@@ -1,10 +1,9 @@
-
 import { createStyles, rawStyles } from '../src';
 import { SimpleStyleRules } from '../src/types';
 
 describe('createStyles tests', () => {
   beforeEach(() => {
-    Array.from(document.head.querySelectorAll('style')).forEach(s => s.remove());
+    Array.from(document.head.querySelectorAll('style')).forEach((s) => s.remove());
   });
   it('Should generate some basic styles', () => {
     const rules: SimpleStyleRules = {
@@ -141,9 +140,11 @@ describe('createStyles tests', () => {
     };
     const [styles, styleContents] = createStyles(rules);
 
-    expect(styleContents).toBe(`.${styles.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}@media (max-width: 600px){.${styles.appHeaderHomeLink} > b{display:none;}.${styles.appHeaderHomeLink} > i{margin-left:0 !important;}}`);
+    expect(styleContents).toBe(
+      `.${styles.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}@media (max-width: 600px){.${styles.appHeaderHomeLink} > b{display:none;}.${styles.appHeaderHomeLink} > i{margin-left:0 !important;}}`,
+    );
   });
-  it('Should ensure that multiple media queries of the same type aren\'t clobbered', () => {
+  it("Should ensure that multiple media queries of the same type aren't clobbered", () => {
     const mediaQuery = '@media (max-width: 600px)';
     const rules: SimpleStyleRules = {
       appBarGrid: {
@@ -195,35 +196,76 @@ describe('createStyles tests', () => {
     const styleContents = rawStyles(rules);
     expect(styleContents).toBe('button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}');
   });
-  it('Should accumulate all calls to createStyles() and write a single sheet to the DOM', () => new Promise((resolve, reject) => {
-    try {
-      const [s1] = createStyles({
-        one: {
-          display: 'flex',
-        },
-      }, { accumulate: true });
-      const [s2] = createStyles({
-        two: {
-          height: '400px',
-          width: '400px',
-        },
-      }, { accumulate: true });
-      const [s3] = createStyles({
-        three: {
-          transform: 'translateY(-50%)',
-        },
-      }, { accumulate: true });
-      setTimeout(() => {
-        try {
-          const styleTag = document.head.querySelector('style');
-          expect(styleTag).not.toBe(null);
-          const contents = styleTag!.innerHTML;
-          expect(contents).toContain(`.${s1.one}{display:flex;}`);
-          expect(contents).toContain(`.${s2.two}{height:400px;width:400px;}`);
-          expect(contents).toContain(`.${s3.three}{transform:translateY(-50%);}`);
-          resolve();
-        } catch (error) { reject(error); }
-      }, 0);
-    } catch (error) { reject(error); }
-  }));
+  it('Should accumulate all calls to createStyles() and write a single sheet to the DOM', () =>
+    new Promise((resolve, reject) => {
+      try {
+        const [s1] = createStyles(
+          {
+            one: {
+              display: 'flex',
+            },
+          },
+          { accumulate: true },
+        );
+        const [s2] = createStyles(
+          {
+            two: {
+              height: '400px',
+              width: '400px',
+            },
+          },
+          { accumulate: true },
+        );
+        const [s3] = createStyles(
+          {
+            three: {
+              transform: 'translateY(-50%)',
+            },
+          },
+          { accumulate: true },
+        );
+        setTimeout(() => {
+          try {
+            const styleTag = document.head.querySelector('style');
+            expect(styleTag).not.toBe(null);
+            const contents = styleTag!.innerHTML;
+            expect(contents).toContain(`.${s1.one}{display:flex;}`);
+            expect(contents).toContain(`.${s2.two}{height:400px;width:400px;}`);
+            expect(contents).toContain(`.${s3.three}{transform:translateY(-50%);}`);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        }, 0);
+      } catch (error) {
+        reject(error);
+      }
+    }));
+  it('Should use the supplied uid', () =>
+    new Promise((resolve, reject) => {
+      try {
+        const [s1] = createStyles(
+          {
+            one: {
+              display: 'flex',
+            },
+          },
+          null,
+          '123456789',
+        );
+        setTimeout(() => {
+          try {
+            const styleTag = document.head.querySelector('style');
+            expect(styleTag).not.toBe(null);
+            const contents = styleTag!.innerHTML;
+            expect(contents).toContain(`one_123456789{display:flex;}`);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        }, 0);
+      } catch (error) {
+        reject(error);
+      }
+    }));
 });

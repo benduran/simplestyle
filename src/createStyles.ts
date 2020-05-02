@@ -20,22 +20,19 @@ function isMedia(r: string): boolean {
 }
 
 function formatCSSRuleName(rule: string): string {
-  return rule.replace(/([A-Z])/g, p1 => `-${p1.toLowerCase()}`);
+  return rule.replace(/([A-Z])/g, (p1) => `-${p1.toLowerCase()}`);
 }
 
 function formatCSSRules(cssRules: Properties): string {
   return Object.entries(cssRules).reduce((prev, [cssProp, cssVal]) => `${prev}${formatCSSRuleName(cssProp)}:${cssVal};`, '');
 }
 
-function execCreateStyles<
-  T extends SimpleStyleRules,
-  K extends keyof T,
-  O extends { [classKey in K]: string },
->(
+function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [classKey in K]: string }>(
   rules: T,
   options: CreateStylesOptions,
   parentSelector: string | null,
-  noGenerateClassName: boolean = false,
+  noGenerateClassName: boolean | null = false,
+  uid: string | null = null,
 ): [O, string, string] {
   const out = {} as O;
   let sheetBuffer = '';
@@ -52,7 +49,7 @@ function execCreateStyles<
       if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
       guardCloseRuleWrite();
       mediaQueriesbuffer += `${classNameOrCSSRule}{`;
-      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, parentSelector);
+      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, parentSelector, null, uid);
       mediaQueriesbuffer += regularOutput;
       mediaQueriesbuffer += '}';
       mediaQueriesbuffer += mediaQueriesOutput;
@@ -62,16 +59,19 @@ function execCreateStyles<
       // format of { '& > span': { display: 'none' } } (or further nesting)
       const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
       replaced.split(/,\s*/).forEach((selector) => {
-        const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, selector);
+        const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, selector, null, uid);
         sheetBuffer += regularOutput;
         mediaQueriesbuffer += mediaQueriesOutput;
       });
     } else if (!parentSelector && typeof classNameRules === 'object') {
       guardCloseRuleWrite();
-      const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
+      let generated = generateClassName([classNameOrCSSRule, uid]);
+      if (noGenerateClassName) {
+        generated = classNameOrCSSRule;
+      }
       (out as any)[classNameOrCSSRule] = generated;
       const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
-      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, generatedSelector);
+      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, generatedSelector, null, uid);
       sheetBuffer += regularOutput;
       mediaQueriesbuffer += mediaQueriesOutput;
     } else {
@@ -110,7 +110,7 @@ function flushSheetContents(sheetContents: string) {
   }
 }
 
-function coerceCreateStylesOptions(options?: Partial<CreateStylesOptions>): CreateStylesOptions {
+function coerceCreateStylesOptions(options?: Partial<CreateStylesOptions> | null): CreateStylesOptions {
   return {
     accumulate: options?.accumulate || false,
     flush: options && typeof options.flush === 'boolean' ? options.flush : true,
@@ -130,10 +130,11 @@ function accumulateSheetContents(sheetContents: string, options: CreateStylesOpt
 
 export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [key in K]: string }>(
   rules: T,
-  options?: Partial<CreateStylesOptions>,
+  options: Partial<CreateStylesOptions> | null = null,
+  uid: string | null = null,
 ) {
   const coerced = coerceCreateStylesOptions(options);
-  const [, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null, true);
+  const [, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null, true, uid);
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
@@ -142,10 +143,10 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   return mergedContents;
 }
 
-export function keyframes<T extends { [increment: string]: Properties }>(frames: T, options?: CreateStylesOptions): [string, string] {
+export function keyframes<T extends { [increment: string]: Properties }>(frames: T, options: CreateStylesOptions | null = null, uid: string | null = null): [string, string] {
   const coerced = coerceCreateStylesOptions(options);
-  const keyframeName = generateClassName('keyframes_');
-  const [out, keyframesContents] = execCreateStyles(frames, coerced, null, true);
+  const keyframeName = generateClassName(['keyframes_']);
+  const [out, keyframesContents] = execCreateStyles(frames, coerced, null, true, uid);
   // const keyframesContents = generateSheetContents(out, toRender);
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
   if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
@@ -153,16 +154,13 @@ export function keyframes<T extends { [increment: string]: Properties }>(frames:
   return [keyframeName, sheetContents];
 }
 
-export default function createStyles<
-  T extends SimpleStyleRules,
-  K extends keyof T,
-  O extends { [classKey in K]: string },
->(
+export default function createStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [classKey in K]: string }>(
   rules: T,
-  options?: Partial<CreateStylesOptions>,
+  options: Partial<CreateStylesOptions> | null = null,
+  uid: string | null = null,
 ): [O, string] {
   const coerced = coerceCreateStylesOptions(options);
-  const [out, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null);
+  const [out, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null, null, uid);
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
@@ -170,10 +168,7 @@ export default function createStyles<
 
   if (coerced.accumulate) accumulateSheetContents(replacedSheetContents, coerced);
   else if (coerced.flush) flushSheetContents(replacedSheetContents);
-  return [
-    out as unknown as O,
-    replacedSheetContents,
-  ];
+  return [(out as unknown) as O, replacedSheetContents];
 }
 
 export type CreateStylesArgs = Parameters<typeof createStyles>;
