@@ -7,6 +7,8 @@ export {
   CreateStylesOptions,
 } from './createStyles';
 
+export { setSeed } from './generateClassName';
+
 export {
   registerPosthook,
   PosthookPlugin,

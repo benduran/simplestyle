@@ -1,5 +1,5 @@
 
-import { createStyles, rawStyles } from '../src';
+import { createStyles, rawStyles, setSeed } from '../src';
 import { SimpleStyleRules } from '../src/types';
 
 describe('createStyles tests', () => {
@@ -226,4 +226,74 @@ describe('createStyles tests', () => {
       }, 0);
     } catch (error) { reject(error); }
   }));
+  it('Should generate different classnames across multiple passes', () => {
+    const rules: SimpleStyleRules = {
+      simple: {
+        width: '100%',
+      },
+      deep: {
+        '& > span, & > div': {
+          '& button': {
+            '@media(max-width: 600px)': {
+              padding: '0.5em',
+            },
+            padding: '1em',
+          },
+        },
+        color: 'pink',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+      },
+      finder: {
+        backgroundColor: 'pink',
+        marginLeft: '40px',
+        padding: '1rem',
+      },
+    };
+    const [s1, rendered1] = createStyles(rules, { flush: false });
+    const [s2, rendered2] = createStyles(rules, { flush: false });
+    const [s3, rendered3] = createStyles(rules, { flush: false });
+    expect(s1).not.toEqual(s2);
+    expect(s1).not.toEqual(s3);
+    expect(s2).not.toEqual(s3);
+    expect(rendered1).not.toEqual(rendered2);
+    expect(rendered1).not.toEqual(rendered3);
+    expect(rendered2).not.toEqual(rendered3);
+  });
+  it('Should generate the same classnames across multiple passes if a custom seed is set', () => {
+    const rules: SimpleStyleRules = {
+      simple: {
+        width: '100%',
+      },
+      deep: {
+        '& > span, & > div': {
+          '& button': {
+            '@media(max-width: 600px)': {
+              padding: '0.5em',
+            },
+            padding: '1em',
+          },
+        },
+        color: 'pink',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+      },
+      finder: {
+        backgroundColor: 'pink',
+        marginLeft: '40px',
+        padding: '1rem',
+      },
+    };
+    const seed = 1234;
+    setSeed(seed);
+    const [s1, rendered1] = createStyles(rules, { flush: false });
+    setSeed(seed);
+    const [s2, rendered2] = createStyles(rules, { flush: false });
+    setSeed(seed);
+    const [s3, rendered3] = createStyles(rules, { flush: false });
+    expect(s1).toEqual(s2);
+    expect(s1).toEqual(s3);
+    expect(s2).toEqual(s3);
+    expect(rendered1).toEqual(rendered2);
+    expect(rendered1).toEqual(rendered3);
+    expect(rendered2).toEqual(rendered3);
+  });
 });
