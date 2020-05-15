@@ -37,7 +37,7 @@ const Button = (props) => <button {...props} className={styles.myButton}>Awesome
 
 ## Advanced Usage
 
-`simplestyle-js` provides three APIs out of the box: `createStyles`, `keyframes` and `rawStyles`.
+`simplestyle-js` provides four APIs out of the box: `createStyles`, `keyframes` and `rawStyles` and `setSeed`.
 
 ```javascript
 import { createStyles, rawStyles } from 'simplestyle-js';
@@ -103,6 +103,17 @@ const [styles] = createStyles({
 
 const myHeader = document.createElement('header');
 myHeader.classList.add(styles.header); // Will have a generated CSS classname in the format of '.header<unique_identifier>' ex .headerumdoaudnaoqwu
+
+// if you want Simplestyle to always generate the same CSS class names, you can set
+// your own initial seed. Assuming your modules are imported in the same order and
+// execute their calls to createStyles() in the same order, the library will reliably generate
+// the same classNames across successive calls.
+const [styles] = createStyles({
+  someRule: {
+    backgroundColor: 'red,
+  },
+});
+
 ```
 
 ```javascript

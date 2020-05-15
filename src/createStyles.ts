@@ -86,7 +86,7 @@ function execCreateStyles<
   return [out, sheetBuffer, mediaQueriesbuffer];
 }
 
-function replaceBackReferences<O extends any>(out: O, sheetContents: string): string {
+function replaceBackReferences<O extends { [key: string]: string }>(out: O, sheetContents: string): string {
   let outputSheetContents = sheetContents;
   const toReplace: string[] = [];
   const toReplaceRegex = /\$\w([a-zA-Z0-9_-]+)?/gm;
