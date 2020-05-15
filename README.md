@@ -2,8 +2,8 @@
 A super simple CSS-in-JS solution with friendly TypeScript support and **zero runtime dependencies**
 
 ## Bundle Size
-- `~3.4kB` minified
-- `~1.4kB` gzipped
+- `~4.4kB` minified
+- `~1.7kB` gzipped
 - Courtesy of [Bundle Phobia](https://bundlephobia.com/result?p=simplestyle-js)
 
 ## Installation
