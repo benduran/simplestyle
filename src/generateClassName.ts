@@ -9,8 +9,9 @@ export function setSeed(seed: number | null): void {
     return;
   }
   if (typeof seed !== 'number') throw Error('Unable to setSeed as provided seed was not a valid number');
-  if (seed === Number.MAX_SAFE_INTEGER) throw Error('Unable to setSeed because the seed was already the maxiumum safe JavaScript number allowed');
+  if (seed === Number.MAX_SAFE_INTEGER) throw Error('Unable to setSeed because the seed was already the maximum safe JavaScript number allowed');
   if (seed === Number.POSITIVE_INFINITY || seed === Number.NEGATIVE_INFINITY) throw new Error('Unable to setSeed. Positive or negative infinity is not allowed');
+  if (seed < 0) throw new Error('Unable to setSeed. Seed must be a number >= 0');
   inc = seed;
 }
 
