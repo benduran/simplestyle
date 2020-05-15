@@ -104,10 +104,10 @@ const [styles] = createStyles({
 const myHeader = document.createElement('header');
 myHeader.classList.add(styles.header); // Will have a generated CSS classname in the format of '.header<unique_identifier>' ex .headerumdoaudnaoqwu
 
-// if you want Simplestyle to always start with the same seed for generating the random suffix applied to the generated CSS class names
-// you can set your own initial seed. Assuming your modules are imported in the same order and execute their calls to
-// createStyles() in the same order, the library will reliably generate the classNames
-setSeed(1234); // or null if you want to reset to using the library's internal seed (defaults to Date.now())
+// if you want Simplestyle to always generate the same CSS class names, you can set
+// your own initial seed. Assuming your modules are imported in the same order and
+// execute their calls to createStyles() in the same order, the library will reliably generate
+// the same classNames across successive calls.
 const [styles] = createStyles({
   someRule: {
     backgroundColor: 'red,
