@@ -145,8 +145,7 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
 export function keyframes<T extends { [increment: string]: Properties }>(frames: T, options?: CreateStylesOptions): [string, string] {
   const coerced = coerceCreateStylesOptions(options);
   const keyframeName = generateClassName('keyframes_');
-  const [out, keyframesContents] = execCreateStyles(frames, coerced, null, true);
-  // const keyframesContents = generateSheetContents(out, toRender);
+  const [, keyframesContents] = execCreateStyles(frames, coerced, null, true);
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
   if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
   if (coerced.flush) flushSheetContents(sheetContents);
