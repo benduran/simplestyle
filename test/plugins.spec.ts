@@ -1,6 +1,5 @@
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
-import { Properties } from 'csstype';
 
 import {
   registerPosthook,

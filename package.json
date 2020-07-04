@@ -1,8 +1,10 @@
 {
   "name": "simplestyle-js",
-  "version": "2.2.0",
+  "version": "2.3.0-beta.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "main": "dist/index.js",
+  "module": "dist/simplestyle-js.esm.js",
+  "esnext": "dist/simplestyle-js.esm.js",
   "typings": "dist/index.d.ts",
   "types": "dist/index.d.ts",
   "repository": {
@@ -10,15 +12,13 @@
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
   "scripts": {
-    "build:commonjs": "tsc -p ./tsconfig.build.json",
-    "build": "run-s clean build:commonjs",
-    "clean": "rimraf ./dist",
+    "build": "tsdx build",
     "coveralls": "run-s test:coverage coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
-    "test:coverage": "jest --coverage --env jsdom",
-    "test": "jest --env jsdom",
-    "test:watch": "jest --env jsdom --watch",
-    "prepublishOnly": "npm run build"
+    "test:coverage": "tsdx test --coverage",
+    "test": "tsdx test",
+    "test:watch": "tsdx test --watch",
+    "prepublishOnly": "tsdx build"
   },
   "keywords": [
     "CSS-in-JS",
@@ -36,17 +36,18 @@
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "autoprefixer": "^9.7.6",
+    "babel-jest": "^26.1.0",
     "coveralls": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
-    "jest": "^26.0.1",
+    "jest": "^25.5.4",
     "jsdom": "^16.2.2",
     "npm-run-all": "^4.1.5",
     "postcss": "^7.0.30",
-    "rimraf": "^3.0.2",
     "ts-jest": "^25.5.1",
     "ts-node": "^8.10.1",
+    "tsdx": "^0.13.2",
     "typescript": "^3.9.2"
   },
   "dependencies": {
