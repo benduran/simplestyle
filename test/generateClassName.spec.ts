@@ -1,4 +1,4 @@
-import generateClassName, { setSeed } from '../src/generateClassName';
+import { generateClassName, setSeed } from '../src/generateClassName';
 
 describe('generateClassName tests', () => {
   it('Should generate multiple unique classnames', () => {

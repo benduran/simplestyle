@@ -36,6 +36,6 @@ export function getUniqueSuffix(): string {
   return out;
 }
 
-export default function generateClassName(c: string): string {
+export function generateClassName(c: string): string {
   return `${c}${getUniqueSuffix()}`;
 }
