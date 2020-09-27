@@ -1,4 +1,3 @@
-
 import numToAlpha from './numToAlpha';
 
 let inc = Date.now();

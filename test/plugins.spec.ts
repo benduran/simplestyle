@@ -40,7 +40,9 @@ describe('Plugin hooks', () => {
         userSelect: 'none',
       },
     };
-    const posthook: PosthookPlugin = sheetContents => postcss([autoprefixer()]).process(sheetContents).css;
+    // Post CSS and autoprefixer types have changed
+    // so we just brute-force the typings
+    const posthook: PosthookPlugin = sheetContents => postcss([autoprefixer() as any]).process(sheetContents).css;
     registerPosthook(posthook);
     const [styles, sheetContents] = createStyles(rules);
     expect(sheetContents).toBe(`.${styles.posthook}{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}`);

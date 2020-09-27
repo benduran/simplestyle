@@ -15,10 +15,13 @@
     "build": "tsdx build",
     "coveralls": "run-s test:coverage coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
+    "lint": "eslint './src/**/*.ts'",
+    "lint:fixall": "eslint './src/**/*.ts' --fix",
     "test:coverage": "tsdx test --coverage",
     "test": "tsdx test",
     "test:watch": "tsdx test --watch",
-    "prepublishOnly": "tsdx build"
+    "prepublishOnly": "tsdx build",
+    "git-pre-commit": "yarn lint && yarn test"
   },
   "keywords": [
     "CSS-in-JS",
@@ -31,26 +34,27 @@
   "license": "MIT",
   "devDependencies": {
     "@types/autoprefixer": "^9.7.2",
-    "@types/jest": "^25.2.1",
-    "@types/jsdom": "^16.2.1",
-    "@typescript-eslint/eslint-plugin": "^2.33.0",
-    "@typescript-eslint/parser": "^2.33.0",
-    "autoprefixer": "^9.7.6",
-    "babel-jest": "^26.1.0",
+    "@types/jest": "^26.0.14",
+    "@types/jsdom": "^16.2.4",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "@zeit/git-hooks": "^0.1.4",
+    "autoprefixer": "^10.0.1",
+    "babel-jest": "^26.3.0",
     "coveralls": "^3.1.0",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
-    "jest": "^25.5.4",
-    "jsdom": "^16.2.2",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "jest": "^26.4.2",
+    "jsdom": "^16.4.0",
     "npm-run-all": "^4.1.5",
-    "postcss": "^7.0.30",
-    "ts-jest": "^25.5.1",
-    "ts-node": "^8.10.1",
-    "tsdx": "^0.13.2",
-    "typescript": "^3.9.2"
+    "postcss": "^8.1.0",
+    "ts-jest": "^26.4.0",
+    "ts-node": "^9.0.0",
+    "tsdx": "^0.14.0",
+    "typescript": "^4.0.3"
   },
   "dependencies": {
-    "csstype": "^2.6.10"
+    "csstype": "^3.0.3"
   }
 }

@@ -1,4 +1,3 @@
-
 import { Properties } from 'csstype';
 
 export interface SimpleStyleRules {

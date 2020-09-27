@@ -1,4 +1,3 @@
-
 export type PosthookPlugin = (sheetContents: string) => string;
 
 const posthooks: PosthookPlugin[] = [];
