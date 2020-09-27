@@ -135,21 +135,6 @@ const styleTag = document.createElement('style');
 styleTag.innerHTML = `${sheetContents}${moreSheetContents}`;
 ```
 
-```javascript
-import { createStyles } from 'simplestyle-js';
-const [style1] = createStyles({
-  nav: {
-    backgroundColor: '#ccaa00',
-    width: '24em',
-  },
-}, { accumulate: true }); // will make this sheet, and any other sheets where "accumulate: true" is used, aggregated into a single output `<style />`
-const [style2] = createStyles({
-  navButtons: {
-    padding: '.5em',
-  },
-}, { accumulate: true }); // accumulating is useful if you want to minimize DOM writes
-```
-
 ## Authoring Plugins
 A recent update has removed the need for a "prehook" plugin (see previous [documentation](https://github.com/benduran/simplestyle/blob/276aac7fd8b64c6cbfced152249aac7024351092/README.md#prehook-plugin-example-poor-mans-autoprefixer) for historical purposes).
 There is a single type of plugin:
