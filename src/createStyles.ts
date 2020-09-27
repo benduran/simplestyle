@@ -5,11 +5,8 @@ import generateClassName from './generateClassName';
 import { getPosthooks } from './plugins';
 
 export interface CreateStylesOptions {
-  accumulate: boolean;
   flush: boolean;
 }
-
-let accumulatedSheetContents: string[] | null = null;
 
 function isNestedSelector(r: string): boolean {
   return /&/g.test(r);
@@ -112,20 +109,8 @@ function flushSheetContents(sheetContents: string) {
 
 function coerceCreateStylesOptions(options?: Partial<CreateStylesOptions>): CreateStylesOptions {
   return {
-    accumulate: options?.accumulate || false,
     flush: options && typeof options.flush === 'boolean' ? options.flush : true,
   };
-}
-
-let accumulatedTimeout: any;
-function accumulateSheetContents(sheetContents: string, options: CreateStylesOptions): void {
-  if (!accumulatedSheetContents) accumulatedSheetContents = [];
-  accumulatedSheetContents.push(sheetContents);
-  if (accumulatedTimeout) accumulatedTimeout = clearTimeout(accumulatedTimeout);
-  accumulatedTimeout = setTimeout(() => {
-    flushSheetContents(accumulatedSheetContents!.reduce((prev, contents) => `${prev}${contents}`, ''));
-    accumulatedSheetContents = null;
-  }, 0);
 }
 
 export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [key in K]: string }>(
@@ -137,8 +122,7 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
-  if (coerced.accumulate) accumulateSheetContents(mergedContents, coerced);
-  else if (coerced.flush) flushSheetContents(mergedContents);
+  if (coerced.flush) flushSheetContents(mergedContents);
   return mergedContents;
 }
 
@@ -147,7 +131,6 @@ export function keyframes<T extends { [increment: string]: Properties }>(frames:
   const keyframeName = generateClassName('keyframes_');
   const [, keyframesContents] = execCreateStyles(frames, coerced, null, true);
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
-  if (coerced.accumulate) accumulateSheetContents(sheetContents, coerced);
   if (coerced.flush) flushSheetContents(sheetContents);
   return [keyframeName, sheetContents];
 }
@@ -167,8 +150,7 @@ export default function createStyles<
 
   const replacedSheetContents = replaceBackReferences(out, mergedContents);
 
-  if (coerced.accumulate) accumulateSheetContents(replacedSheetContents, coerced);
-  else if (coerced.flush) flushSheetContents(replacedSheetContents);
+  if (coerced.flush) flushSheetContents(replacedSheetContents);
   return [
     out as unknown as O,
     replacedSheetContents,

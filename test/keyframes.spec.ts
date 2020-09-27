@@ -1,4 +1,3 @@
-
 import { keyframes } from '../src';
 
 describe('Keyframes generation', () => {
