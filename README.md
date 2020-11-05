@@ -114,6 +114,21 @@ const [styles] = createStyles({
   },
 });
 
+// you can also update an existing stylesheet by adding or removing styles. Only applies when "flush" is set to true
+const [styles, _, updateSheet] = createStyles({
+  myRule: {
+    height: '400px,
+  },
+});
+const [updatedStyles] = updateSheet({
+  anotherRule: {
+    textTransform: 'uppercase',
+  },
+  myRule: {
+    height: '200px',
+  },
+}); // will update replace the existing sheet's contents and you can use the updatedClassnames here
+
 ```
 
 ```javascript
