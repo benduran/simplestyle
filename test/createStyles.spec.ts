@@ -3,7 +3,7 @@ import { SimpleStyleRules } from '../src/types';
 
 describe('createStyles tests', () => {
   beforeEach(() => {
-    Array.from(document.head.querySelectorAll('style')).forEach(s => s.remove());
+    Array.from(document.querySelectorAll('style')).forEach(s => s.remove());
   });
   it('Should generate some basic styles', () => {
     const rules: SimpleStyleRules = {
@@ -264,5 +264,51 @@ describe('createStyles tests', () => {
     expect(rendered1).toEqual(rendered2);
     expect(rendered1).toEqual(rendered3);
     expect(rendered2).toEqual(rendered3);
+  });
+  it('Should generate styles and allow inserting after a desired element', () => {
+    const insertAfter = document.createElement('div');
+    document.body.appendChild(insertAfter);
+    const [, styleContents] = createStyles({
+      test: {
+        backgroundColor: 'purple',
+        fontSize: '40px',
+      },
+    }, { insertAfter });
+    const foundStyle = document.body.querySelector('style');
+    expect(foundStyle?.innerHTML).toBe(styleContents);
+    const children = Array.from(document.body.children);
+    let success = false;
+    for (let i = 0; i < children.length; i += 1) {
+      const child = children[i];
+      if (child === insertAfter) {
+        success = true;
+        expect(children[i + 1]).toBe(foundStyle);
+        break;
+      }
+    }
+    expect(success).toBeTruthy();
+  });
+  it('Should generate styles and allow inserting before desired element', () => {
+    const insertBefore = document.createElement('div');
+    document.body.appendChild(insertBefore);
+    const [, styleContents] = createStyles({
+      test: {
+        backgroundColor: 'purple',
+        fontSize: '40px',
+      },
+    }, { insertBefore });
+    const foundStyle = document.body.querySelector('style');
+    expect(foundStyle?.innerHTML).toBe(styleContents);
+    const children = Array.from(document.body.children);
+    let success = false;
+    for (let i = 0; i < children.length; i += 1) {
+      const child = children[i];
+      if (child === insertBefore) {
+        success = true;
+        expect(children[i - 1]).toBe(foundStyle);
+        break;
+      }
+    }
+    expect(success).toBeTruthy();
   });
 });

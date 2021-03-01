@@ -144,10 +144,39 @@ const [moreStyles, moreSheetContents] = createStyles({
   navButtons: {
     padding: '.5em',
   },
-}, false); // prevents immediate flushing of the <style /> tag to the DOM
+}, { flush: false }); // prevents immediate flushing of the <style /> tag to the DOM
 
 const styleTag = document.createElement('style');
 styleTag.innerHTML = `${sheetContents}${moreSheetContents}`;
+```
+
+```javascript
+/**
+ * By default, simple style will insert the <style /> tags
+ * it creates in the document <head />. You can change this
+ * by providing either an "insertBefore" or "insertAfter"
+ * DOM node.
+ */
+
+const someElement = document.getElementById('some-element');
+
+const [styles, sheetContents] = createStyles({
+  nav: {
+    backgroundColor: '#ccaa00',
+    width: '24em',
+  },
+}, { insertBefore: someElement }); // <style /> will be inserted into the DOM *before* someElement
+
+const anotherElement = document.getElementById('another-element`);
+const [moreStyles, moreSheetContents] = createStyles({
+  navButtons: {
+    padding: '.5em',
+  },
+}, { insertAfter: anotherElement }); // <style /> will be insert into the DOM *after* anotherElement
+
+const styleTag = document.createElement('style');
+styleTag.innerHTML = `${sheetContents}${moreSheetContents}`;
+
 ```
 
 ## Authoring Plugins
