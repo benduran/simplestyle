@@ -4,9 +4,12 @@ import { SimpleStyleRules } from './types';
 import { generateClassName } from './generateClassName';
 import { getPosthooks } from './plugins';
 
-export interface CreateStylesOptions {
+export type CreateStylesOptions = Partial<{
   flush: boolean;
-}
+
+  insertAfter?: HTMLElement;
+  insertBefore?: HTMLElement;
+}>;
 
 function isNestedSelector(r: string): boolean {
   return /&/g.test(r);
@@ -107,14 +110,21 @@ function createSheet(sheetContents: string) {
   return null;
 }
 
-function flushSheetContents(sheetContents: string) {
+function flushSheetContents(sheetContents: string, options?: CreateStylesOptions) {
   // In case we're in come weird test environment that doesn't support JSDom
   const styleTag = createSheet(sheetContents);
-  if (styleTag) document.head.appendChild(styleTag);
+  if (styleTag) {
+    if (options?.insertAfter && options?.insertBefore) {
+      throw new Error('Both insertAfter and insertBefore were provided. Please choose only one.');
+    }
+    if (options?.insertAfter?.after) options.insertAfter.after(styleTag as Node);
+    else if (options?.insertBefore?.before) options.insertBefore.before(styleTag as Node);
+    else document.head.appendChild(styleTag);
+  }
   return styleTag;
 }
 
-function coerceCreateStylesOptions(options?: Partial<CreateStylesOptions>): CreateStylesOptions {
+function coerceCreateStylesOptions(options?: CreateStylesOptions): CreateStylesOptions {
   return {
     flush: options && typeof options.flush === 'boolean' ? options.flush : true,
   };
@@ -129,7 +139,7 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
-  if (coerced.flush) flushSheetContents(mergedContents);
+  if (coerced.flush) flushSheetContents(mergedContents, options);
   return mergedContents;
 }
 
@@ -176,7 +186,7 @@ export default function createStyles<
     return null;
   };
 
-  if (coerced.flush) sheet = flushSheetContents(replacedSheetContents);
+  if (coerced.flush) sheet = flushSheetContents(replacedSheetContents, options);
   // Need this TS cast to get solid code assist from the consumption-side
   return [
     out as unknown,
