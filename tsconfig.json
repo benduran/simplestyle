@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "declaration": true,
+    "outDir": "./dist/esm",
+    "module": "ES2020",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "sourceMap": true,
@@ -19,5 +21,6 @@
     "resolveJsonModule": true,
     "jsx": "react",
     "esModuleInterop": true
-  }
+  },
+  "include": ["./src"]
 }
