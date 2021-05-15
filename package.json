@@ -16,8 +16,8 @@
     "coveralls": "run-s test:coverage coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
     "fixsourcemaps": "node ./fixSourceMaps.js",
-    "lint": "eslint './src/**/*.ts'",
-    "lint:fixall": "eslint './src/**/*.ts' --fix",
+    "lint": "eslint './src/**/*.{ts,tsx}'",
+    "lint:fixall": "eslint './src/**/*.{ts,tsx}' --fix",
     "test:coverage": "jest --coverage",
     "test": "rm -rf ./dist && jest",
     "test:watch": "rm -rf ./dist && jest --watch",
@@ -34,7 +34,10 @@
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@testing-library/react": "11.2.7",
     "@types/autoprefixer": "^10.2.0",
+    "@types/react": ">16.8",
+    "@types/react-dom": ">16.8",
     "@types/jest": "^26.0.23",
     "@types/jsdom": "^16.2.10",
     "@zeit/git-hooks": "^0.1.4",
@@ -45,6 +48,8 @@
     "jest": "^26.6.3",
     "jsdom": "^16.5.3",
     "npm-run-all": "^4.1.5",
+    "react": ">16.8",
+    "react-dom": ">16.8",
     "postcss": "^8.2.15",
     "ts-jest": "^26.5.6",
     "ts-node": "^9.1.1",
@@ -52,5 +57,8 @@
   },
   "dependencies": {
     "csstype": "^3.0.8"
+  },
+  "peerDependencies": {
+    "react": ">16.8"
   }
 }
