@@ -14,6 +14,8 @@ execSync('tsc --project ./tsconfig.json', { stdio: 'inherit' });
 
 execSync('tsc --project ./tsconfig.commonjs.json', { stdio: 'inherit' });
 
+execSync('cp ./.npmignore ./dist', { stdio: 'inherit' });
+
 setTimeout(() => {
   // We prepare the source maps so they're not wrong
   allFiles
@@ -41,5 +43,5 @@ setTimeout(() => {
     process.chdir(distDir);
 
     execSync('npm pack', { stdio: 'inherit' });
-  }, 1);
-}, 1);
+  }, 1000);
+}, 1000);
