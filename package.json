@@ -1,6 +1,6 @@
 {
   "name": "simplestyle-js",
-  "version": "2.7.0-beta.1",
+  "version": "2.7.0-beta.2",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "main": "./commonjs/index.js",
   "module": "./esm/index.js",
@@ -8,7 +8,8 @@
   "typings": "./commonjs/index.d.ts",
   "types": "./commonjs/index.d.ts",
   "files": [
-    "./"
+    "commonjs/",
+    "esm/"
   ],
   "repository": {
     "type": "git",
