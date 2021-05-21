@@ -31,7 +31,8 @@ export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O
   }, [sheetContents]);
 
   useLayoutEffect(() => {
-    styleTag.current.remove();
+    const { current: style } = styleTag;
+    return () => style.remove();
   }, []);
 
   return useMemo(() => [styles, handleUpdateSheet], [styles, handleUpdateSheet]);
