@@ -3,8 +3,6 @@
   "version": "2.7.0-alpha.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "main": "dist/index.js",
-  "module": "dist/simplestyle-js.esm.js",
-  "esnext": "dist/simplestyle-js.esm.js",
   "typings": "dist/index.d.ts",
   "types": "dist/index.d.ts",
   "repository": {
@@ -22,7 +20,7 @@
     "test:coverage": "tsdx test --coverage",
     "test": "jest test",
     "test:watch": "jest test --watch",
-    "prepublishOnly": "build",
+    "prepublishOnly": "yarn build",
     "git-pre-commit": "yarn lint && yarn test"
   },
   "keywords": [
