@@ -1,13 +1,16 @@
 # simplestyle-js [![Build Status](https://travis-ci.org/benduran/simplestyle.svg?branch=master)](https://travis-ci.org/benduran/simplestyle) [![Coverage Status](https://coveralls.io/repos/github/benduran/simplestyle/badge.svg?branch=master)](https://coveralls.io/github/benduran/simplestyle?branch=master)
-A super simple CSS-in-JS solution with friendly TypeScript support and **zero runtime dependencies**
+A super simple CSS-in-JS solution with friendly TypeScript support and a small file size
 
 ## Bundle Size
-- `~4.4kB` minified
-- `~1.7kB` gzipped
+- `~5.5kB` minified
+- `~2.2kB` gzipped
 - Courtesy of [Bundle Phobia](https://bundlephobia.com/result?p=simplestyle-js)
 
 ## Installation
 `npm install simplestyle-js --save`
+
+## Live Demo
+[Checkout this Codesandbox](https://codesandbox.io/s/nice-franklin-485wi?file=/src/App.tsx)
 
 ## Basic Usage
 ```javascript
@@ -218,8 +221,7 @@ In order to use a plugin, you need to **register** each plugin you'd like to use
 
 ## What this library isn't
 This library isn't trying to make grandiose assumption about how your styles should be rendered. Its goal is to simply provide a typed way of 
-easily creating reusable styles close to your JavaScript / TypeScript components. Eventually a plugin system will be introduced so that you can stub out
-additional behaviors you might desire, but in the meantime, it is a zero-runtime-dependency way of creating CSS in JS and assumes that you're wise enough to know
+easily creating reusable styles close to your JavaScript / TypeScript components. It is a super compact, small file size way of creating CSS in JS and assumes that you're wise enough to know
 whether you've made a styling mistake (wrong property, wrong unit, invalid rule format, etc)
 
 ## License

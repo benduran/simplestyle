@@ -5,10 +5,17 @@ describe('updateStyles tests', () => {
     document.querySelectorAll('style').forEach(s => s.remove());
   });
   it('Should create styles, then update them without creating a new sheet', () => {
-    const [originalStyles, originalContents, updateSheet] = createStyles({
+    const {
+      classes: originalStyles,
+      stylesheet: originalContents,
+      updateSheet,
+    } = createStyles({
       one: {
         backgroundColor: 'grape',
         boxSizing: 'border-box',
+      },
+      two: {
+        height: '100px',
       },
     });
     expect(typeof updateSheet).toBe('function');
@@ -20,11 +27,13 @@ describe('updateStyles tests', () => {
       },
     });
     expect(updates).not.toBeNull();
-    const [updatedStyles, updatedContents] = updates!;
+    const { classes: updatedStyles, stylesheet: updatedContents } = updates!;
     expect(originalStyles).not.toBe(updatedStyles);
     expect(originalContents).not.toBe(updatedContents);
     expect(document.head.querySelectorAll('style').length).toBe(1);
     expect(document.head.querySelector('style')?.innerHTML).toBe(updatedContents);
-    expect(updatedContents).toBe(`.${updatedStyles.one}{background-color:red;}`);
+    expect(updatedContents).toBe(
+      `.${updatedStyles.one}{background-color:red;box-sizing:border-box;}.${updatedStyles.two}{height:100px;}`,
+    );
   });
 });
