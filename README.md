@@ -218,8 +218,7 @@ In order to use a plugin, you need to **register** each plugin you'd like to use
 
 ## What this library isn't
 This library isn't trying to make grandiose assumption about how your styles should be rendered. Its goal is to simply provide a typed way of 
-easily creating reusable styles close to your JavaScript / TypeScript components. Eventually a plugin system will be introduced so that you can stub out
-additional behaviors you might desire, but in the meantime, it is a zero-runtime-dependency way of creating CSS in JS and assumes that you're wise enough to know
+easily creating reusable styles close to your JavaScript / TypeScript components. It is a zero-runtime-dependency way of creating CSS in JS and assumes that you're wise enough to know
 whether you've made a styling mistake (wrong property, wrong unit, invalid rule format, etc)
 
 ## License

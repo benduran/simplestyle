@@ -1,8 +1,8 @@
 import { Properties } from 'csstype';
 
-import { SimpleStyleRules } from './types';
 import { generateClassName } from './generateClassName';
 import { getPosthooks } from './plugins';
+import { SimpleStyleRules } from './types';
 
 export type CreateStylesOptions = Partial<{
   flush: boolean;
@@ -24,22 +24,21 @@ function formatCSSRuleName(rule: string): string {
 }
 
 function formatCSSRules(cssRules: Properties): string {
-  return Object.entries(cssRules).reduce((prev, [cssProp, cssVal]) => `${prev}${formatCSSRuleName(cssProp)}:${cssVal};`, '');
+  return Object.entries(cssRules).reduce(
+    (prev, [cssProp, cssVal]) => `${prev}${formatCSSRuleName(cssProp)}:${cssVal};`,
+    '',
+  );
 }
 
-function execCreateStyles<
-  T extends SimpleStyleRules,
-  K extends keyof T,
-  O extends { [classKey in K]: string },
->(
+function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [classKey in K]: string }>(
   rules: T,
   options: CreateStylesOptions,
   parentSelector: string | null,
   noGenerateClassName: boolean = false,
-): [O, string, string] {
+): { classes: O; sheetBuffer: string; mediaQueriesBuffer: string } {
   const out = {} as O;
   let sheetBuffer = '';
-  let mediaQueriesbuffer = '';
+  let mediaQueriesBuffer = '';
   const styleEntries = Object.entries(rules);
   let ruleWriteOpen = false;
   const guardCloseRuleWrite = () => {
@@ -49,31 +48,44 @@ function execCreateStyles<
   for (const [classNameOrCSSRule, classNameRules] of styleEntries) {
     // if the classNameRules is a string, we are dealing with a display: none; type rule
     if (isMedia(classNameOrCSSRule)) {
-      if (typeof classNameRules !== 'object') throw new Error('Unable to map @media query because rules / props are an invalid type');
+      if (typeof classNameRules !== 'object')
+        throw new Error('Unable to map @media query because rules / props are an invalid type');
       guardCloseRuleWrite();
-      mediaQueriesbuffer += `${classNameOrCSSRule}{`;
-      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, parentSelector);
-      mediaQueriesbuffer += regularOutput;
-      mediaQueriesbuffer += '}';
-      mediaQueriesbuffer += mediaQueriesOutput;
+      mediaQueriesBuffer += `${classNameOrCSSRule}{`;
+      const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
+        classNameRules as T,
+        options,
+        parentSelector,
+      );
+      mediaQueriesBuffer += regularOutput;
+      mediaQueriesBuffer += '}';
+      mediaQueriesBuffer += mediaQueriesOutput;
     } else if (isNestedSelector(classNameOrCSSRule)) {
       if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
       guardCloseRuleWrite();
       // format of { '& > span': { display: 'none' } } (or further nesting)
       const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
-      replaced.split(/,\s*/).forEach((selector) => {
-        const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, selector);
+      for (const selector of replaced.split(/,\s*/)) {
+        const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
+          classNameRules as T,
+          options,
+          selector,
+        );
         sheetBuffer += regularOutput;
-        mediaQueriesbuffer += mediaQueriesOutput;
-      });
+        mediaQueriesBuffer += mediaQueriesOutput;
+      }
     } else if (!parentSelector && typeof classNameRules === 'object') {
       guardCloseRuleWrite();
       const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
       (out as any)[classNameOrCSSRule] = generated;
       const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
-      const [, regularOutput, mediaQueriesOutput] = execCreateStyles(classNameRules as T, options, generatedSelector);
+      const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
+        classNameRules as T,
+        options,
+        generatedSelector,
+      );
       sheetBuffer += regularOutput;
-      mediaQueriesbuffer += mediaQueriesOutput;
+      mediaQueriesBuffer += mediaQueriesOutput;
     } else {
       if (!parentSelector) throw new Error('Unable to write css props because parent selector is null');
       if (!ruleWriteOpen) {
@@ -83,7 +95,11 @@ function execCreateStyles<
     }
   }
   guardCloseRuleWrite();
-  return [out, sheetBuffer, mediaQueriesbuffer];
+  return {
+    classes: out,
+    sheetBuffer,
+    mediaQueriesBuffer,
+  };
 }
 
 function replaceBackReferences<O extends { [key: string]: string }>(out: O, sheetContents: string): string {
@@ -102,7 +118,12 @@ function replaceBackReferences<O extends { [key: string]: string }>(out: O, shee
 }
 
 function createSheet(sheetContents: string) {
-  if (typeof document !== 'undefined' && document.head && document.head.appendChild && typeof document.createElement === 'function') {
+  if (
+    typeof document !== 'undefined' &&
+    document.head &&
+    document.head.appendChild &&
+    typeof document.createElement === 'function'
+  ) {
     const styleTag = document.createElement('style');
     styleTag.innerHTML = sheetContents;
     return styleTag;
@@ -130,12 +151,18 @@ function coerceCreateStylesOptions(options?: CreateStylesOptions): CreateStylesO
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [key in K]: string }>(
   rules: T,
   options?: Partial<CreateStylesOptions>,
 ) {
   const coerced = coerceCreateStylesOptions(options);
-  const [, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null, true);
+  const { sheetBuffer: sheetContents, mediaQueriesBuffer: mediaQueriesContents } = execCreateStyles(
+    rules,
+    coerced,
+    null,
+    true,
+  );
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
@@ -143,10 +170,13 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   return mergedContents;
 }
 
-export function keyframes<T extends { [increment: string]: Properties }>(frames: T, options?: CreateStylesOptions): [string, string] {
+export function keyframes<T extends { [increment: string]: Properties }>(
+  frames: T,
+  options?: CreateStylesOptions,
+): [string, string] {
   const coerced = coerceCreateStylesOptions(options);
   const keyframeName = generateClassName('keyframes_');
-  const [, keyframesContents] = execCreateStyles(frames, coerced, null, true);
+  const { sheetBuffer: keyframesContents } = execCreateStyles(frames, coerced, null, true);
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
   if (coerced.flush) flushSheetContents(sheetContents);
   return [keyframeName, sheetContents];
@@ -156,12 +186,13 @@ export default function createStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
   O extends { [classKey in K]: string },
->(
-  rules: T,
-  options?: Partial<CreateStylesOptions>,
-) {
+>(rules: T, options?: Partial<CreateStylesOptions>) {
   const coerced = coerceCreateStylesOptions(options);
-  const [out, sheetContents, mediaQueriesContents] = execCreateStyles(rules, coerced, null);
+  const {
+    classes: out,
+    sheetBuffer: sheetContents,
+    mediaQueriesBuffer: mediaQueriesContents,
+  } = execCreateStyles(rules, coerced, null);
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
@@ -169,13 +200,15 @@ export default function createStyles<
 
   let sheet: ReturnType<typeof flushSheetContents> = null;
 
-  const updateSheet = <
-    T2 extends SimpleStyleRules,
-    K2 extends keyof T2,
-    O2 extends { [classKey in K2]: string },
-  >(updatedRules: T2): [O2, string] | null => {
+  const updateSheet = <T2 extends SimpleStyleRules, K2 extends keyof T2, O2 extends { [classKey in K2]: string }>(
+    updatedRules: T2,
+  ): [O2, string] | null => {
     if (sheet) {
-      const [updatedOut, updatedSheetContents, updatedMediaQueriesContents] = execCreateStyles(updatedRules, { flush: false }, null);
+      const {
+        classes: updatedOut,
+        sheetBuffer: updatedSheetContents,
+        mediaQueriesBuffer: updatedMediaQueriesContents,
+      } = execCreateStyles(updatedRules, { flush: false }, null);
 
       const updatedMergedContents = `${updatedSheetContents}${updatedMediaQueriesContents}`;
 
@@ -188,11 +221,7 @@ export default function createStyles<
 
   if (coerced.flush) sheet = flushSheetContents(replacedSheetContents, options);
   // Need this TS cast to get solid code assist from the consumption-side
-  return [
-    out as unknown,
-    replacedSheetContents,
-    updateSheet,
-  ] as [O, string, typeof updateSheet];
+  return [out as unknown, replacedSheetContents, updateSheet] as [O, string, typeof updateSheet];
 }
 
 export type CreateStylesArgs = Parameters<typeof createStyles>;
