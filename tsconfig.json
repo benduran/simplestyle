@@ -3,7 +3,7 @@
     "alwaysStrict": true,
     "declaration": true,
     "esModuleInterop": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "jsx": "react",
     "lib": [
       "dom",
