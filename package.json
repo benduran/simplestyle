@@ -19,7 +19,6 @@
     "test:coverage": "jest test --coverage",
     "test": "jest test",
     "test:watch": "jest test --watch",
-    "prepublishOnly": "yarn build",
     "git-pre-commit": "yarn lint && yarn test"
   },
   "keywords": [
