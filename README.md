@@ -9,6 +9,9 @@ A super simple CSS-in-JS solution with friendly TypeScript support and a small f
 ## Installation
 `npm install simplestyle-js --save`
 
+## Live Demo
+[Checkout this Codesandbox](https://codesandbox.io/s/nice-franklin-485wi?file=/src/App.tsx)
+
 ## Basic Usage
 ```javascript
 import { createStyles } from 'simplestyle-js';
