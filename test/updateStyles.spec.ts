@@ -5,7 +5,11 @@ describe('updateStyles tests', () => {
     document.querySelectorAll('style').forEach(s => s.remove());
   });
   it('Should create styles, then update them without creating a new sheet', () => {
-    const [originalStyles, originalContents, updateSheet] = createStyles({
+    const {
+      classes: originalStyles,
+      stylesheet: originalContents,
+      updateSheet,
+    } = createStyles({
       one: {
         backgroundColor: 'grape',
         boxSizing: 'border-box',

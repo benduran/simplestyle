@@ -221,7 +221,15 @@ export default function createStyles<
 
   if (coerced.flush) sheet = flushSheetContents(replacedSheetContents, options);
   // Need this TS cast to get solid code assist from the consumption-side
-  return [out as unknown, replacedSheetContents, updateSheet] as [O, string, typeof updateSheet];
+  return {
+    classes: out as unknown,
+    stylesheet: replacedSheetContents,
+    updateSheet,
+  } as {
+    classes: O;
+    stylesheet: string;
+    updateSheet: typeof updateSheet;
+  };
 }
 
 export type CreateStylesArgs = Parameters<typeof createStyles>;

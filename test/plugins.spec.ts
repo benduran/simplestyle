@@ -1,16 +1,8 @@
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 
-import {
-  registerPosthook,
-  PosthookPlugin,
-  SimpleStyleRules,
-  createStyles,
-} from '../src';
-
-import {
-  getPosthooks,
-} from '../src/plugins';
+import { createStyles, PosthookPlugin, registerPosthook, SimpleStyleRules } from '../src';
+import { getPosthooks } from '../src/plugins';
 
 describe('Plugin hooks', () => {
   beforeEach(() => {
@@ -24,7 +16,7 @@ describe('Plugin hooks', () => {
         backgroundRepeat: 'no-repeat',
       },
     };
-    const posthook: PosthookPlugin = jest.fn((sheetContents) => {
+    const posthook: PosthookPlugin = jest.fn(sheetContents => {
       expect(sheetContents.length).toBeGreaterThan(0);
       expect(sheetContents.startsWith('.posthook')).toBeTruthy();
       expect(sheetContents).toContain('{background-size:contain;background-repeat:no-repeat;}');
@@ -44,7 +36,9 @@ describe('Plugin hooks', () => {
     // so we just brute-force the typings
     const posthook: PosthookPlugin = sheetContents => postcss([autoprefixer() as any]).process(sheetContents).css;
     registerPosthook(posthook);
-    const [styles, sheetContents] = createStyles(rules);
-    expect(sheetContents).toBe(`.${styles.posthook}{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}`);
+    const { classes, stylesheet } = createStyles(rules);
+    expect(stylesheet).toBe(
+      `.${classes.posthook}{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}`,
+    );
   });
 });
