@@ -200,21 +200,26 @@ export default function createStyles<
 
   let sheet: ReturnType<typeof flushSheetContents> = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const updateSheet = <T2 extends SimpleStyleRules, K2 extends keyof T2, O2 extends { [classKey in K2]: string }>(
-    updatedRules: T2,
-  ): [O2, string] | null => {
-    if (sheet) {
+    updatedRules: Partial<T2>,
+  ) => {
+    if (sheet && updatedRules) {
+      // We prefer the first set, and then we shallow merge
       const {
         classes: updatedOut,
         sheetBuffer: updatedSheetContents,
         mediaQueriesBuffer: updatedMediaQueriesContents,
-      } = execCreateStyles(updatedRules, { flush: false }, null);
+      } = execCreateStyles({ ...rules, ...updatedRules }, { flush: false }, null);
 
       const updatedMergedContents = `${updatedSheetContents}${updatedMediaQueriesContents}`;
 
       const updatedReplacedSheetContents = replaceBackReferences(out, updatedMergedContents);
       sheet.innerHTML = updatedReplacedSheetContents;
-      return [updatedOut as unknown as O2, updatedReplacedSheetContents];
+      return { classes: updatedOut, stylesheet: updatedSheetContents } as {
+        classes: typeof updatedOut;
+        stylesheet: string;
+      };
     }
     return null;
   };

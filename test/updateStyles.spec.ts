@@ -14,6 +14,9 @@ describe('updateStyles tests', () => {
         backgroundColor: 'grape',
         boxSizing: 'border-box',
       },
+      two: {
+        height: '100px',
+      },
     });
     expect(typeof updateSheet).toBe('function');
     const sheet = document.head.querySelector('style');
@@ -24,11 +27,11 @@ describe('updateStyles tests', () => {
       },
     });
     expect(updates).not.toBeNull();
-    const [updatedStyles, updatedContents] = updates!;
+    const { classes: updatedStyles, stylesheet: updatedContents } = updates!;
     expect(originalStyles).not.toBe(updatedStyles);
     expect(originalContents).not.toBe(updatedContents);
     expect(document.head.querySelectorAll('style').length).toBe(1);
     expect(document.head.querySelector('style')?.innerHTML).toBe(updatedContents);
-    expect(updatedContents).toBe(`.${updatedStyles.one}{background-color:red;}`);
+    expect(updatedContents).toBe(`.${updatedStyles.one}{background-color:red;}.${updatedStyles.two}{height:100px;}`);
   });
 });
