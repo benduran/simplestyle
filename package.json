@@ -1,16 +1,17 @@
 {
   "name": "simplestyle-js",
-  "version": "3.0.1-3",
+  "version": "3.0.1",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
   "scripts": {
-    "build": "yarn clean && yarn build:esm && yarn build:commonjs && yarn prepare:dist",
+    "build": "yarn clean && yarn build:esm && yarn build:commonjs && yarn prepare:dist && yarn copy",
     "build:esm": "tsc --project ./tsconfig.build.json -m es6 --outDir ./dist/esm",
     "build:commonjs": "tsc --project ./tsconfig.build.json -m commonjs --outDir ./dist/commonjs",
     "clean": "rm -rf ./dist",
+    "copy": "cp ./README.md ./dist && cp ./LICENSE ./dist",
     "coveralls": "run-s test:coverage coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint './src/**/*.ts'",
