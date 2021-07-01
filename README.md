@@ -15,7 +15,7 @@ A super simple CSS-in-JS solution with friendly TypeScript support and a small f
 ## Basic Usage
 ```javascript
 import { createStyles } from 'simplestyle-js';
-const [styles] = createStyles({
+const { classes } = createStyles({
   myButton: {
     '&:hover': {
       backgroundColor: 'red',
@@ -30,12 +30,12 @@ const [styles] = createStyles({
   },
 });
 const btn = document.createElement('button');
-btn.classList.add(styles.myButton);
+btn.classList.add(classes.myButton);
 document.body.appendChild(btn);
 
 // Or React / JSX style component
 
-const Button = (props) => <button {...props} className={styles.myButton}>Awesome button</button>
+const Button = (props) => <button {...props} className={classes.myButton}>Awesome button</button>
 ```
 
 ## Advanced Usage
@@ -73,7 +73,7 @@ const [animationName] = keyframes({
   },
 });
 
-const [styles] = createStyles({
+const { classes } = createStyles({
   myButton: {
     '&:hover': {
       backgroundColor: 'red',
@@ -105,25 +105,25 @@ const [styles] = createStyles({
 }); // A new <style /> tag will appear in the header immediately after calling this function
 
 const myHeader = document.createElement('header');
-myHeader.classList.add(styles.header); // Will have a generated CSS classname in the format of '.header<unique_identifier>' ex .headerumdoaudnaoqwu
+myHeader.classList.add(classes.header); // Will have a generated CSS classname in the format of '.header<unique_identifier>' ex .headerumdoaudnaoqwu
 
 // if you want Simplestyle to always generate the same CSS class names, you can set
 // your own initial seed. Assuming your modules are imported in the same order and
 // execute their calls to createStyles() in the same order, the library will reliably generate
 // the same classNames across successive calls.
-const [styles] = createStyles({
+const { classes } = createStyles({
   someRule: {
     backgroundColor: 'red,
   },
 });
 
 // you can also update an existing stylesheet by adding or removing styles. Only applies when "flush" is set to true
-const [styles, _, updateSheet] = createStyles({
+const { classes, styles, updateSheet } = createStyles({
   myRule: {
     height: '400px,
   },
 });
-const [updatedStyles] = updateSheet({
+const { classes: updatedClasses } = updateSheet({
   anotherRule: {
     textTransform: 'uppercase',
   },
@@ -137,20 +137,20 @@ const [updatedStyles] = updateSheet({
 ```javascript
 import { createStyles } from 'simplestyle-js';
 
-const [styles, sheetContents] = createStyles({
+const { classes, stylesheet } = createStyles({
   nav: {
     backgroundColor: '#ccaa00',
     width: '24em',
   },
 }, { flush: false }); // prevents immediate flushing of the <style /> tag to the DOM
-const [moreStyles, moreSheetContents] = createStyles({
+const { classes: moreClasses, stylesheet: moreSheetContents } = createStyles({
   navButtons: {
     padding: '.5em',
   },
 }, { flush: false }); // prevents immediate flushing of the <style /> tag to the DOM
 
 const styleTag = document.createElement('style');
-styleTag.innerHTML = `${sheetContents}${moreSheetContents}`;
+styleTag.innerHTML = `${stylesheet}${moreSheetContents}`;
 ```
 
 ```javascript
@@ -163,7 +163,7 @@ styleTag.innerHTML = `${sheetContents}${moreSheetContents}`;
 
 const someElement = document.getElementById('some-element');
 
-const [styles, sheetContents] = createStyles({
+const { classes, stylesheet } = createStyles({
   nav: {
     backgroundColor: '#ccaa00',
     width: '24em',
@@ -171,14 +171,14 @@ const [styles, sheetContents] = createStyles({
 }, { insertBefore: someElement }); // <style /> will be inserted into the DOM *before* someElement
 
 const anotherElement = document.getElementById('another-element`);
-const [moreStyles, moreSheetContents] = createStyles({
+const { classes: moreClasses, stylesheet: moreSheetContents } = createStyles({
   navButtons: {
     padding: '.5em',
   },
 }, { insertAfter: anotherElement }); // <style /> will be insert into the DOM *after* anotherElement
 
 const styleTag = document.createElement('style');
-styleTag.innerHTML = `${sheetContents}${moreSheetContents}`;
+styleTag.innerHTML = `${stylesheet}${moreSheetContents}`;
 
 ```
 
