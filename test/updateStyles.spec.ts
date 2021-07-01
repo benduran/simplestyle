@@ -32,6 +32,8 @@ describe('updateStyles tests', () => {
     expect(originalContents).not.toBe(updatedContents);
     expect(document.head.querySelectorAll('style').length).toBe(1);
     expect(document.head.querySelector('style')?.innerHTML).toBe(updatedContents);
-    expect(updatedContents).toBe(`.${updatedStyles.one}{background-color:red;}.${updatedStyles.two}{height:100px;}`);
+    expect(updatedContents).toBe(
+      `.${updatedStyles.one}{background-color:red;box-sizing:border-box;}.${updatedStyles.two}{height:100px;}`,
+    );
   });
 });

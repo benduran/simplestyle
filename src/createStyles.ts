@@ -1,4 +1,5 @@
 import { Properties } from 'csstype';
+import merge from 'deepmerge';
 
 import { generateClassName } from './generateClassName';
 import { getPosthooks } from './plugins';
@@ -210,7 +211,7 @@ export default function createStyles<
         classes: updatedOut,
         sheetBuffer: updatedSheetContents,
         mediaQueriesBuffer: updatedMediaQueriesContents,
-      } = execCreateStyles({ ...rules, ...updatedRules }, { flush: false }, null);
+      } = execCreateStyles(merge(rules, updatedRules), { flush: false }, null);
 
       const updatedMergedContents = `${updatedSheetContents}${updatedMediaQueriesContents}`;
 
