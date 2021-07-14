@@ -32,6 +32,7 @@
   "license": "MIT",
   "devDependencies": {
     "@jest/types": "^27.0.6",
+    "@testing-library/react": "^12.0.0",
     "@types/autoprefixer": "^10.2.0",
     "@types/jest": "^26.0.23",
     "@types/jsdom": "^16.2.12",
