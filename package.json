@@ -16,9 +16,10 @@
     "lint": "eslint './src/**/*.ts'",
     "lint:fixall": "eslint './src/**/*.ts' --fix",
     "prepare:dist": "./scripts/preparePackageJson.js",
-    "test:coverage": "jest test --coverage",
-    "test": "jest test",
-    "test:watch": "jest test --watch",
+    "test:coverage": "jest --coverage",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:debug": "node --inspect-brk ./node_modules/.bin/jest",
     "git-pre-commit": "yarn lint && yarn test"
   },
   "keywords": [

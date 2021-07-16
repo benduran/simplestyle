@@ -8,11 +8,8 @@ export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O
   rules: T,
   options?: Partial<Omit<CreateStylesOptions, 'flush'>>,
 ) {
-  const cachedRules = useMemo(() => Object.create(rules) as T, [rules]);
-  const cachedOptions = useMemo(
-    () => Object.create(options ?? {}) as Partial<Omit<CreateStylesOptions, 'flush'>>,
-    [options],
-  );
+  const [cachedRules, setCachedRules] = useState(() => rules);
+  const cachedOptions = useMemo(() => ({ ...options } as Partial<Omit<CreateStylesOptions, 'flush'>>), [options]);
   const didFirstWriteRef = useRef(false);
   const styleTagRef = useRef(document.createElement('style'));
 
@@ -26,10 +23,12 @@ export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O
     return () => s.remove();
   }, []);
   useEffect(() => {
-    if (!didFirstWriteRef.current) {
+    if (!didFirstWriteRef.current && !styleTagRef.current.innerHTML) {
       didFirstWriteRef.current = true;
       styleTagRef.current.innerHTML = stylesheet;
+      return;
     } else if (!deepEqual(rules, cachedRules)) {
+      setCachedRules(rules);
       const updated = updateSheet(rules);
       if (updated?.stylesheet) {
         styleTagRef.current.innerHTML = updated.stylesheet;
