@@ -6,9 +6,21 @@ import { getPosthooks } from './plugins';
 import { SimpleStyleRules } from './types';
 
 export type CreateStylesOptions = Partial<{
+  /**
+   * If true, automatically renders generated styles
+   * to the DOM in an injected <style /> tag
+   */
   flush: boolean;
 
+  /**
+   * If set, along with flush: true,
+   * will render the injected <style /> after this element
+   */
   insertAfter?: HTMLElement;
+  /**
+   * If set, along with flush: true,
+   * will render the injects <style /> before this element
+   */
   insertBefore?: HTMLElement;
 }>;
 
@@ -205,7 +217,7 @@ export default function createStyles<
   const updateSheet = <T2 extends SimpleStyleRules, K2 extends keyof T2, O2 extends { [classKey in K2]: string }>(
     updatedRules: Partial<T2>,
   ) => {
-    if (sheet && updatedRules) {
+    if (((options?.flush && sheet) || !options?.flush) && updatedRules) {
       // We prefer the first set, and then we shallow merge
       const {
         classes: updatedOut,
@@ -216,7 +228,7 @@ export default function createStyles<
       const updatedMergedContents = `${updatedSheetContents}${updatedMediaQueriesContents}`;
 
       const updatedReplacedSheetContents = replaceBackReferences(out, updatedMergedContents);
-      sheet.innerHTML = updatedReplacedSheetContents;
+      if (sheet) sheet.innerHTML = updatedReplacedSheetContents;
       return { classes: updatedOut, stylesheet: updatedSheetContents } as {
         classes: typeof updatedOut;
         stylesheet: string;
