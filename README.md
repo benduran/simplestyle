@@ -204,7 +204,7 @@ styleTag.innerHTML = `${stylesheet}${moreSheetContents}`;
 
 ```javascript
 import React from 'react';
-import { useCreateStyles } from 'simplestyle-js/react';
+import { useCreateStyles } from 'simplestyle-js/esm/react';
 
 
 const MyComponent = () => {
