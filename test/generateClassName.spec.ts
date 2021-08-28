@@ -17,26 +17,30 @@ describe('generateClassName tests', () => {
     try {
       setSeed('bad' as any);
     } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toContain('not a valid number');
+      const e = error as Error;
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toContain('not a valid number');
     }
     try {
       setSeed(Number.MAX_SAFE_INTEGER);
     } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toContain('maximum safe JavaScript');
+      const e = error as Error;
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toContain('maximum safe JavaScript');
     }
     try {
       setSeed(Number.POSITIVE_INFINITY);
     } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toContain('Positive or negative');
+      const e = error as Error;
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toContain('Positive or negative');
     }
     try {
       setSeed(-1);
     } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toContain('number >= 0');
+      const e = error as Error;
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toContain('number >= 0');
     }
   });
 });
