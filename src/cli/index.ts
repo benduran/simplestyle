@@ -9,16 +9,23 @@ interface CLIArgs {
 async function setupCLI() {
   const { glob } = yargs
     .scriptName('simplestyle-cli')
-    .option('glob', { description: 'Valid glob where your JS / TS styles live', requiresArg: true, type: 'string' })
+    .option('glob', {
+      alias: 'g',
+      description: 'Valid glob where your JS / TS styles live',
+      demandOption: true,
+      requiresArg: true,
+      type: 'string',
+    })
+    .positional('glob', {})
     .help().argv as CLIArgs;
 
   if (!glob) yargs.showHelp();
   else {
     // Do the stuffs
-    const foundFiles = await fastGlob(glob, { onlyFiles: true });
+    const foundFiles = await fastGlob(glob, { absolute: true, onlyFiles: true });
     const { shouldContinue } = await inquirer.prompt<{ shouldContinue: boolean }>([
       {
-        message: `Found the following files: \n${foundFiles.join(', ')}\n Do you want to continue?`,
+        message: `Found the following files: \n\n${foundFiles.join(', ')}\n\n Do you want to continue?`,
         name: 'shouldContinue',
         type: 'confirm',
       },

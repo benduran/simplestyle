@@ -17,6 +17,7 @@
     "lint": "eslint './src/**/*.ts'",
     "lint:fixall": "eslint './src/**/*.ts' --fix",
     "prepare:dist": "./scripts/preparePackageJson.js",
+    "start:cli": "ts-node --project ./tsconfig.build.json ./src/cli/index.ts",
     "test:coverage": "jest --coverage",
     "test": "jest",
     "test:watch": "jest --watch",
