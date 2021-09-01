@@ -1,5 +1,7 @@
 import numToAlpha from './numToAlpha';
 
+export const SUFFIX_SEPARATOR = '~~~';
+
 let inc = Date.now();
 
 export function setSeed(seed: number | null): void {
@@ -26,7 +28,7 @@ export function getUniqueSuffix(): string {
     numPairs.push(result[0]);
     result = numPairsRegex.exec(incStr);
   }
-  let out = '_';
+  let out = SUFFIX_SEPARATOR;
   numPairs.forEach(pair => {
     const val = +pair;
     if (val > 25) {
@@ -40,4 +42,26 @@ export function getUniqueSuffix(): string {
 
 export function generateClassName(c: string): string {
   return `${c}${getUniqueSuffix()}`;
+}
+
+/**
+ * This function extracts the generated classname and creates the same object that the
+ * "classes" object on the createStyles return type would contain.
+ * TODO: We can probably make this return type a little smarter
+ */
+export function convertRenderedSheetToClassesObject(sheetContents: string): Record<string, string> {
+  const matches: string[] = [];
+  let buffer = '';
+  for (let i = 0; i < sheetContents.length; i++) {
+    const char = sheetContents.charAt(i);
+    if (char === '{') {
+      matches.push(buffer.replace(/^\./, ''));
+      buffer = '';
+    } else if (char === '}') buffer = '';
+    else buffer += char;
+  }
+  return matches.reduce((prev, className) => {
+    const [classKey] = className.replace(/^\./, '').split(SUFFIX_SEPARATOR);
+    return { ...prev, [classKey]: className };
+  }, {} as Record<string, string>);
 }

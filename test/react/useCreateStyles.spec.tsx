@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react';
 import React, { useState } from 'react';
 
+import { SUFFIX_SEPARATOR } from '../../src/generateClassName';
 import { useCreateStyles } from '../../src/react/useCreateStyles';
 
 describe('React utilities tests', () => {
@@ -21,7 +22,7 @@ describe('React utilities tests', () => {
     const result = render(<Bogus />);
     const section = result.getByTestId('app');
     expect(section.classList.length).toBeGreaterThan(0);
-    expect(section.className.startsWith('app_')).toBeTruthy();
+    expect(section.className.startsWith(`app${SUFFIX_SEPARATOR}`)).toBeTruthy();
     const sheet = document.head.querySelector('style');
     expect(sheet).not.toBeNull();
     expect(sheet?.innerHTML).toContain(section.className);

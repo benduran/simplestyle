@@ -1,9 +1,26 @@
 import fastGlob from 'fast-glob';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
+import path from 'path';
 import yargs from 'yargs';
+
+import createStyles from '../createStyles';
 
 interface CLIArgs {
   glob: string;
+}
+
+async function renderSheets(stylePaths: string[]) {
+  return Promise.all(
+    stylePaths.map(async sp => {
+      // @ts-ignore
+      const styleResult = (await import(sp)).default as ReturnType<typeof createStyles>;
+      console.info(styleResult);
+      const basename = path.basename(sp);
+      const filename = `${basename.split('.')[0]}.css`;
+      await fs.writeFile(path.join(sp.replace(basename, ''), filename), styleResult.stylesheet, 'utf8');
+    }),
+  );
 }
 
 async function setupCLI() {
@@ -31,6 +48,7 @@ async function setupCLI() {
       },
     ]);
     if (!shouldContinue) return;
+    await renderSheets(foundFiles);
   }
 }
 setupCLI();

@@ -63,3 +63,4 @@ typings/
 # next.js build output
 .next
 .idea
+test/cli/testStyles/test1.css
