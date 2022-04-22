@@ -9,10 +9,10 @@ A super simple CSS-in-JS solution with friendly TypeScript support and a small f
 ## Installation
 `npm install simplestyle-js --save`
 
-## Live Demo with VanillaJS 
-[Codesandbox VanillaJS Demo](https://codesandbox.io/s/busy-engelbart-glui6?file=/src/index.js)
+## Live Demo using VanillaJS 
+[Codesandbox VanillaJS Demo](https://codesandbox.io/s/gracious-browser-9hxg3r?file=/src/index.js)
 
-## Live Demo with React Hooks
+## Live Demo using the provided React Hooks
 [Codesandbox React Hooks Demo](https://codesandbox.io/s/nice-franklin-485wi?file=/src/App.tsx)
 
 ## Basic Usage
@@ -204,7 +204,7 @@ styleTag.innerHTML = `${stylesheet}${moreSheetContents}`;
 
 ```javascript
 import React from 'react';
-import { useCreateStyles } from 'simplestyle-js/esm/react';
+import { useCreateStyles } from 'simplestyle-js/react';
 
 
 const MyComponent = () => {
