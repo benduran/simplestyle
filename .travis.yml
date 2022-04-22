@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-  - 12
+  - 16
 install:
-  - yarn
+  - pnpm
 script:
-  - yarn test
-  - yarn coveralls
+  - pnpm test
+  - pnpm coveralls
