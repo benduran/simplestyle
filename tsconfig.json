@@ -4,6 +4,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "importHelpers": false,
+    "isolatedModules": true,
     "jsx": "react",
     "lib": [
       "dom",

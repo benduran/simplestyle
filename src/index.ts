@@ -1,4 +1,6 @@
-export { default as createStyles, CreateStylesArgs, CreateStylesOptions, keyframes, rawStyles } from './createStyles';
+export type { CreateStylesArgs, CreateStylesOptions } from './createStyles';
+export { default as createStyles, keyframes, rawStyles } from './createStyles';
 export { setSeed } from './generateClassName';
-export { PosthookPlugin, registerPosthook } from './plugins';
-export { SimpleStyleRules } from './types';
+export type { PosthookPlugin } from './plugins';
+export { registerPosthook } from './plugins';
+export type { SimpleStyleRules } from './types';
