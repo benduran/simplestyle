@@ -1,8 +1,7 @@
 language: node_js
 node_js:
   - 16
-install:
-  - pnpm
 script:
+  - npm run setup
   - pnpm test
   - pnpm coveralls
