@@ -11,7 +11,7 @@ export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O
   const [cachedRules, setCachedRules] = useState(() => rules);
   const cachedOptions = useMemo(() => ({ ...options } as Partial<Omit<CreateStylesOptions, 'flush'>>), [options]);
   const didFirstWriteRef = useRef(false);
-  const styleTagRef = useRef(typeof document !== undefined ? document.createElement('style') : null);
+  const styleTagRef = useRef(typeof document !== 'undefined' ? document.createElement('style') : null);
 
   const [{ classes, stylesheet, updateSheet }, setCreateStyles] = useState(() =>
     createStyles<T, K, O>(rules, { ...cachedOptions, flush: false }),
