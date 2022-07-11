@@ -11,18 +11,20 @@ export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O
   const [cachedRules, setCachedRules] = useState(() => rules);
   const cachedOptions = useMemo(() => ({ ...options } as Partial<Omit<CreateStylesOptions, 'flush'>>), [options]);
   const didFirstWriteRef = useRef(false);
-  const styleTagRef = useRef(document.createElement('style'));
+  const styleTagRef = useRef(typeof document !== undefined ? document.createElement('style') : null);
 
   const [{ classes, stylesheet, updateSheet }, setCreateStyles] = useState(() =>
     createStyles<T, K, O>(rules, { ...cachedOptions, flush: false }),
   );
 
   useEffect(() => {
+    if (!styleTagRef.current) return;
     const { current: s } = styleTagRef;
     document.head.appendChild(s);
     return () => s.remove();
   }, []);
   useEffect(() => {
+    if (!styleTagRef.current) return;
     if (!didFirstWriteRef.current && !styleTagRef.current.innerHTML) {
       didFirstWriteRef.current = true;
       styleTagRef.current.innerHTML = stylesheet;

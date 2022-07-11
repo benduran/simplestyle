@@ -26,7 +26,7 @@ describe('Plugin hooks', () => {
     createStyles(rules);
     expect(posthook).toBeCalled();
   });
-  it('Should execture a posthook and transform the contents', () => {
+  it('Should execute a posthook and transform the contents', () => {
     const rules: SimpleStyleRules = {
       posthook: {
         userSelect: 'none',
@@ -37,8 +37,6 @@ describe('Plugin hooks', () => {
     const posthook: PosthookPlugin = sheetContents => postcss([autoprefixer() as any]).process(sheetContents).css;
     registerPosthook(posthook);
     const { classes, stylesheet } = createStyles(rules);
-    expect(stylesheet).toBe(
-      `.${classes.posthook}{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}`,
-    );
+    expect(stylesheet).toBe(`.${classes.posthook}{-webkit-user-select:none;-moz-user-select:none;user-select:none;}`);
   });
 });

@@ -131,17 +131,10 @@ function replaceBackReferences<O extends { [key: string]: string }>(out: O, shee
 }
 
 function createSheet(sheetContents: string) {
-  if (
-    typeof document !== 'undefined' &&
-    document.head &&
-    document.head.appendChild &&
-    typeof document.createElement === 'function'
-  ) {
-    const styleTag = document.createElement('style');
-    styleTag.innerHTML = sheetContents;
-    return styleTag;
-  }
-  return null;
+  if (typeof document?.head?.appendChild !== 'function' || typeof document?.createElement !== 'function') return null;
+  const styleTag = document.createElement('style');
+  styleTag.innerHTML = sheetContents;
+  return styleTag;
 }
 
 function flushSheetContents(sheetContents: string, options?: CreateStylesOptions) {
