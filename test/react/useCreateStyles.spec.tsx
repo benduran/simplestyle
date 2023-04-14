@@ -6,7 +6,7 @@ import { useCreateStyles } from '../../src/react/useCreateStyles';
 describe('React utilities tests', () => {
   it('Should verify useCreateStyles hook generates classnames and inserts the stylesheet', () => {
     const Bogus = () => {
-      const classes = useCreateStyles({
+      const { classes } = useCreateStyles({
         app: {
           backgroundColor: 'purple',
           fontSize: '16px',
@@ -31,8 +31,8 @@ describe('React utilities tests', () => {
   it('Should verify useCreateStyles hook updates the generated styles when they change', () => {
     const Bogus = () => {
       const [changeFont, setChangeFont] = useState(false);
-      if (changeFont) debugger;
-      const classes = useCreateStyles({
+
+      const { classes } = useCreateStyles({
         button: {
           color: changeFont ? 'blue' : 'yellow',
         },
@@ -55,8 +55,7 @@ describe('React utilities tests', () => {
     const result = render(<Bogus />);
     const button = result.getByTestId('button');
     const { className: initialButtonClassName } = button;
-    // shortcut - https://testing-library.com/docs/dom-testing-library/api-events/#fireeventeventname
-    fireEvent['click'](button);
+    fireEvent.click(button);
 
     const updatedButton = result.getByTestId('button');
     expect(initialButtonClassName).not.toBe(updatedButton.className);
