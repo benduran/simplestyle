@@ -32,7 +32,7 @@ export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O
   const styleTag = React.useMemo(() => {
     if (styleTagRef.current) return null;
 
-    return <style>{stylesheet}</style>;
+    return <style dangerouslySetInnerHTML={{ __html: stylesheet }} />;
   }, [stylesheet]);
 
   // effects
