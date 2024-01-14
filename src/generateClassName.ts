@@ -31,7 +31,7 @@ export function getUniqueSuffix(): string {
     const val = +pair;
     if (val > 25) {
       const [first, second] = pair.split('');
-      out += `${numToAlpha(+first)}${numToAlpha(+second)}`;
+      out += `${numToAlpha(Number(first))}${numToAlpha(Number(second))}`;
     } else out += numToAlpha(val);
   });
   inc += 1;

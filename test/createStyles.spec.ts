@@ -19,7 +19,7 @@ describe('createStyles tests', () => {
 
     Object.keys(rules).forEach(key => {
       expect(classes[key]).toBeDefined();
-      expect(classes[key].length).toBeGreaterThan(0);
+      expect(classes[key]?.length).toBeGreaterThan(0);
       expect(classes[key]).toContain(key);
     });
     expect(stylesheet).toContain(`.${classes.one}{display:flex;position:fixed;}`);
@@ -45,11 +45,11 @@ describe('createStyles tests', () => {
     const { classes, stylesheet } = createStyles(rules);
 
     expect(classes.nested).toBeDefined();
-    expect(classes.nested.length).toBeGreaterThan(0);
+    expect(classes.nested?.length).toBeGreaterThan(0);
     expect(classes.nested).toContain('nested');
 
     expect(classes.yarg).toBeDefined();
-    expect(classes.yarg.length).toBeGreaterThan(0);
+    expect(classes.yarg?.length).toBeGreaterThan(0);
     expect(classes.yarg).toContain('yarg');
 
     expect(stylesheet).toContain(`.${classes.nested} > span{font-family:Arial;}`);
