@@ -1,3 +1,5 @@
+import { beforeAll, describe, expect, it } from 'vitest';
+
 import { createStyles } from '../src';
 
 describe('updateStyles tests', () => {

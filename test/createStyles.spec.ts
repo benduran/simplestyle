@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { createStyles, rawStyles, setSeed } from '../src';
 import { SimpleStyleRules } from '../src/types';
 

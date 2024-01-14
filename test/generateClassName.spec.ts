@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { generateClassName, setSeed } from '../src/generateClassName';
 
 describe('generateClassName tests', () => {

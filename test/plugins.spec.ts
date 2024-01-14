@@ -1,5 +1,6 @@
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createStyles, PosthookPlugin, registerPosthook, SimpleStyleRules } from '../src';
 import { getPosthooks } from '../src/plugins';
@@ -16,7 +17,7 @@ describe('Plugin hooks', () => {
         backgroundRepeat: 'no-repeat',
       },
     };
-    const posthook: PosthookPlugin = jest.fn(sheetContents => {
+    const posthook: PosthookPlugin = vi.fn(sheetContents => {
       expect(sheetContents.length).toBeGreaterThan(0);
       expect(sheetContents.startsWith('.posthook')).toBeTruthy();
       expect(sheetContents).toContain('{background-size:contain;background-repeat:no-repeat;}');

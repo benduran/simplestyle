@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { deepEqual } from '../src/util';
 
 describe('Deep Object Equality utility', () => {
