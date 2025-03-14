@@ -269,7 +269,10 @@ In order to use a plugin, you need to **register** each plugin you'd like to use
 ## What this library isn't
 This library isn't trying to make grandiose assumptions about how your styles should be rendered. Its goal is to simply provide a typed way of 
 easily creating reusable styles close to your JavaScript / TypeScript components. It is a super compact, small file size way of creating CSS in JS and assumes that you're wise enough to know
-whether you've made a styling mistake (wrong property, wrong unit, invalid rule format, etc)
+whether you've made a styling mistake (wrong property, wrong unit, invalid rule format, etc).
+
+There are, currently, **no plans** for creating an SSR-variant of this library, as it would be in-confict of the goal of SimpleStyle, which is to be an easy and lightweight way to use CSS-in-JS.
+If you need SSR rendering in a CSS-in-JS engine, consider using [Emotion](https://emotion.sh/docs/introduction), instead.
 
 ## License
 [MIT](https://en.wikipedia.org/wiki/MIT_License)
