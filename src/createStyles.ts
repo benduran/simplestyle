@@ -1,9 +1,9 @@
 import { Properties } from 'csstype';
 import merge from 'deepmerge';
 
-import { generateClassName } from './generateClassName';
-import { getPosthooks } from './plugins';
-import { SimpleStyleRules } from './types';
+import { generateClassName } from './generateClassName.js';
+import { getPosthooks } from './plugins.js';
+import { SimpleStyleRules } from './types.js';
 
 export type CreateStylesOptions = Partial<{
   /**

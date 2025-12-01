@@ -1,4 +1,4 @@
-import numToAlpha from './numToAlpha';
+import numToAlpha from './numToAlpha.js';
 
 let inc = Date.now();
 

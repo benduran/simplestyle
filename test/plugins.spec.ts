@@ -2,8 +2,8 @@ import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createStyles, PosthookPlugin, registerPosthook, SimpleStyleRules } from '../src';
-import { getPosthooks } from '../src/plugins';
+import { createStyles, PosthookPlugin, registerPosthook, SimpleStyleRules } from '../src/index.js';
+import { getPosthooks } from '../src/plugins.js';
 
 describe('Plugin hooks', () => {
   beforeEach(() => {

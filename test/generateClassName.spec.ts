@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { generateClassName, setSeed } from '../src/generateClassName';
+import { generateClassName, setSeed } from '../src/generateClassName.js';
 
 describe('generateClassName tests', () => {
   it('Should generate multiple unique classnames', () => {

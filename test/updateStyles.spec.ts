@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { createStyles } from '../src';
+import { createStyles } from '../src/index.js';
 
 describe('updateStyles tests', () => {
   beforeAll(() => {

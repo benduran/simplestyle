@@ -1,1 +1,1 @@
-export * from './deepEqual';
+export * from './deepEqual.js';
