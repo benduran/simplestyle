@@ -13,8 +13,8 @@ export function deepEqual<
     if (!prev) return prev; // we've already failed equality checks here
     if (!(key in o2)) return false;
     if (typeof o1[key] !== 'object') {
-      return prev && o1[key] === o2[key];
+      return o1[key] === o2[key];
     }
-    return prev && deepEqual(o1[key], o2[key]);
+    return deepEqual(o1[key], o2[key]);
   }, true);
 }

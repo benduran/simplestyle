@@ -1,1 +1,1 @@
-export * from './useCreateStyles';
+export * from './useCreateStyles.js';

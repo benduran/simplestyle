@@ -1,25 +1,23 @@
 {
   "name": "simplestyle-js",
-  "version": "3.3.0",
+  "version": "3.3.1-beta.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
   "scripts": {
-    "build": "run-s clean build:package copy",
-    "build:package": "package-bundler -c -r -t ./tsconfig.build.json",
+    "build": "bun run clean && bun run build:package",
+    "build:package": "ts-duality --clean",
     "clean": "rm -rf ./dist",
-    "copy": "cp ./README.md ./dist && cp ./LICENSE ./dist",
-    "coveralls": "run-s test:coverage coverage:pipe",
+    "coveralls": "bun run test:coverage && bun run coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint './src/**/*.ts'",
     "lint:fixall": "eslint './src/**/*.ts' --fix",
-    "setup": "npm install -g pnpm@$(cat pnpm-version) && pnpm install",
-    "test:coverage": "vitest run --coverage",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "git-pre-commit": "pnpm lint && pnpm test"
+    "test:coverage": "bun run --bun vitest run --coverage",
+    "test": "bun run --bun vitest run",
+    "test:watch": "bun run --bun vitest"
   },
   "keywords": [
     "CSS-in-JS",
@@ -31,31 +29,136 @@
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@better-builds/lets-version": "^0.8.2",
-    "@better-builds/package-bundler": "^1.6.1",
-    "@testing-library/react": "^14.1.2",
-    "@types/autoprefixer": "^10.2.0",
-    "@types/react": "^18.2.47",
-    "@types/react-dom": "^18.2.18",
-    "@vitejs/plugin-react": "^4.2.1",
-    "@zeit/git-hooks": "^0.1.4",
-    "autoprefixer": "^10.4.16",
+    "@better-builds/lets-version": "^1.6.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/autoprefixer": "^10.2.4",
+    "@types/react": ">=18",
+    "@types/react-dom": ">=18",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.22",
     "coveralls": "^3.1.1",
-    "eslint-config-react-yas": "^4.1.0",
-    "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.33",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.11",
-    "vitest": "^1.2.0"
+    "eslint-config-react-yas": "^6.0.10",
+    "husky": "^9.1.7",
+    "postcss": "^8.5.6",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "@better-builds/ts-duality": "latest",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6",
+    "vitest": "^4.0.14"
   },
   "dependencies": {
-    "csstype": "^3.1.3",
-    "deepmerge": "^4.3.1"
+    "csstype": "^3.2.3",
+    "deepmerge": "^4.3.1",
+    "jsdom": "^27.2.0"
   },
   "peerDependencies": {
     "react": ">=16.8"
-  }
+  },
+  "exports": {
+    "./createStyles": {
+      "require": {
+        "types": "./dist/cjs/createStyles.d.ts",
+        "default": "./dist/cjs/createStyles.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/createStyles.d.ts",
+        "default": "./dist/esm/createStyles.mjs"
+      }
+    },
+    "./generateClassName": {
+      "require": {
+        "types": "./dist/cjs/generateClassName.d.ts",
+        "default": "./dist/cjs/generateClassName.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/generateClassName.d.ts",
+        "default": "./dist/esm/generateClassName.mjs"
+      }
+    },
+    ".": {
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.mjs"
+      }
+    },
+    "./numToAlpha": {
+      "require": {
+        "types": "./dist/cjs/numToAlpha.d.ts",
+        "default": "./dist/cjs/numToAlpha.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/numToAlpha.d.ts",
+        "default": "./dist/esm/numToAlpha.mjs"
+      }
+    },
+    "./plugins": {
+      "require": {
+        "types": "./dist/cjs/plugins.d.ts",
+        "default": "./dist/cjs/plugins.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/plugins.d.ts",
+        "default": "./dist/esm/plugins.mjs"
+      }
+    },
+    "./react": {
+      "require": {
+        "types": "./dist/cjs/react/index.d.ts",
+        "default": "./dist/cjs/react/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/react/index.d.ts",
+        "default": "./dist/esm/react/index.mjs"
+      }
+    },
+    "./react/useCreateStyles": {
+      "require": {
+        "types": "./dist/cjs/react/useCreateStyles.d.ts",
+        "default": "./dist/cjs/react/useCreateStyles.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/react/useCreateStyles.d.ts",
+        "default": "./dist/esm/react/useCreateStyles.mjs"
+      }
+    },
+    "./types": {
+      "require": {
+        "types": "./dist/cjs/types.d.ts",
+        "default": "./dist/cjs/types.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/types.d.ts",
+        "default": "./dist/esm/types.mjs"
+      }
+    },
+    "./util/deepEqual": {
+      "require": {
+        "types": "./dist/cjs/util/deepEqual.d.ts",
+        "default": "./dist/cjs/util/deepEqual.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/util/deepEqual.d.ts",
+        "default": "./dist/esm/util/deepEqual.mjs"
+      }
+    },
+    "./util": {
+      "require": {
+        "types": "./dist/cjs/util/index.d.ts",
+        "default": "./dist/cjs/util/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/util/index.d.ts",
+        "default": "./dist/esm/util/index.mjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/cjs/index.d.ts",
+  "main": "./dist/cjs/index.cjs"
 }

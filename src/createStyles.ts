@@ -1,9 +1,9 @@
 import { Properties } from 'csstype';
 import merge from 'deepmerge';
 
-import { generateClassName } from './generateClassName';
-import { getPosthooks } from './plugins';
-import { SimpleStyleRules } from './types';
+import { generateClassName } from './generateClassName.js';
+import { getPosthooks } from './plugins.js';
+import { SimpleStyleRules } from './types.js';
 
 export type CreateStylesOptions = Partial<{
   /**
@@ -33,21 +33,21 @@ function isMedia(r: string): boolean {
 }
 
 function formatCSSRuleName(rule: string): string {
-  return rule.replace(/([A-Z])/g, p1 => `-${p1.toLowerCase()}`);
+  return rule.replaceAll(/([A-Z])/g, p1 => `-${p1.toLowerCase()}`);
 }
 
 function formatCSSRules(cssRules: Properties): string {
   return Object.entries(cssRules).reduce(
-    (prev, [cssProp, cssVal]) => `${prev}${formatCSSRuleName(cssProp)}:${cssVal};`,
+    (prev, [cssProp, cssVal]) => `${prev}${formatCSSRuleName(cssProp)}:${String(cssVal)};`,
     '',
   );
 }
 
-function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [classKey in K]: string }>(
+function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
   rules: T,
   options: CreateStylesOptions,
   parentSelector: string | null,
-  noGenerateClassName: boolean = false,
+  noGenerateClassName = false,
 ): { classes: O; sheetBuffer: string; mediaQueriesBuffer: string } {
   const out = {} as O;
   let sheetBuffer = '';
@@ -77,7 +77,7 @@ function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O exten
       if (!parentSelector) throw new Error('Unable to generate nested rule because parentSelector is missing');
       guardCloseRuleWrite();
       // format of { '& > span': { display: 'none' } } (or further nesting)
-      const replaced = classNameOrCSSRule.replace(/&/g, parentSelector);
+      const replaced = classNameOrCSSRule.replaceAll('&', parentSelector);
       for (const selector of replaced.split(/,\s*/)) {
         const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
           classNameRules as T,
@@ -90,7 +90,8 @@ function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O exten
     } else if (!parentSelector && typeof classNameRules === 'object') {
       guardCloseRuleWrite();
       const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
-      (out as any)[classNameOrCSSRule] = generated;
+      // @ts-expect-error - yes, we can index this object here, so be quiet
+      out[classNameOrCSSRule] = generated;
       const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
       const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
         classNameRules as T,
@@ -101,10 +102,12 @@ function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O exten
       mediaQueriesBuffer += mediaQueriesOutput;
     } else {
       if (!parentSelector) throw new Error('Unable to write css props because parent selector is null');
-      if (!ruleWriteOpen) {
+      if (ruleWriteOpen) {
+        sheetBuffer += formatCSSRules({ [classNameOrCSSRule]: classNameRules });
+      } else {
         sheetBuffer += `${parentSelector}{${formatCSSRules({ [classNameOrCSSRule]: classNameRules })}`;
         ruleWriteOpen = true;
-      } else sheetBuffer += formatCSSRules({ [classNameOrCSSRule]: classNameRules });
+      }
     }
   }
   guardCloseRuleWrite();
@@ -115,7 +118,7 @@ function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   };
 }
 
-function replaceBackReferences<O extends { [key: string]: string }>(out: O, sheetContents: string): string {
+function replaceBackReferences<O extends Record<string, string>>(out: O, sheetContents: string): string {
   let outputSheetContents = sheetContents;
   const toReplace: string[] = [];
   const toReplaceRegex = /\$\w([a-zA-Z0-9_-]+)?/gm;
@@ -125,15 +128,17 @@ function replaceBackReferences<O extends { [key: string]: string }>(out: O, shee
     matches = toReplaceRegex.exec(outputSheetContents);
   }
   for (const r of toReplace) {
-    outputSheetContents = outputSheetContents.replace(r, `.${out[r.substring(1)]}`);
+    outputSheetContents = outputSheetContents.replace(r, `.${out[r.slice(1)] ?? ''}`);
   }
   return getPosthooks().reduce((prev, hook) => hook(prev), outputSheetContents);
 }
 
 function createSheet(sheetContents: string) {
-  if (typeof document === 'undefined') return null;
-  if (typeof document?.head?.appendChild !== 'function' || typeof document?.createElement !== 'function') return null;
-  const styleTag = document.createElement('style');
+  const doc = globalThis.document as Partial<typeof globalThis.document> | null | undefined;
+  if (doc === undefined) return null;
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  if (typeof doc?.head?.appendChild !== 'function' || typeof doc.createElement !== 'function') return null;
+  const styleTag = doc.createElement('style');
   styleTag.innerHTML = sheetContents;
   return styleTag;
 }
@@ -142,12 +147,12 @@ function flushSheetContents(sheetContents: string, options?: CreateStylesOptions
   // In case we're in come weird test environment that doesn't support JSDom
   const styleTag = createSheet(sheetContents);
   if (styleTag) {
-    if (options?.insertAfter && options?.insertBefore) {
+    if (options?.insertAfter && options.insertBefore) {
       throw new Error('Both insertAfter and insertBefore were provided. Please choose only one.');
     }
     if (options?.insertAfter?.after) options.insertAfter.after(styleTag as Node);
     else if (options?.insertBefore?.before) options.insertBefore.before(styleTag as Node);
-    else document.head.appendChild(styleTag);
+    else document.head.append(styleTag);
   }
   return styleTag;
 }
@@ -159,7 +164,7 @@ function coerceCreateStylesOptions(options?: CreateStylesOptions): CreateStylesO
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends { [key in K]: string }>(
+export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
   rules: T,
   options?: Partial<CreateStylesOptions>,
 ) {
@@ -177,7 +182,7 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   return mergedContents;
 }
 
-export function keyframes<T extends { [increment: string]: Properties }>(
+export function keyframes<T extends Record<string, Properties>>(
   frames: T,
   options?: CreateStylesOptions,
 ): [string, string] {
@@ -189,11 +194,10 @@ export function keyframes<T extends { [increment: string]: Properties }>(
   return [keyframeName, sheetContents];
 }
 
-export default function createStyles<
-  T extends SimpleStyleRules,
-  K extends keyof T,
-  O extends { [classKey in K]: string },
->(rules: T, options?: Partial<CreateStylesOptions>) {
+export default function createStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+  rules: T,
+  options?: Partial<CreateStylesOptions>,
+) {
   const coerced = coerceCreateStylesOptions(options);
   const {
     classes: out,
@@ -208,10 +212,10 @@ export default function createStyles<
   let sheet: ReturnType<typeof flushSheetContents> = null;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const updateSheet = <T2 extends SimpleStyleRules, K2 extends keyof T2, O2 extends { [classKey in K2]: string }>(
+  const updateSheet = <T2 extends SimpleStyleRules, K2 extends keyof T2, O2 extends Record<K2, string>>(
     updatedRules: Partial<T2>,
   ) => {
-    if (((options?.flush && sheet) || !options?.flush) && updatedRules) {
+    if ((options?.flush && sheet) || !options?.flush) {
       // We prefer the first set, and then we shallow merge
       const {
         classes: updatedOut,

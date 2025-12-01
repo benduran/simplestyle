@@ -1,3 +1,24 @@
+## 3.3.1-beta.0 (2025-12-01)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: addressed all linting issues and updated some nullish checks (b3a7cf6d2a7f96fdc3c5bf987be5757ca053584f)
+- chore: updated everything (822f0820832462742d4a4c7a217b053b6174e522)
+
+
+
+### ✨ Features ✨
+
+- feat: update to using ts-duality for building (e0b0a788d39bd63d8517ae31f35bebfc6e74a9c5)
+
+
+
+### 📖 Docs 📖
+
+- docs: Update README.md (3d7b15ee53050ca75bac185ff12eecba68a5c3f4)
+
+---
+
 ## 3.3.0 (2024-01-13)
 
 ### 🔀 Miscellaneous 🔀

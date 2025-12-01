@@ -1,7 +1,7 @@
 import { Properties } from 'csstype';
 
-export interface SimpleStyleRules {
+export type SimpleStyleRules = {
   [key: string]: Properties | SimpleStyleRules;
-}
+};
 
-export type RenderableSimpleStyleRules = SimpleStyleRules & { [selector: string]: Properties[] };
+export type RenderableSimpleStyleRules = SimpleStyleRules & Record<string, Properties[]>;

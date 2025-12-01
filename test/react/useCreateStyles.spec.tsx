@@ -1,8 +1,8 @@
 import { fireEvent, render } from '@testing-library/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { useCreateStyles } from '../../src/react/useCreateStyles';
+import { useCreateStyles } from '../../src/react/useCreateStyles.js';
 
 describe('React utilities tests', () => {
   it('Should verify useCreateStyles hook generates classnames and inserts the stylesheet', () => {

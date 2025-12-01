@@ -1,7 +1,8 @@
 language: node_js
 node_js:
-  - 16
+  - 20
 script:
-  - npm run setup
-  - pnpm test
-  - pnpm coveralls
+  - npm i -g bun@1.3.3
+  - bun run ci
+  - bun run test
+  - bun run coveralls

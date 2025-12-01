@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { keyframes } from '../src';
+import { keyframes } from '../src/index.js';
 
 describe('Keyframes generation', () => {
   it('Should generate simple animation keyframes', () => {

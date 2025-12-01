@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createStyles, rawStyles, setSeed } from '../src';
-import { SimpleStyleRules } from '../src/types';
+import { createStyles, rawStyles, setSeed } from '../src/index.js';
+import { SimpleStyleRules } from '../src/types.js';
 
 describe('createStyles tests', () => {
   beforeEach(() => {
