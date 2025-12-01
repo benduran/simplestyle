@@ -4,11 +4,7 @@ import createStyles, { CreateStylesOptions } from '../createStyles.js';
 import { SimpleStyleRules } from '../types.js';
 import { deepEqual } from '../util/index.js';
 
-export function useCreateStyles<
-  T extends SimpleStyleRules,
-  K extends keyof T,
-  O extends { [classKey in K]: string }
->(
+export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
   rules: T,
   options?: Partial<Omit<CreateStylesOptions, 'flush'>>,
 ) {
@@ -16,20 +12,13 @@ export function useCreateStyles<
   const [cachedRules, setCachedRules] = useState(() => rules);
 
   // memoize options but keep them live
-  const cachedOptions = useMemo(
-    () => ({ ...options } as Partial<Omit<CreateStylesOptions, 'flush'>>),
-    [options],
-  );
+  const cachedOptions = useMemo(() => ({ ...options }) as Partial<Omit<CreateStylesOptions, 'flush'>>, [options]);
 
   const didFirstWriteRef = useRef(false);
-  const styleTagRef = useRef(
-    typeof document !== 'undefined' ? document.createElement('style') : null,
-  );
+  const styleTagRef = useRef(typeof document === 'undefined' ? null : document.createElement('style'));
 
   // initialize styles
-  const [styleState, setStyleState] = useState(() =>
-    createStyles<T, K, O>(rules, { ...cachedOptions, flush: false }),
-  );
+  const [styleState, setStyleState] = useState(() => createStyles<T, K, O>(rules, { ...cachedOptions, flush: false }));
 
   const { classes, stylesheet, updateSheet } = styleState;
 
@@ -37,8 +26,10 @@ export function useCreateStyles<
   useEffect(() => {
     if (!styleTagRef.current) return;
     const { current: s } = styleTagRef;
-    document.head.appendChild(s);
-    return () => s.remove();
+    document.head.append(s);
+    return () => {
+      s.remove();
+    };
   }, []);
 
   // update stylesheet when rules change
@@ -61,7 +52,7 @@ export function useCreateStyles<
         setStyleState({ ...updated, updateSheet });
       }
     }
-  }, [rules, updateSheet]); // only depend on rules + updater
+  }, [cachedRules, rules, stylesheet, updateSheet]); // only depend on rules + updater
 
   return classes;
 }

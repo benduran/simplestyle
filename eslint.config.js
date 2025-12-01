@@ -1,1 +1,3 @@
-export { standalone as default } from 'eslint-config-react-yas';
+import { standalone } from 'eslint-config-react-yas';
+
+export default [...standalone];
