@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "bun run clean && bun run build:package",
-    "build:package": "package-bundler -c -r -t ./tsconfig.build.json",
+    "build:package": "ts-duality --clean",
     "clean": "rm -rf ./dist",
     "coveralls": "bun run test:coverage && bun run coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
@@ -54,5 +54,111 @@
   },
   "peerDependencies": {
     "react": ">=16.8"
-  }
+  },
+  "exports": {
+    "./createStyles": {
+      "require": {
+        "types": "./dist/cjs/createStyles.d.ts",
+        "default": "./dist/cjs/createStyles.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/createStyles.d.ts",
+        "default": "./dist/esm/createStyles.mjs"
+      }
+    },
+    "./generateClassName": {
+      "require": {
+        "types": "./dist/cjs/generateClassName.d.ts",
+        "default": "./dist/cjs/generateClassName.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/generateClassName.d.ts",
+        "default": "./dist/esm/generateClassName.mjs"
+      }
+    },
+    ".": {
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.mjs"
+      }
+    },
+    "./numToAlpha": {
+      "require": {
+        "types": "./dist/cjs/numToAlpha.d.ts",
+        "default": "./dist/cjs/numToAlpha.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/numToAlpha.d.ts",
+        "default": "./dist/esm/numToAlpha.mjs"
+      }
+    },
+    "./plugins": {
+      "require": {
+        "types": "./dist/cjs/plugins.d.ts",
+        "default": "./dist/cjs/plugins.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/plugins.d.ts",
+        "default": "./dist/esm/plugins.mjs"
+      }
+    },
+    "./react": {
+      "require": {
+        "types": "./dist/cjs/react/index.d.ts",
+        "default": "./dist/cjs/react/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/react/index.d.ts",
+        "default": "./dist/esm/react/index.mjs"
+      }
+    },
+    "./react/useCreateStyles": {
+      "require": {
+        "types": "./dist/cjs/react/useCreateStyles.d.ts",
+        "default": "./dist/cjs/react/useCreateStyles.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/react/useCreateStyles.d.ts",
+        "default": "./dist/esm/react/useCreateStyles.mjs"
+      }
+    },
+    "./types": {
+      "require": {
+        "types": "./dist/cjs/types.d.ts",
+        "default": "./dist/cjs/types.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/types.d.ts",
+        "default": "./dist/esm/types.mjs"
+      }
+    },
+    "./util/deepEqual": {
+      "require": {
+        "types": "./dist/cjs/util/deepEqual.d.ts",
+        "default": "./dist/cjs/util/deepEqual.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/util/deepEqual.d.ts",
+        "default": "./dist/esm/util/deepEqual.mjs"
+      }
+    },
+    "./util": {
+      "require": {
+        "types": "./dist/cjs/util/index.d.ts",
+        "default": "./dist/cjs/util/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/util/index.d.ts",
+        "default": "./dist/esm/util/index.mjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/cjs/index.d.ts",
+  "main": "./dist/cjs/index.cjs"
 }
