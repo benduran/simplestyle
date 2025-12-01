@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
     "build": "bun run clean && bun run build:package",
     "build:package": "ts-duality --clean",
