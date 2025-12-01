@@ -1,3 +1,11 @@
+## 3.4.0 (2025-12-01)
+
+### 🔀 Miscellaneous 🔀
+
+- Merge pull request #51 from benduran/update-everything (aa20cc703cefcadd789d4039df0d35c6a5012da7)
+
+---
+
 ## 3.3.1-beta.0 (2025-12-01)
 
 ### 🔀 Miscellaneous 🔀
