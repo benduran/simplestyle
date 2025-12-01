@@ -1,3 +1,11 @@
+## 3.4.1 (2025-12-01)
+
+### 🛠️ Fixes 🛠️
+
+- fix: fixed exports and updated license (6868e1e01323c352263c528442ea8af7f87ac5e7)
+
+---
+
 ## 3.4.0 (2025-12-01)
 
 ### 🔀 Miscellaneous 🔀
