@@ -1,3 +1,11 @@
+## 3.4.2-alpha.0 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: added a style registry option, which should hopefully be useful for SSR (6c994c06798b00784f87189074400cf74726332f)
+
+---
+
 ## 3.4.1 (2025-12-01)
 
 ### 🛠️ Fixes 🛠️
