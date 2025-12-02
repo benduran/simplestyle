@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { SimpleStyleRegistry } from '../src/simpleStyleRegistry';
-import { makeCreateStyle } from '../src/createStyles';
+import { makeCreateStyles } from '../src/createStyles';
 import { setSeed } from '../src/generateClassName';
 
 describe('SimpleStyleRegistry', () => {
@@ -16,7 +16,7 @@ describe('SimpleStyleRegistry', () => {
   });
 
   it('should check to make sure all styles are accumulated in the registry', () => {
-    const createStyles = makeCreateStyle(registry!);
+    const createStyles = makeCreateStyles(registry!);
 
     const backgroundColor = 'palevioletred';
     const fontSize = '16rem';
@@ -36,7 +36,7 @@ describe('SimpleStyleRegistry', () => {
   });
 
   it('should ensure backreferences are replaced correctly', () => {
-    const createStyles = makeCreateStyle(registry!);
+    const createStyles = makeCreateStyles(registry!);
 
     const backgroundColor = 'palevioletred';
     const fontSize = '16rem';

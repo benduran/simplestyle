@@ -223,7 +223,7 @@ export function makeKeyframes(registry: SimpleStyleRegistry) {
   };
 }
 
-export function makeCreateStyle(registry: SimpleStyleRegistry) {
+export function makeCreateStyles(registry: SimpleStyleRegistry) {
   return function wrappedCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
     ruleId: string,
     rules: T,
