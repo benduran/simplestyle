@@ -3,6 +3,7 @@ import merge from 'deepmerge';
 
 import { generateClassName } from './generateClassName.js';
 import { getPosthooks } from './plugins.js';
+import { SimpleStyleRegistry } from './simpleStyleRegistry.js';
 import { SimpleStyleRules } from './types.js';
 
 export type CreateStylesOptions = Partial<{
@@ -22,6 +23,15 @@ export type CreateStylesOptions = Partial<{
    * will render the injects <style /> before this element
    */
   insertBefore?: HTMLElement;
+
+  /**
+   * if set, will automatically prevent any styles from
+   * being flushed to the DOM or inserted at all.
+   * All styles will be accumulated in the registry
+   * and it will be up to you to determine how they should
+   * be flushed.
+   */
+  registry?: SimpleStyleRegistry;
 }>;
 
 function isNestedSelector(r: string): boolean {
@@ -194,6 +204,14 @@ export function keyframes<T extends Record<string, Properties>>(
   return [keyframeName, sheetContents];
 }
 
+export function makeCreateStyle(registry: SimpleStyleRegistry) {
+  return function wrappedCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+    rules: T,
+  ) {
+    return createStyles<T, K, O>(rules, { registry });
+  };
+}
+
 export default function createStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
   rules: T,
   options?: Partial<CreateStylesOptions>,
@@ -215,7 +233,7 @@ export default function createStyles<T extends SimpleStyleRules, K extends keyof
   const updateSheet = <T2 extends SimpleStyleRules, K2 extends keyof T2, O2 extends Record<K2, string>>(
     updatedRules: Partial<T2>,
   ) => {
-    if ((options?.flush && sheet) || !options?.flush) {
+    if (((options?.flush || options?.registry) && sheet) || !options?.flush) {
       // We prefer the first set, and then we shallow merge
       const {
         classes: updatedOut,
@@ -235,7 +253,8 @@ export default function createStyles<T extends SimpleStyleRules, K extends keyof
     return null;
   };
 
-  if (coerced.flush) sheet = flushSheetContents(replacedSheetContents, options);
+  if (!options?.registry && coerced.flush) sheet = flushSheetContents(replacedSheetContents, options);
+  else if (options?.registry) options.registry.add(replacedSheetContents);
   // Need this TS cast to get solid code assist from the consumption-side
   return {
     classes: out as unknown,
