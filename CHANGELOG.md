@@ -1,3 +1,11 @@
+## 3.4.2-alpha.2 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: added required support for style ids (02dcacad27303686a86881e483da8e591d21b324)
+
+---
+
 ## 3.4.2-alpha.1 (2025-12-02)
 
 ### 🛠️ Fixes 🛠️
