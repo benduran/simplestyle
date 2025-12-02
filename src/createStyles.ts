@@ -178,8 +178,7 @@ function coerceCreateStylesOptions(options?: CreateStylesOptions): CreateStylesO
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+export function rawStyles<T extends SimpleStyleRules>(
   ruleId: string,
   rules: T,
   options?: Partial<CreateStylesOptions>,
@@ -199,6 +198,12 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
   return mergedContents;
 }
 
+export function makeRawStyles(registry: SimpleStyleRegistry) {
+  return function wrappedRawStyles<T extends SimpleStyleRules>(ruleId: string, rules: T) {
+    return rawStyles<T>(ruleId, rules, { registry });
+  };
+}
+
 export function keyframes<T extends Record<string, Properties>>(
   ruleId: string,
   frames: T,
@@ -210,6 +215,12 @@ export function keyframes<T extends Record<string, Properties>>(
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
   if (coerced.flush) flushSheetContents(ruleId, sheetContents);
   return [keyframeName, sheetContents];
+}
+
+export function makeKeyframes(registry: SimpleStyleRegistry) {
+  return function wrappedCreateKeyframes<T extends Record<string, Properties>>(ruleId: string, rules: T) {
+    return keyframes<T>(ruleId, rules, { registry });
+  };
 }
 
 export function makeCreateStyle(registry: SimpleStyleRegistry) {
@@ -239,11 +250,8 @@ export default function createStyles<T extends SimpleStyleRules, K extends keyof
 
   let sheet: ReturnType<typeof flushSheetContents> = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const updateSheet = <T2 extends SimpleStyleRules, K2 extends keyof T2, O2 extends Record<K2, string>>(
-    updatedRules: Partial<T2>,
-  ) => {
-    if (((options?.flush || options?.registry) && sheet) || !options?.flush) {
+  const updateSheet = <T2 extends SimpleStyleRules>(updatedRules: Partial<T2>) => {
+    if (options?.flush || options?.registry || !options?.flush) {
       // We prefer the first set, and then we shallow merge
       const {
         classes: updatedOut,
@@ -255,6 +263,9 @@ export default function createStyles<T extends SimpleStyleRules, K extends keyof
 
       const updatedReplacedSheetContents = replaceBackReferences(out, updatedMergedContents);
       if (sheet) sheet.innerHTML = updatedReplacedSheetContents;
+      else if (options?.registry) {
+        options.registry.add(ruleId, updatedReplacedSheetContents);
+      }
       return { classes: updatedOut, stylesheet: updatedSheetContents } as {
         classes: typeof updatedOut;
         stylesheet: string;
