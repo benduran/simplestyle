@@ -1,3 +1,56 @@
+## 4.1.0 (2025-12-02)
+
+### 🛠️ Fixes 🛠️
+
+- fix: do not render a duplicate tag out if one already existed for the ID (45b234613327329d20affa1de558d6bbdaa57dae)
+- fix: files glob didn't include readme, oops (f4758163d756e22e9d0bcf96db262e736ebb3236)
+- fix: fixed exported names and also improved the documentation (343da7f95399ad701a7fe50dd299855504313efa)
+- fix: fixed updateSheet API not writing to the registry if it was set (0575ba78b967ce9eaedc25971afce9fcc06b23d2)
+- fix: forgot to export the new function (491efd5fc19b9770ecbbb77e27fda30b650eb7e5)
+- fix: fixed exports and updated license (6868e1e01323c352263c528442ea8af7f87ac5e7)
+
+
+
+### 🔀 Miscellaneous 🔀
+
+- Version Bump (a399f8afb3970ab4cef41ab511e3e890e9afadb1)
+- Version Bump (4ca76a4260db0cf82180fd0e9609e3d6550a06ed)
+- chore: removed dev deps from prod deps and updated readme (a85ff1c1ece2a47e8713d9c2d8e482b3fc84f526)
+- Version Bump (89e9a3c72420a9885c3eea3c5e8045c44f12aee8)
+- Version Bump (0d16f556969a79f4cd70b6ec71bc4fcddabdb118)
+- Merge pull request #52 from benduran/style-registry (19f235e44326a570922938d41ea4b970dce944b6)
+- chore: updated jsdoc (3fdec891f53ea5c73614d53addafbccdd314e58f)
+- Version Bump (31bb2a096d0955f5383c9adb56da1451bf4a7504)
+- Version Bump (601ca712a47dcd3c24f3d54885762c9a4efa4533)
+- Version Bump (68884810cbb24f45886736587ff6b3886511d4c6)
+- Version Bump (d0070004ca81c986ce1d9b0ce573a05b3806632a)
+- Version Bump (b0f354622ecaf93cf1213acd47be5e6fceeb3816)
+- Version Bump (94565bf4ff9e6b4ba075e8ff31f42c2ad9695830)
+- Version Bump (586d7e28658b2482c37c6c3464114bacae8952b5)
+- Merge pull request #51 from benduran/update-everything (aa20cc703cefcadd789d4039df0d35c6a5012da7)
+- Version Bump (b9e74ec35e8c7eaa2ca1d79607848adb5cd45af3)
+- chore: addressed all linting issues and updated some nullish checks (b3a7cf6d2a7f96fdc3c5bf987be5757ca053584f)
+- chore: updated everything (822f0820832462742d4a4c7a217b053b6174e522)
+
+
+
+### 📖 Docs 📖
+
+- docs: updated readme again because oops (6c46990716e6039a354b38830d76f7bd58689ba3)
+- docs: Update README.md (3d7b15ee53050ca75bac185ff12eecba68a5c3f4)
+
+
+
+### ✨ Features ✨
+
+- feat: added function to return the tuples of ids to styles (6bdf17e345690699a904b780ed9efd7fab641868)
+- feat: render the styleId as the prefix for the generated classnames (293504d9bb76f63dd4551dea741ec56f5cb1631e)
+- feat: added required support for style ids (02dcacad27303686a86881e483da8e591d21b324)
+- feat: added a style registry option, which should hopefully be useful for SSR (6c994c06798b00784f87189074400cf74726332f)
+- feat: update to using ts-duality for building (e0b0a788d39bd63d8517ae31f35bebfc6e74a9c5)
+
+---
+
 ## 4.0.3 (2025-12-02)
 
 ### 📖 Docs 📖
