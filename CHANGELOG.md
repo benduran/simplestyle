@@ -1,3 +1,11 @@
+## 3.4.2-alpha.3 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: render the styleId as the prefix for the generated classnames (293504d9bb76f63dd4551dea741ec56f5cb1631e)
+
+---
+
 ## 3.4.2-alpha.2 (2025-12-02)
 
 ### ✨ Features ✨
