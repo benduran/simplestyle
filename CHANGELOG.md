@@ -1,3 +1,11 @@
+## 4.0.2 (2025-12-02)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: removed dev deps from prod deps and updated readme (a85ff1c1ece2a47e8713d9c2d8e482b3fc84f526)
+
+---
+
 ## 4.0.1 (2025-12-02)
 
 ### 🛠️ Fixes 🛠️
