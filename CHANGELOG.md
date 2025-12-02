@@ -1,3 +1,11 @@
+## 4.1.1 (2025-12-02)
+
+### 🔀 Miscellaneous 🔀
+
+- Version bumped exactly to 4.1.1
+
+---
+
 ## 4.1.0 (2025-12-02)
 
 ### 🛠️ Fixes 🛠️
