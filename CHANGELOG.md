@@ -1,3 +1,11 @@
+## 3.4.2-alpha.4 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: added function to return the tuples of ids to styles (6bdf17e345690699a904b780ed9efd7fab641868)
+
+---
+
 ## 3.4.2-alpha.3 (2025-12-02)
 
 ### ✨ Features ✨
