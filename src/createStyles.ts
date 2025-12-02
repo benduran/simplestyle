@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { Properties } from 'csstype';
 import merge from 'deepmerge';
 
@@ -148,19 +149,28 @@ function replaceBackReferences<O extends Record<string, string>>(out: O, sheetCo
 }
 
 function createSheet(ruleId: string, sheetContents: string) {
+  const out: { existing: boolean | null; styleTag: HTMLElement | null } = { existing: null, styleTag: null };
+
   const doc = globalThis.document as Partial<typeof globalThis.document> | null | undefined;
-  if (doc === undefined) return null;
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  if (typeof doc?.head?.appendChild !== 'function' || typeof doc.createElement !== 'function') return null;
-  const styleTag = doc.createElement('style');
+  if (doc === undefined) return out;
+  if (typeof doc?.head?.appendChild !== 'function' || typeof doc.createElement !== 'function') return out;
+  // attempt to reuse the style tag, if it existed
+  const existingTag = doc.getElementById?.(ruleId);
+  const existing = Boolean(existingTag);
+  const styleTag = existingTag ?? doc.createElement('style');
   styleTag.id = ruleId;
   styleTag.innerHTML = sheetContents;
-  return styleTag;
+  out.existing = existing;
+  out.styleTag = styleTag;
+
+  return out;
 }
 
 function flushSheetContents(ruleId: string, sheetContents: string, options?: CreateStylesOptions) {
   // In case we're in come weird test environment that doesn't support JSDom
-  const styleTag = createSheet(ruleId, sheetContents);
+  const { existing, styleTag } = createSheet(ruleId, sheetContents);
+  // if the tag existed, DO NOT render it back out to the DOM.
+  if (existing) return styleTag;
   if (styleTag) {
     if (options?.insertAfter && options.insertBefore) {
       throw new Error('Both insertAfter and insertBefore were provided. Please choose only one.');
