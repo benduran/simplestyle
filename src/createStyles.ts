@@ -143,19 +143,20 @@ function replaceBackReferences<O extends Record<string, string>>(out: O, sheetCo
   return getPosthooks().reduce((prev, hook) => hook(prev), outputSheetContents);
 }
 
-function createSheet(sheetContents: string) {
+function createSheet(ruleId: string, sheetContents: string) {
   const doc = globalThis.document as Partial<typeof globalThis.document> | null | undefined;
   if (doc === undefined) return null;
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   if (typeof doc?.head?.appendChild !== 'function' || typeof doc.createElement !== 'function') return null;
   const styleTag = doc.createElement('style');
+  styleTag.id = ruleId;
   styleTag.innerHTML = sheetContents;
   return styleTag;
 }
 
-function flushSheetContents(sheetContents: string, options?: CreateStylesOptions) {
+function flushSheetContents(ruleId: string, sheetContents: string, options?: CreateStylesOptions) {
   // In case we're in come weird test environment that doesn't support JSDom
-  const styleTag = createSheet(sheetContents);
+  const styleTag = createSheet(ruleId, sheetContents);
   if (styleTag) {
     if (options?.insertAfter && options.insertBefore) {
       throw new Error('Both insertAfter and insertBefore were provided. Please choose only one.');
@@ -175,6 +176,7 @@ function coerceCreateStylesOptions(options?: CreateStylesOptions): CreateStylesO
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+  ruleId: string,
   rules: T,
   options?: Partial<CreateStylesOptions>,
 ) {
@@ -188,11 +190,12 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
-  if (coerced.flush) flushSheetContents(mergedContents, options);
+  if (coerced.flush) flushSheetContents(ruleId, mergedContents, options);
   return mergedContents;
 }
 
 export function keyframes<T extends Record<string, Properties>>(
+  ruleId: string,
   frames: T,
   options?: CreateStylesOptions,
 ): [string, string] {
@@ -200,19 +203,21 @@ export function keyframes<T extends Record<string, Properties>>(
   const keyframeName = generateClassName('keyframes_');
   const { sheetBuffer: keyframesContents } = execCreateStyles(frames, coerced, null, true);
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
-  if (coerced.flush) flushSheetContents(sheetContents);
+  if (coerced.flush) flushSheetContents(ruleId, sheetContents);
   return [keyframeName, sheetContents];
 }
 
 export function makeCreateStyle(registry: SimpleStyleRegistry) {
   return function wrappedCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+    ruleId: string,
     rules: T,
   ) {
-    return createStyles<T, K, O>(rules, { registry });
+    return createStyles<T, K, O>(ruleId, rules, { registry });
   };
 }
 
 export default function createStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+  ruleId: string,
   rules: T,
   options?: Partial<CreateStylesOptions>,
 ) {
@@ -253,8 +258,11 @@ export default function createStyles<T extends SimpleStyleRules, K extends keyof
     return null;
   };
 
-  if (!options?.registry && coerced.flush) sheet = flushSheetContents(replacedSheetContents, options);
-  else if (options?.registry) options.registry.add(replacedSheetContents);
+  if (!options?.registry && coerced.flush) {
+    sheet = flushSheetContents(ruleId, replacedSheetContents, options);
+  } else if (options?.registry) {
+    options.registry.add(ruleId, replacedSheetContents);
+  }
   // Need this TS cast to get solid code assist from the consumption-side
   return {
     classes: out as unknown,

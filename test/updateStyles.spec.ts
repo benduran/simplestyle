@@ -11,7 +11,7 @@ describe('updateStyles tests', () => {
       classes: originalStyles,
       stylesheet: originalContents,
       updateSheet,
-    } = createStyles({
+    } = createStyles('update-no-new-sheet', {
       one: {
         backgroundColor: 'grape',
         boxSizing: 'border-box',

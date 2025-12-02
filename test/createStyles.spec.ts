@@ -17,7 +17,7 @@ describe('createStyles tests', () => {
         backgroundColor: 'red',
       },
     };
-    const { classes, stylesheet } = createStyles(rules);
+    const { classes, stylesheet } = createStyles('basic-styles', rules);
 
     Object.keys(rules).forEach(key => {
       expect(classes[key]).toBeDefined();
@@ -44,7 +44,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const { classes, stylesheet } = createStyles(rules);
+    const { classes, stylesheet } = createStyles('basic-nested', rules);
 
     expect(classes.nested).toBeDefined();
     expect(classes.nested?.length).toBeGreaterThan(0);
@@ -74,7 +74,7 @@ describe('createStyles tests', () => {
         lineHeight: '1.5',
       },
     };
-    const { classes, stylesheet } = createStyles(rules);
+    const { classes, stylesheet } = createStyles('backreferences', rules);
 
     expect(stylesheet).toContain(`.${classes.a}{text-align:center;}`);
     expect(stylesheet).toContain(`.${classes.b}{line-height:1.5;}`);
@@ -94,7 +94,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const { classes, stylesheet } = createStyles(rules);
+    const { classes, stylesheet } = createStyles('media-queries', rules);
 
     expect(stylesheet).toBe(
       `.${classes.responsive} button{padding:8px;}@media (max-width: 960px){.${classes.responsive} button{padding:24px;}}`,
@@ -118,7 +118,7 @@ describe('createStyles tests', () => {
         gridTemplateColumns: 'repeat(4, 1fr)',
       },
     };
-    const { classes, stylesheet } = createStyles(rules);
+    const { classes, stylesheet } = createStyles('multiple-media-queries', rules);
 
     expect(stylesheet).toContain(`.${classes.simple}{width:100%;}`);
     expect(stylesheet).toContain(`.${classes.deep}{color:pink;grid-template-columns:repeat(4, 1fr);}`);
@@ -142,7 +142,7 @@ describe('createStyles tests', () => {
         transition: 'background-color .2s ease',
       },
     };
-    const { classes, stylesheet } = createStyles(rules);
+    const { classes, stylesheet } = createStyles('media-query-with-children', rules);
 
     // eslint-disable-next-line max-len
     expect(stylesheet).toBe(
@@ -165,7 +165,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const { classes, stylesheet } = createStyles(rules);
+    const { classes, stylesheet } = createStyles('media-query-no-clobbering', rules);
 
     expect(stylesheet).toBe(
       `${mediaQuery}{.${classes.appBarGrid}{grid-template-columns:1fr 2fr;}}${mediaQuery}{.${classes.appHeaderHomeLink} > b{display:none;}}`,
@@ -183,7 +183,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const styleContents = rawStyles(rules);
+    const styleContents = rawStyles('raw', rules);
 
     expect(styleContents).toContain('body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}');
     expect(styleContents).toContain('a:hover{text-decoration:none;}');
@@ -200,7 +200,7 @@ describe('createStyles tests', () => {
         minWidth: '300px',
       },
     };
-    const styleContents = rawStyles(rules);
+    const styleContents = rawStyles('raw-media', rules);
     expect(styleContents).toBe(
       'button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}',
     );
@@ -228,9 +228,9 @@ describe('createStyles tests', () => {
         padding: '1rem',
       },
     };
-    const { classes: s1, stylesheet: rendered1 } = createStyles(rules, { flush: false });
-    const { classes: s2, stylesheet: rendered2 } = createStyles(rules, { flush: false });
-    const { classes: s3, stylesheet: rendered3 } = createStyles(rules, { flush: false });
+    const { classes: s1, stylesheet: rendered1 } = createStyles('s1', rules, { flush: false });
+    const { classes: s2, stylesheet: rendered2 } = createStyles('s2', rules, { flush: false });
+    const { classes: s3, stylesheet: rendered3 } = createStyles('s3', rules, { flush: false });
     expect(s1).not.toEqual(s2);
     expect(s1).not.toEqual(s3);
     expect(s2).not.toEqual(s3);
@@ -263,11 +263,11 @@ describe('createStyles tests', () => {
     };
     const seed = 1234;
     setSeed(seed);
-    const { classes: s1, stylesheet: rendered1 } = createStyles(rules, { flush: false });
+    const { classes: s1, stylesheet: rendered1 } = createStyles('s1', rules, { flush: false });
     setSeed(seed);
-    const { classes: s2, stylesheet: rendered2 } = createStyles(rules, { flush: false });
+    const { classes: s2, stylesheet: rendered2 } = createStyles('s2', rules, { flush: false });
     setSeed(seed);
-    const { classes: s3, stylesheet: rendered3 } = createStyles(rules, { flush: false });
+    const { classes: s3, stylesheet: rendered3 } = createStyles('s3', rules, { flush: false });
     expect(s1).toEqual(s2);
     expect(s1).toEqual(s3);
     expect(s2).toEqual(s3);
@@ -278,7 +278,7 @@ describe('createStyles tests', () => {
   it('Should generate styles and allow inserting after a desired element', () => {
     const insertAfter = document.createElement('div');
     document.body.appendChild(insertAfter);
-    const { stylesheet: styleContents } = createStyles(
+    const { stylesheet: styleContents } = createStyles('insert-after',
       {
         test: {
           backgroundColor: 'purple',
@@ -304,7 +304,7 @@ describe('createStyles tests', () => {
   it('Should generate styles and allow inserting before desired element', () => {
     const insertBefore = document.createElement('div');
     document.body.appendChild(insertBefore);
-    const { stylesheet: styleContents } = createStyles(
+    const { stylesheet: styleContents } = createStyles('insert-before',
       {
         test: {
           backgroundColor: 'purple',

@@ -4,7 +4,7 @@ import { keyframes } from '../src/index.js';
 
 describe('Keyframes generation', () => {
   it('Should generate simple animation keyframes', () => {
-    const [keyframeName, sheetContents] = keyframes({
+    const [keyframeName, sheetContents] = keyframes('simple-animation', {
       '0%': {
         width: '100px',
       },

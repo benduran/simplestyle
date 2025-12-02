@@ -8,6 +8,8 @@ describe('SimpleStyleRegistry', () => {
   let registry: SimpleStyleRegistry | null = null;
 
   beforeEach(() => {
+    document.querySelectorAll('style').forEach(style => style.remove());
+
     // we need deterministic classnames
     setSeed(0);
     registry = new SimpleStyleRegistry();
@@ -19,7 +21,7 @@ describe('SimpleStyleRegistry', () => {
     const backgroundColor = 'palevioletred';
     const fontSize = '16rem';
 
-    const { classes } = createStyles({
+    const { classes } = createStyles('accumulated', {
       root: {
         backgroundColor,
         fontSize,
@@ -41,7 +43,7 @@ describe('SimpleStyleRegistry', () => {
     const height = '500px';
     const width = '1000px';
 
-    const { classes } = createStyles({
+    const { classes } = createStyles('backreferences-registry', {
       someBtn: {
         height,
       },
