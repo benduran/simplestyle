@@ -44,7 +44,7 @@ ${contents}`,
   }
 
   /**
-   * returns an array of tuples, Array<[string, string]>,
+   * returns an array of tuples, [string, string][]
    * where the first item in the tuple is the ID for the style rule
    * and the second item is the actual CSS.
    * Use this if you need to fully-control how you're rendering
