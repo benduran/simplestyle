@@ -1,3 +1,19 @@
+## 4.0.0 (2025-12-02)
+
+### 🔀 Miscellaneous 🔀
+
+- Merge pull request #52 from benduran/style-registry (19f235e44326a570922938d41ea4b970dce944b6)
+- chore: updated jsdoc (3fdec891f53ea5c73614d53addafbccdd314e58f)
+
+
+
+### 🛠️ Fixes 🛠️
+
+- fix: fixed exported names and also improved the documentation (343da7f95399ad701a7fe50dd299855504313efa)
+- fix: fixed updateSheet API not writing to the registry if it was set (0575ba78b967ce9eaedc25971afce9fcc06b23d2)
+
+---
+
 ## 3.4.2-alpha.4 (2025-12-02)
 
 ### ✨ Features ✨
