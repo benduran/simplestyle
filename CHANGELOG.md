@@ -1,3 +1,11 @@
+## 4.0.1 (2025-12-02)
+
+### 🛠️ Fixes 🛠️
+
+- fix: files glob didn't include readme, oops (f4758163d756e22e9d0bcf96db262e736ebb3236)
+
+---
+
 ## 4.0.0 (2025-12-02)
 
 ### 🔀 Miscellaneous 🔀
