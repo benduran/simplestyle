@@ -1,3 +1,11 @@
+## 3.4.2-alpha.1 (2025-12-02)
+
+### 🛠️ Fixes 🛠️
+
+- fix: forgot to export the new function (491efd5fc19b9770ecbbb77e27fda30b650eb7e5)
+
+---
+
 ## 3.4.2-alpha.0 (2025-12-02)
 
 ### ✨ Features ✨
