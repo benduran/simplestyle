@@ -54,6 +54,7 @@ function formatCSSRules(cssRules: Properties): string {
 }
 
 function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+  ruleId: string,
   rules: T,
   options: CreateStylesOptions,
   parentSelector: string | null,
@@ -76,6 +77,7 @@ function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O exten
       guardCloseRuleWrite();
       mediaQueriesBuffer += `${classNameOrCSSRule}{`;
       const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
+        ruleId,
         classNameRules as T,
         options,
         parentSelector,
@@ -90,6 +92,7 @@ function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O exten
       const replaced = classNameOrCSSRule.replaceAll('&', parentSelector);
       for (const selector of replaced.split(/,\s*/)) {
         const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
+          ruleId,
           classNameRules as T,
           options,
           selector,
@@ -99,11 +102,12 @@ function execCreateStyles<T extends SimpleStyleRules, K extends keyof T, O exten
       }
     } else if (!parentSelector && typeof classNameRules === 'object') {
       guardCloseRuleWrite();
-      const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(classNameOrCSSRule);
+      const generated = noGenerateClassName ? classNameOrCSSRule : generateClassName(`${ruleId}_${classNameOrCSSRule}`);
       // @ts-expect-error - yes, we can index this object here, so be quiet
       out[classNameOrCSSRule] = generated;
       const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
       const { mediaQueriesBuffer: mediaQueriesOutput, sheetBuffer: regularOutput } = execCreateStyles(
+        ruleId,
         classNameRules as T,
         options,
         generatedSelector,
@@ -182,6 +186,7 @@ export function rawStyles<T extends SimpleStyleRules, K extends keyof T, O exten
 ) {
   const coerced = coerceCreateStylesOptions(options);
   const { sheetBuffer: sheetContents, mediaQueriesBuffer: mediaQueriesContents } = execCreateStyles(
+    ruleId,
     rules,
     coerced,
     null,
@@ -200,8 +205,8 @@ export function keyframes<T extends Record<string, Properties>>(
   options?: CreateStylesOptions,
 ): [string, string] {
   const coerced = coerceCreateStylesOptions(options);
-  const keyframeName = generateClassName('keyframes_');
-  const { sheetBuffer: keyframesContents } = execCreateStyles(frames, coerced, null, true);
+  const keyframeName = generateClassName(`${ruleId}_keyframes_`);
+  const { sheetBuffer: keyframesContents } = execCreateStyles(ruleId, frames, coerced, null, true);
   const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
   if (coerced.flush) flushSheetContents(ruleId, sheetContents);
   return [keyframeName, sheetContents];
@@ -226,7 +231,7 @@ export default function createStyles<T extends SimpleStyleRules, K extends keyof
     classes: out,
     sheetBuffer: sheetContents,
     mediaQueriesBuffer: mediaQueriesContents,
-  } = execCreateStyles(rules, coerced, null);
+  } = execCreateStyles(ruleId, rules, coerced, null);
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
@@ -244,7 +249,7 @@ export default function createStyles<T extends SimpleStyleRules, K extends keyof
         classes: updatedOut,
         sheetBuffer: updatedSheetContents,
         mediaQueriesBuffer: updatedMediaQueriesContents,
-      } = execCreateStyles(merge(rules, updatedRules), { flush: false }, null);
+      } = execCreateStyles(ruleId, merge(rules, updatedRules), { flush: false }, null);
 
       const updatedMergedContents = `${updatedSheetContents}${updatedMediaQueriesContents}`;
 

@@ -10,8 +10,9 @@ describe('React utilities tests', () => {
   });
 
   it('Should verify useCreateStyles hook generates classnames and inserts the stylesheet', () => {
+    const styleId = 'Bogus-1'
     const Bogus = () => {
-      const classes = useCreateStyles('Bogus-1', {
+      const classes = useCreateStyles(styleId, {
         app: {
           backgroundColor: 'purple',
           fontSize: '16px',
@@ -26,7 +27,7 @@ describe('React utilities tests', () => {
     const result = render(<Bogus />);
     const section = result.getByTestId('app');
     expect(section.classList.length).toBeGreaterThan(0);
-    expect(section.className.startsWith('app_')).toBeTruthy();
+    expect(section.className.startsWith(`${styleId}_app_`)).toBeTruthy();
     const sheet = document.head.querySelector('style');
     expect(sheet).not.toBeNull();
     expect(sheet?.innerHTML).toContain(section.className);

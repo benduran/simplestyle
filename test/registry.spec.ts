@@ -43,7 +43,8 @@ describe('SimpleStyleRegistry', () => {
     const height = '500px';
     const width = '1000px';
 
-    const { classes } = createStyles('backreferences-registry', {
+    const styleId = 'backreferences-registry'
+    const { classes } = createStyles(styleId, {
       someBtn: {
         height,
       },
@@ -61,6 +62,6 @@ describe('SimpleStyleRegistry', () => {
     
     const styles = registry?.getCSS() ?? '';
 
-    expect(styles).toContain(`.someBtn_a{height:${height};}.root_b{background-color:${backgroundColor};font-size:${fontSize};}.root_b > .someBtn_a{width:${width};}`);
+    expect(styles).toContain(`.${styleId}_someBtn_a{height:${height};}.${styleId}_root_b{background-color:${backgroundColor};font-size:${fontSize};}.${styleId}_root_b > .${styleId}_someBtn_a{width:${width};}`);
   });
 });

@@ -265,9 +265,9 @@ describe('createStyles tests', () => {
     setSeed(seed);
     const { classes: s1, stylesheet: rendered1 } = createStyles('s1', rules, { flush: false });
     setSeed(seed);
-    const { classes: s2, stylesheet: rendered2 } = createStyles('s2', rules, { flush: false });
+    const { classes: s2, stylesheet: rendered2 } = createStyles('s1', rules, { flush: false });
     setSeed(seed);
-    const { classes: s3, stylesheet: rendered3 } = createStyles('s3', rules, { flush: false });
+    const { classes: s3, stylesheet: rendered3 } = createStyles('s1', rules, { flush: false });
     expect(s1).toEqual(s2);
     expect(s1).toEqual(s3);
     expect(s2).toEqual(s3);
