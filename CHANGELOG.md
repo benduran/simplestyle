@@ -1,3 +1,11 @@
+## 4.0.3 (2025-12-02)
+
+### 📖 Docs 📖
+
+- docs: updated readme again because oops (6c46990716e6039a354b38830d76f7bd58689ba3)
+
+---
+
 ## 4.0.2 (2025-12-02)
 
 ### 🔀 Miscellaneous 🔀
