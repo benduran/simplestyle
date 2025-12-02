@@ -12,7 +12,7 @@ A concise guide to the core `simplestyle-js` APIs, how they fit together, and ho
 ## Table of Contents
 - [Install](#install)
 - [Quick Start](#quick-start)
-- [API Reference (from `src/index.ts`)](#api-reference-from-srcindexts)
+- [API Reference](#api-reference-from-srcindexts)
 - [Patterns and Tips](#patterns-and-tips)
 - [SSR](#ssr)
   - [SSR steps for most SSR / SSG frameworks (including Next.js)](#ssr-steps-for-most-ssr--ssg-frameworks)
@@ -71,7 +71,7 @@ const Button = (props) => <button {...props} className={classes.root}>Awesome bu
 
 Rules support nested selectors via `&`, media queries, and `$className` back-references to other generated classes.
 
-## API Reference (from `src/index.ts`)
+## API Reference
 
 - `createStyles(ruleId, rules, options?)`
   - Builds a set of class names and CSS from a rules object. Returns `{ classes, stylesheet, updateSheet }`.
