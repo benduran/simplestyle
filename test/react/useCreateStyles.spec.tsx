@@ -1,13 +1,18 @@
 import { fireEvent, render } from '@testing-library/react';
 import { useState } from 'react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useCreateStyles } from '../../src/react/useCreateStyles.js';
 
 describe('React utilities tests', () => {
+  beforeEach(() => {
+    Array.from(document.querySelectorAll('style')).forEach(s => s.remove());
+  });
+
   it('Should verify useCreateStyles hook generates classnames and inserts the stylesheet', () => {
+    const styleId = 'Bogus-1'
     const Bogus = () => {
-      const classes = useCreateStyles({
+      const classes = useCreateStyles(styleId, {
         app: {
           backgroundColor: 'purple',
           fontSize: '16px',
@@ -22,7 +27,7 @@ describe('React utilities tests', () => {
     const result = render(<Bogus />);
     const section = result.getByTestId('app');
     expect(section.classList.length).toBeGreaterThan(0);
-    expect(section.className.startsWith('app_')).toBeTruthy();
+    expect(section.className.startsWith(`${styleId}_app_`)).toBeTruthy();
     const sheet = document.head.querySelector('style');
     expect(sheet).not.toBeNull();
     expect(sheet?.innerHTML).toContain(section.className);
@@ -33,7 +38,7 @@ describe('React utilities tests', () => {
     const Bogus = () => {
       const [changeFont, setChangeFont] = useState(false);
       if (changeFont) debugger;
-      const classes = useCreateStyles({
+      const classes = useCreateStyles('Bogus-2', {
         button: {
           color: changeFont ? 'blue' : 'yellow',
         },

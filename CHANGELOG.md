@@ -1,3 +1,43 @@
+## 3.4.2-alpha.4 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: added function to return the tuples of ids to styles (6bdf17e345690699a904b780ed9efd7fab641868)
+
+---
+
+## 3.4.2-alpha.3 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: render the styleId as the prefix for the generated classnames (293504d9bb76f63dd4551dea741ec56f5cb1631e)
+
+---
+
+## 3.4.2-alpha.2 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: added required support for style ids (02dcacad27303686a86881e483da8e591d21b324)
+
+---
+
+## 3.4.2-alpha.1 (2025-12-02)
+
+### 🛠️ Fixes 🛠️
+
+- fix: forgot to export the new function (491efd5fc19b9770ecbbb77e27fda30b650eb7e5)
+
+---
+
+## 3.4.2-alpha.0 (2025-12-02)
+
+### ✨ Features ✨
+
+- feat: added a style registry option, which should hopefully be useful for SSR (6c994c06798b00784f87189074400cf74726332f)
+
+---
+
 ## 3.4.1 (2025-12-01)
 
 ### 🛠️ Fixes 🛠️

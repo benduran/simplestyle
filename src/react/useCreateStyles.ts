@@ -5,6 +5,7 @@ import { SimpleStyleRules } from '../types.js';
 import { deepEqual } from '../util/index.js';
 
 export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O extends Record<K, string>>(
+  ruleId: string,
   rules: T,
   options?: Partial<Omit<CreateStylesOptions, 'flush'>>,
 ) {
@@ -18,7 +19,9 @@ export function useCreateStyles<T extends SimpleStyleRules, K extends keyof T, O
   const styleTagRef = useRef(typeof document === 'undefined' ? null : document.createElement('style'));
 
   // initialize styles
-  const [styleState, setStyleState] = useState(() => createStyles<T, K, O>(rules, { ...cachedOptions, flush: false }));
+  const [styleState, setStyleState] = useState(() =>
+    createStyles<T, K, O>(ruleId, rules, { ...cachedOptions, flush: false }),
+  );
 
   const { classes, stylesheet, updateSheet } = styleState;
 

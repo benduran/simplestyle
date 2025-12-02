@@ -1,6 +1,6 @@
 {
   "name": "simplestyle-js",
-  "version": "3.4.1",
+  "version": "3.4.2-alpha.4",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "type": "module",
   "repository": {
@@ -40,7 +40,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
     "coveralls": "^3.1.1",
-    "eslint-config-react-yas": "^6.0.10",
+    "eslint-config-react-yas": "^6.0.11",
     "husky": "^9.1.7",
     "postcss": "^8.5.6",
     "react": ">=18",
@@ -127,6 +127,16 @@
       "import": {
         "types": "./dist/esm/react/useCreateStyles.d.ts",
         "default": "./dist/esm/react/useCreateStyles.mjs"
+      }
+    },
+    "./simpleStyleRegistry": {
+      "require": {
+        "types": "./dist/cjs/simpleStyleRegistry.d.ts",
+        "default": "./dist/cjs/simpleStyleRegistry.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/simpleStyleRegistry.d.ts",
+        "default": "./dist/esm/simpleStyleRegistry.mjs"
       }
     },
     "./types": {
