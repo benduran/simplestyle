@@ -1,3 +1,10 @@
+# simplestyle-js
+
+An ultra-tiny, neat, easy-to-use CSS-in-JS library with SSR support,
+tiny bundle size and only *one runtime dependency*.
+
+`6.06kB` / `2.55kB gzip` ([courtesy of bundlejs.com](https://bundlejs.com/?q=simplestyle-js%404.0.1))
+
 # Simplestyle-js Reference
 
 A concise guide to the core `simplestyle-js` APIs, how they fit together, and how to use them in browser and server-rendered apps (including Next.js).
