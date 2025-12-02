@@ -42,4 +42,16 @@ ${contents}`,
       '',
     );
   }
+
+  /**
+   * returns an array of tuples, Array<[string, string]>,
+   * where the first item in the tuple is the ID for the style rule
+   * and the second item is the actual CSS.
+   * Use this if you need to fully-control how you're rendering
+   * style tags BUT BE SURE TO USE THE ID or else HMR
+   * won't work during local development
+   */
+  getRulesById() {
+    return [...this.sheets.entries()];
+  }
 }
