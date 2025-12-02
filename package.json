@@ -129,6 +129,16 @@
         "default": "./dist/esm/react/useCreateStyles.mjs"
       }
     },
+    "./simpleStyleRegistry": {
+      "require": {
+        "types": "./dist/cjs/simpleStyleRegistry.d.ts",
+        "default": "./dist/cjs/simpleStyleRegistry.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/simpleStyleRegistry.d.ts",
+        "default": "./dist/esm/simpleStyleRegistry.mjs"
+      }
+    },
     "./types": {
       "require": {
         "types": "./dist/cjs/types.d.ts",
