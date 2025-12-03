@@ -1,3 +1,11 @@
+## 4.1.2 (2025-12-03)
+
+### 🛠️ Fixes 🛠️
+
+- fix: fixed issue where keyframes and raw styles aren't written to registry if registry is used (3084125c867d31e388cf3da561c7dbcd197d23e4)
+
+---
+
 ## 4.1.1 (2025-12-02)
 
 ### 🔀 Miscellaneous 🔀
