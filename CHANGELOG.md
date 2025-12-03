@@ -1,3 +1,17 @@
+## 4.1.3 (2025-12-03)
+
+### 📖 Docs 📖
+
+- docs: updated readme (bc547d7123b581828744da8390926599521e40f1)
+
+
+
+### 🛠️ Fixes 🛠️
+
+- fix: fixed how keyframes and raw styles are rendered to the registry (1f4c94b4c18e2d77d3bb14b9cde2c8b4fd341211)
+
+---
+
 ## 4.1.2 (2025-12-03)
 
 ### 🛠️ Fixes 🛠️
