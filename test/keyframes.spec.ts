@@ -4,7 +4,7 @@ import { keyframes } from '../src/index.js';
 
 describe('Keyframes generation', () => {
   it('Should generate simple animation keyframes', () => {
-    const [keyframeName, sheetContents] = keyframes('simple-animation', {
+    const { keyframeName, stylesheet } = keyframes('simple-animation', {
       '0%': {
         width: '100px',
       },
@@ -14,6 +14,6 @@ describe('Keyframes generation', () => {
     });
     expect(keyframeName).toBeDefined();
     expect(keyframeName.length).toBeGreaterThan(0);
-    expect(sheetContents).toBe(`@keyframes ${keyframeName}{0%{width:100px;}100%{width:200px;}}`);
+    expect(stylesheet).toBe(`@keyframes ${keyframeName}{0%{width:100px;}100%{width:200px;}}`);
   });
 });

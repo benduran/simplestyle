@@ -193,9 +193,10 @@ export function rawStyles<T extends SimpleStyleRules>(
   rules: T,
   options?: Partial<CreateStylesOptions>,
 ) {
+  const rawStylesId = `${ruleId}_raw`;
   const coerced = coerceCreateStylesOptions(options);
   const { sheetBuffer: sheetContents, mediaQueriesBuffer: mediaQueriesContents } = execCreateStyles(
-    ruleId,
+    rawStylesId,
     rules,
     coerced,
     null,
@@ -204,7 +205,11 @@ export function rawStyles<T extends SimpleStyleRules>(
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
-  if (coerced.flush) flushSheetContents(ruleId, mergedContents, options);
+  if (options?.registry) {
+    options.registry.add(rawStylesId, mergedContents);
+  } else if (coerced.flush) {
+    flushSheetContents(rawStylesId, mergedContents, options);
+  }
   return mergedContents;
 }
 
@@ -218,13 +223,17 @@ export function keyframes<T extends Record<string, Properties>>(
   ruleId: string,
   frames: T,
   options?: CreateStylesOptions,
-): [string, string] {
+) {
   const coerced = coerceCreateStylesOptions(options);
-  const keyframeName = generateClassName(`${ruleId}_keyframes_`);
+  const keyframeName = generateClassName(`${ruleId}_keyframes`);
   const { sheetBuffer: keyframesContents } = execCreateStyles(ruleId, frames, coerced, null, true);
-  const sheetContents = `@keyframes ${keyframeName}{${keyframesContents}}`;
-  if (coerced.flush) flushSheetContents(ruleId, sheetContents);
-  return [keyframeName, sheetContents];
+  const stylesheet = `@keyframes ${keyframeName}{${keyframesContents}}`;
+  if (options?.registry) {
+    options.registry.add(keyframeName, keyframesContents);
+  } else if (coerced.flush) {
+    flushSheetContents(ruleId, stylesheet);
+  }
+  return { keyframeName, stylesheet };
 }
 
 export function makeKeyframes(registry: SimpleStyleRegistry) {
