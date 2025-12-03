@@ -225,15 +225,15 @@ export function keyframes<T extends Record<string, Properties>>(
   options?: CreateStylesOptions,
 ) {
   const coerced = coerceCreateStylesOptions(options);
-  const keyframeName = generateClassName(`${ruleId}_keyframes`);
-  const { sheetBuffer: keyframesContents } = execCreateStyles(ruleId, frames, coerced, null, true);
-  const stylesheet = `@keyframes ${keyframeName}{${keyframesContents}}`;
+  const keyframeId = generateClassName(`${ruleId}_keyframes`);
+  const { sheetBuffer: keyframesContents } = execCreateStyles(keyframeId, frames, coerced, null, true);
+  const stylesheet = `@keyframes ${keyframeId}{${keyframesContents}}`;
   if (options?.registry) {
-    options.registry.add(keyframeName, keyframesContents);
+    options.registry.add(keyframeId, stylesheet);
   } else if (coerced.flush) {
-    flushSheetContents(ruleId, stylesheet);
+    flushSheetContents(keyframeId, stylesheet);
   }
-  return { keyframeName, stylesheet };
+  return { keyframe: keyframeId, stylesheet };
 }
 
 export function makeKeyframes(registry: SimpleStyleRegistry) {

@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react';
 import { useState } from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { useCreateStyles } from '../../src/react/useCreateStyles.js';
+import { useCreateStyles } from '../../react/useCreateStyles.js';
 
 describe('React utilities tests', () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { deepEqual } from '../src/util/index.js';
+import { deepEqual } from '../util/index.js';
 
 describe('Deep Object Equality utility', () => {
   it('Should veryify two simple objects are not equal', () => {
