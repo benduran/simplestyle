@@ -94,7 +94,7 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
 
 - `keyframes(ruleId, frames, options?)`
   - Generates a unique animation name and accompanying `@keyframes` CSS.
-  - Returns `[animationName, stylesheet]`. Respects `flush` and `insertBefore/After` options.
+  - Returns `{ keyframe: string; stylesheet: string; }`. Respects `flush` and `insertBefore/After` options.
 
 - `rawStyles(ruleId, rules, options?)`
   - Writes rules without generating new class names. Keys must already be selectors (e.g., `html`, `body *`, `.app`).
