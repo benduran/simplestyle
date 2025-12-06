@@ -1,3 +1,17 @@
+## 4.3.0 (2025-12-06)
+
+### 🛠️ Fixes 🛠️
+
+- fix: removed biome as a prod dep (f7e693169e226b389d3036adee6e78ceceaf796f)
+
+
+
+### ✨ Features ✨
+
+- feat: added astro export to package.json (3f71305805a043e35863b725cee9a90bbd39ec38)
+
+---
+
 ## 4.2.1-beta.0 (2025-12-06)
 
 ### ✨ Features ✨
