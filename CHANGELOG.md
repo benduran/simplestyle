@@ -1,3 +1,11 @@
+## 4.2.1-beta.0 (2025-12-06)
+
+### ✨ Features ✨
+
+- feat: added a next.js and astro wrapper for convenience (de0ef26889f301af2d65ebfe9b173adacba355af)
+
+---
+
 ## 4.2.0 (2025-12-03)
 
 ### 🔀 Miscellaneous 🔀
