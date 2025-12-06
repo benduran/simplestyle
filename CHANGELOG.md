@@ -1,3 +1,11 @@
+## 4.3.1 (2025-12-06)
+
+### 📖 Docs 📖
+
+- docs: updated docs to have links to the official next.js and astro integrations (f456859e7562b93b0c3f5622edd85f6b8e603e49)
+
+---
+
 ## 4.3.0 (2025-12-06)
 
 ### 🛠️ Fixes 🛠️
