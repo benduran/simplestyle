@@ -13,12 +13,12 @@
   ],
   "scripts": {
     "build": "bun run clean && bun run build:package",
-    "build:package": "ts-duality --clean",
+    "build:package": "bun run --bun ts-duality --clean",
     "clean": "rm -rf ./dist",
     "coveralls": "bun run test:coverage && bun run coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
-    "lint": "eslint './src/**/*.ts'",
-    "lint:fixall": "eslint './src/**/*.ts' --fix",
+    "lint": "biome check './src'",
+    "lint:fix": "biome check --write './src'",
     "test:coverage": "bun run --bun vitest run --coverage",
     "test": "bun run --bun vitest run",
     "test:watch": "bun run --bun vitest"
@@ -33,6 +33,7 @@
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "astro": ">=5",
     "@better-builds/lets-version": "^1.6.0",
     "@testing-library/react": "^16.3.0",
     "@types/autoprefixer": "^10.2.4",
@@ -53,8 +54,13 @@
     "vitest": "^4.0.14"
   },
   "dependencies": {
+    "@biomejs/biome": "^2.3.8",
     "csstype": "^3.2.3",
     "deepmerge": "^4.3.1"
+  },
+  "optionalDependencies": {
+    "astro": ">=5",
+    "next": ">=15"
   },
   "peerDependencies": {
     "react": ">=16.8"

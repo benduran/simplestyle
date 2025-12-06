@@ -1,3 +1,6 @@
 {
-  "editor.formatOnSave": false
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "prettier.enable": false,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome"
 }
