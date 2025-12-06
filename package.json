@@ -46,6 +46,7 @@
     "@types/react-dom": ">=18",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
+    "@biomejs/biome": "^2.3.8",
     "coveralls": "^3.1.1",
     "eslint-config-react-yas": "^6.0.11",
     "husky": "^9.1.7",
@@ -59,7 +60,6 @@
     "vitest": "^4.0.14"
   },
   "dependencies": {
-    "@biomejs/biome": "^2.3.8",
     "csstype": "^3.2.3",
     "deepmerge": "^4.3.1"
   },
