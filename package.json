@@ -1,6 +1,6 @@
 {
   "name": "simplestyle-js",
-  "version": "4.2.0",
+  "version": "4.2.1-beta.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "type": "module",
   "repository": {
@@ -11,14 +11,19 @@
     "dist/**",
     "README.md"
   ],
+  "ts-duality": {
+    "extraExports": {
+      "./astro/SimpleStyleProvider": "./dist/esm/astro/SimpleStyleProvider.astro"
+    }
+  },
   "scripts": {
     "build": "bun run clean && bun run build:package",
-    "build:package": "ts-duality --clean",
+    "build:package": "bun run --bun ts-duality --clean --copyOtherFiles",
     "clean": "rm -rf ./dist",
     "coveralls": "bun run test:coverage && bun run coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
-    "lint": "eslint './src/**/*.ts'",
-    "lint:fixall": "eslint './src/**/*.ts' --fix",
+    "lint": "biome check './src'",
+    "lint:fix": "biome check --write './src'",
     "test:coverage": "bun run --bun vitest run --coverage",
     "test": "bun run --bun vitest run",
     "test:watch": "bun run --bun vitest"
@@ -33,6 +38,7 @@
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "astro": ">=5",
     "@better-builds/lets-version": "^1.6.0",
     "@testing-library/react": "^16.3.0",
     "@types/autoprefixer": "^10.2.4",
@@ -40,6 +46,7 @@
     "@types/react-dom": ">=18",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
+    "@biomejs/biome": "^2.3.8",
     "coveralls": "^3.1.1",
     "eslint-config-react-yas": "^6.0.11",
     "husky": "^9.1.7",
@@ -55,6 +62,10 @@
   "dependencies": {
     "csstype": "^3.2.3",
     "deepmerge": "^4.3.1"
+  },
+  "optionalDependencies": {
+    "astro": ">=5",
+    "next": ">=15"
   },
   "peerDependencies": {
     "react": ">=16.8"
@@ -90,6 +101,26 @@
         "default": "./dist/esm/index.mjs"
       }
     },
+    "./next/SimpleStyleProvider": {
+      "require": {
+        "types": "./dist/cjs/next/SimpleStyleProvider.d.ts",
+        "default": "./dist/cjs/next/SimpleStyleProvider.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/next/SimpleStyleProvider.d.ts",
+        "default": "./dist/esm/next/SimpleStyleProvider.mjs"
+      }
+    },
+    "./next": {
+      "require": {
+        "types": "./dist/cjs/next/index.d.ts",
+        "default": "./dist/cjs/next/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/next/index.d.ts",
+        "default": "./dist/esm/next/index.mjs"
+      }
+    },
     "./numToAlpha": {
       "require": {
         "types": "./dist/cjs/numToAlpha.d.ts",
@@ -108,26 +139,6 @@
       "import": {
         "types": "./dist/esm/plugins.d.ts",
         "default": "./dist/esm/plugins.mjs"
-      }
-    },
-    "./react": {
-      "require": {
-        "types": "./dist/cjs/react/index.d.ts",
-        "default": "./dist/cjs/react/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/react/index.d.ts",
-        "default": "./dist/esm/react/index.mjs"
-      }
-    },
-    "./react/useCreateStyles": {
-      "require": {
-        "types": "./dist/cjs/react/useCreateStyles.d.ts",
-        "default": "./dist/cjs/react/useCreateStyles.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/react/useCreateStyles.d.ts",
-        "default": "./dist/esm/react/useCreateStyles.mjs"
       }
     },
     "./simpleStyleRegistry": {
@@ -170,7 +181,8 @@
         "default": "./dist/esm/util/index.mjs"
       }
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./astro/SimpleStyleProvider": "./dist/esm/astro/SimpleStyleProvider.astro"
   },
   "module": "./dist/esm/index.mjs",
   "types": "./dist/cjs/index.d.ts",

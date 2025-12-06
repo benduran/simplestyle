@@ -1,0 +1,16 @@
+---
+import type { SimpleStyleRegistry } from '../simpleStyleRegistry';
+
+interface Props {
+  registry: SimpleStyleRegistry;
+}
+
+const { registry } = Astro.props;
+
+const cssRulesById = registry.getRulesById();
+---
+{cssRulesById.map(([ruleId, css]) => (
+  <style id={ruleId} set:html={css}></style>
+))}
+
+<slot />
