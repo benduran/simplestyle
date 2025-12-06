@@ -131,6 +131,19 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
 
 ## SSR
 
+### Next.js
+
+Use the official Next.js integration here and wrap the `SimpleStyleProvider` around your `layout` file. 
+Check out this [Code Sanbox w/Next.js integration to see how it works](https://codesandbox.io/p/devbox/t3smf4).
+
+
+### Astro
+
+Use the official Astro integration here and wrap your page's `<head />` with the `SimpleStyleProvider`.
+Check out this [Code Sanbox w/Astro integration to see how it works](https://codesandbox.io/p/devbox/mq9twt).
+
+**General SSR Concepts**
+
 `simplestyle-js` is intentionally unopinionated, especially when it comes to deep integrations with various frameworks. This also applies to SSR / Server-side rendering.
 The core APIs needed to make this work are:
 
@@ -139,7 +152,7 @@ The core APIs needed to make this work are:
 - `makeCreateStyle(registry)` - returns a `createStyles()` function that is locked to your StyleSheet registry
 - `makeKeyframes(registry)` - returns a `keyframes()` function that is locaked to your StyleSheet registry
 
-### SSR steps for most SSR / SSG frameworks (including Next.js)
+### SSR steps for most SSR / SSG frameworks
 
 #### 1. Set your seed, create a SimpleStyleRegistry and your style functions
 
