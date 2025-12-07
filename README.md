@@ -12,10 +12,12 @@ A concise guide to the core `simplestyle-js` APIs, how they fit together, and ho
 ## Table of Contents
 - [Install](#install)
 - [Quick Start](#quick-start)
-- [API Reference](#api-reference-from-srcindexts)
+- [API Reference](#api-reference)
 - [Patterns and Tips](#patterns-and-tips)
 - [SSR](#ssr)
-  - [SSR steps for most SSR / SSG frameworks (including Next.js)](#ssr-steps-for-most-ssr--ssg-frameworks)
+  - [Next.js](#nextjs)
+  - [Astro](#astro)
+  - [SSR steps for most SSR / SSG frameworks](#ssr-steps-for-most-ssr--ssg-frameworks)
     - [1. Set your seed, create a SimpleStyleRegistry and your style functions](#1-set-your-seed-create-a-simplestyleregistry-and-your-style-functions)
     - [2. Render the generated styles in your HTML](#2-render-the-generated-styles-in-your-html)
     - [3. Create your styles and have fun!](#3-create-your-styles-and-have-fun)
@@ -133,14 +135,158 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
 
 ### Next.js
 
-Use the official Next.js integration here and wrap the `SimpleStyleProvider` around your `layout` file. 
-Check out this [Code Sanbox w/Next.js integration to see how it works](https://codesandbox.io/p/devbox/t3smf4).
+Create your style registry and scoped CSS functions, then use the official Next.js integration here and wrap the `SimpleStyleProvider` around your `layout` file.
+
+```typescript
+// src/styleRegistry.ts
+
+import { makeCreateStyles, makeKeyframes, setSeed } from "simplestyle-js";
+import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
+
+// ensures deterministic creation of CSS classnames
+setSeed(11223344);
+
+export const StyleRegistry = new SimpleStyleRegistry();
+
+export const createStyles = makeCreateStyles(StyleRegistry);
+export const keyframes = makeKeyframes(StyleRegistry);
+```
+
+```tsx
+// src/app/layout.tsx
+import type { Metadata } from "next";
+import { SimpleStyleProvider } from "simplestyle-js/next";
+import { createStyles, StyleRegistry } from "./styleRegistry";
+
+// start writing CSS!
+const { classes } = createStyles('RootLayoutStyles', {
+  rootLayout: {
+    backgroundColor: 'pink',
+    padding: '1rem',
+  },
+});
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className={classes.rootLayout}>
+        <SimpleStyleProvider registry={StyleRegistry}>
+          {children}
+        </SimpleStyleProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+Check out this [Code Sandbox w/Next.js integration to see how it works](https://codesandbox.io/p/devbox/t3smf4).
 
 
 ### Astro
 
-Use the official Astro integration here and wrap your page's `<head />` with the `SimpleStyleProvider`.
-Check out this [Code Sanbox w/Astro integration to see how it works](https://codesandbox.io/p/devbox/mq9twt).
+Create your style registry and scoped CSS functions, then use the official Astro integration here and wrap the `SimpleStyleProvider` around your page's `<head />` contents.
+
+```typescript
+// src/styleRegistry.ts
+
+import { makeCreateStyles, makeKeyframes, setSeed } from "simplestyle-js";
+import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
+
+// ensures deterministic creation of CSS classnames
+setSeed(11223344);
+
+export const StyleRegistry = new SimpleStyleRegistry();
+
+export const createStyles = makeCreateStyles(StyleRegistry);
+export const keyframes = makeKeyframes(StyleRegistry);
+```
+
+```astro
+---
+import SimpleStyleProvider from "simplestyle-js/astro/SimpleStyleProvider";
+
+import {
+  StyleRegistry,
+  createStyles,
+  keyframes,
+  rawStyles,
+} from "../styleRegistry";
+
+rawStyles("basic-css-reset", {
+  "*": {
+    boxSizing: "border-box",
+  },
+  "body, html": {
+    fontFamily: "sans-serif",
+    fontSize: "16px",
+    padding: 0,
+  },
+});
+
+// make changes to me and I will hot reload!
+const { keyframe } = keyframes("HomePage", {
+  "0%": {
+    backgroundColor: "#cc2222cc",
+  },
+  "33%": {
+    backgroundColor: "#22cc22cc",
+  },
+  "66%": {
+    backgroundColor: "#2222cccc",
+  },
+  "100%": {
+    backgroundColor: "#cc2222cc",
+  },
+});
+
+const { classes } = createStyles("HomePage", {
+  background: {
+    alignItems: "center",
+    animation: `${keyframe} 5s linear infinite`,
+    display: "flex",
+    flexFlow: "column",
+    height: "90vh",
+    justifyContent: "center",
+    margin: "0 auto",
+    width: "90vw",
+  },
+  content: {
+    backgroundColor: "#00000033",
+    borderRadius: "4px",
+    color: "white",
+    padding: "1rem",
+  },
+});
+---
+
+<html lang="en">
+  <head>
+    <SimpleStyleProvider registry={StyleRegistry}>
+      <meta charset="utf-8" />
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <meta name="viewport" content="width=device-width" />
+      <meta name="generator" content={Astro.generator} />
+      <title>Astro</title>
+    </SimpleStyleProvider>
+  </head>
+  <body class={classes.background}>
+    <div class={classes.content}>
+      <h1>Astro</h1>
+      <p>
+        Checkout the CSS class and animation applied to the body, which is
+        making my colors changes.
+      </p>
+      <p>Feel free to edit me and I'll hot reload!</p>
+    </div>
+  </body>
+</html>
+```
+
+Check out this [Code Sandbox w/Astro integration to see how it works](https://codesandbox.io/p/devbox/mq9twt).
 
 **General SSR Concepts**
 
