@@ -1,3 +1,11 @@
+## 4.3.2 (2025-12-07)
+
+### 🔀 Miscellaneous 🔀
+
+- doc: updated readme with better next.js and astro docs (c8f1c80d14f2e2e46d8dea856cd6fa47dc9aa2ee)
+
+---
+
 ## 4.3.1 (2025-12-06)
 
 ### 📖 Docs 📖
