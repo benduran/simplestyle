@@ -101,6 +101,16 @@
         "default": "./dist/esm/index.mjs"
       }
     },
+    "./makeStyles": {
+      "require": {
+        "types": "./dist/cjs/makeStyles.d.ts",
+        "default": "./dist/cjs/makeStyles.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/makeStyles.d.ts",
+        "default": "./dist/esm/makeStyles.mjs"
+      }
+    },
     "./next/SimpleStyleProvider": {
       "require": {
         "types": "./dist/cjs/next/SimpleStyleProvider.d.ts",

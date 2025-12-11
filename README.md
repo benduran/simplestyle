@@ -166,7 +166,6 @@ const { classes } = createStyles('my-component', vars => ({
 }));
 ```
 
-
 ## SSR
 
 ### Next.js
