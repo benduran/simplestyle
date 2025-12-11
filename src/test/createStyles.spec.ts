@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { createStyles, rawStyles, setSeed } from '../index.js';
-import { SimpleStyleRules } from '../types.js';
+import type { SimpleStyleRules } from '../types.js';
 
 describe('createStyles tests', () => {
   beforeEach(() => {
-    Array.from(document.querySelectorAll('style')).forEach(s => s.remove());
+    Array.from(document.querySelectorAll('style')).forEach((s) => {
+      s.remove();
+    });
   });
   it('Should generate some basic styles', () => {
     const rules: SimpleStyleRules = {
@@ -17,14 +19,16 @@ describe('createStyles tests', () => {
         backgroundColor: 'red',
       },
     };
-    const { classes, stylesheet } = createStyles('basic-styles', rules);
+    const { classes, stylesheet } = createStyles('basic-styles', () => rules);
 
-    Object.keys(rules).forEach(key => {
+    Object.keys(rules).forEach((key) => {
       expect(classes[key]).toBeDefined();
       expect(classes[key]?.length).toBeGreaterThan(0);
       expect(classes[key]).toContain(key);
     });
-    expect(stylesheet).toContain(`.${classes.one}{display:flex;position:fixed;}`);
+    expect(stylesheet).toContain(
+      `.${classes.one}{display:flex;position:fixed;}`,
+    );
     expect(stylesheet).toContain(`.${classes.two}{background-color:red;}`);
   });
   it('Should generate some basic styles for a simple nested structure', () => {
@@ -44,7 +48,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const { classes, stylesheet } = createStyles('basic-nested', rules);
+    const { classes, stylesheet } = createStyles('basic-nested', () => rules);
 
     expect(classes.nested).toBeDefined();
     expect(classes.nested?.length).toBeGreaterThan(0);
@@ -54,10 +58,14 @@ describe('createStyles tests', () => {
     expect(classes.yarg?.length).toBeGreaterThan(0);
     expect(classes.yarg).toContain('yarg');
 
-    expect(stylesheet).toContain(`.${classes.nested} > span{font-family:Arial;}`);
+    expect(stylesheet).toContain(
+      `.${classes.nested} > span{font-family:Arial;}`,
+    );
     expect(stylesheet).toContain(`.${classes.nested}{font-size:20px;}`);
     expect(stylesheet).toContain(`.${classes.yarg}:hover{top:-1px;}`);
-    expect(stylesheet).toContain(`.${classes.yarg}:focus{background-color:purple;}`);
+    expect(stylesheet).toContain(
+      `.${classes.yarg}:focus{background-color:purple;}`,
+    );
   });
   it('Should allow backreferences', () => {
     const rules: SimpleStyleRules = {
@@ -74,12 +82,16 @@ describe('createStyles tests', () => {
         lineHeight: '1.5',
       },
     };
-    const { classes, stylesheet } = createStyles('backreferences', rules);
+    const { classes, stylesheet } = createStyles('backreferences', () => rules);
 
     expect(stylesheet).toContain(`.${classes.a}{text-align:center;}`);
     expect(stylesheet).toContain(`.${classes.b}{line-height:1.5;}`);
-    expect(stylesheet).toContain(`.${classes.b} .${classes.a}{font-size:30px;}`);
-    expect(stylesheet).toContain(`.${classes.b} .${classes.a}:hover{font-size:99px;}`);
+    expect(stylesheet).toContain(
+      `.${classes.b} .${classes.a}{font-size:30px;}`,
+    );
+    expect(stylesheet).toContain(
+      `.${classes.b} .${classes.a}:hover{font-size:99px;}`,
+    );
   });
   it('Should allow simple media queries', () => {
     const rules: SimpleStyleRules = {
@@ -94,7 +106,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const { classes, stylesheet } = createStyles('media-queries', rules);
+    const { classes, stylesheet } = createStyles('media-queries', () => rules);
 
     expect(stylesheet).toBe(
       `.${classes.responsive} button{padding:8px;}@media (max-width: 960px){.${classes.responsive} button{padding:24px;}}`,
@@ -118,14 +130,25 @@ describe('createStyles tests', () => {
         gridTemplateColumns: 'repeat(4, 1fr)',
       },
     };
-    const { classes, stylesheet } = createStyles('multiple-media-queries', rules);
+    const { classes, stylesheet } = createStyles(
+      'multiple-media-queries',
+      () => rules,
+    );
 
     expect(stylesheet).toContain(`.${classes.simple}{width:100%;}`);
-    expect(stylesheet).toContain(`.${classes.deep}{color:pink;grid-template-columns:repeat(4, 1fr);}`);
-    expect(stylesheet).toContain(`.${classes.deep} > span button{padding:1em;}`);
+    expect(stylesheet).toContain(
+      `.${classes.deep}{color:pink;grid-template-columns:repeat(4, 1fr);}`,
+    );
+    expect(stylesheet).toContain(
+      `.${classes.deep} > span button{padding:1em;}`,
+    );
     expect(stylesheet).toContain(`.${classes.deep} > div button{padding:1em;}`);
-    expect(stylesheet).toContain(`@media(max-width: 600px){.${classes.deep} > div button{padding:0.5em;}}`);
-    expect(stylesheet).toContain(`@media(max-width: 600px){.${classes.deep} > span button{padding:0.5em;}}`);
+    expect(stylesheet).toContain(
+      `@media(max-width: 600px){.${classes.deep} > div button{padding:0.5em;}}`,
+    );
+    expect(stylesheet).toContain(
+      `@media(max-width: 600px){.${classes.deep} > span button{padding:0.5em;}}`,
+    );
   });
   it('Should allow a media query with multiple children', () => {
     const rules: SimpleStyleRules = {
@@ -142,7 +165,10 @@ describe('createStyles tests', () => {
         transition: 'background-color .2s ease',
       },
     };
-    const { classes, stylesheet } = createStyles('media-query-with-children', rules);
+    const { classes, stylesheet } = createStyles(
+      'media-query-with-children',
+      () => rules,
+    );
 
     // eslint-disable-next-line max-len
     expect(stylesheet).toBe(
@@ -165,7 +191,10 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const { classes, stylesheet } = createStyles('media-query-no-clobbering', rules);
+    const { classes, stylesheet } = createStyles(
+      'media-query-no-clobbering',
+      () => rules,
+    );
 
     expect(stylesheet).toBe(
       `${mediaQuery}{.${classes.appBarGrid}{grid-template-columns:1fr 2fr;}}${mediaQuery}{.${classes.appHeaderHomeLink} > b{display:none;}}`,
@@ -183,9 +212,11 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const styleContents = rawStyles('raw', rules);
+    const styleContents = rawStyles('raw', () => rules);
 
-    expect(styleContents).toContain('body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}');
+    expect(styleContents).toContain(
+      'body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}',
+    );
     expect(styleContents).toContain('a:hover{text-decoration:none;}');
   });
   it('Should allow creation of top-level "raw" styles with nested media queries', () => {
@@ -200,7 +231,7 @@ describe('createStyles tests', () => {
         minWidth: '300px',
       },
     };
-    const styleContents = rawStyles('raw-media', rules);
+    const styleContents = rawStyles('raw-media', () => rules);
     expect(styleContents).toBe(
       'button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}',
     );
@@ -228,9 +259,27 @@ describe('createStyles tests', () => {
         padding: '1rem',
       },
     };
-    const { classes: s1, stylesheet: rendered1 } = createStyles('s1', rules, { flush: false });
-    const { classes: s2, stylesheet: rendered2 } = createStyles('s2', rules, { flush: false });
-    const { classes: s3, stylesheet: rendered3 } = createStyles('s3', rules, { flush: false });
+    const { classes: s1, stylesheet: rendered1 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
+    const { classes: s2, stylesheet: rendered2 } = createStyles(
+      's2',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
+    const { classes: s3, stylesheet: rendered3 } = createStyles(
+      's3',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     expect(s1).not.toEqual(s2);
     expect(s1).not.toEqual(s3);
     expect(s2).not.toEqual(s3);
@@ -263,11 +312,29 @@ describe('createStyles tests', () => {
     };
     const seed = 1234;
     setSeed(seed);
-    const { classes: s1, stylesheet: rendered1 } = createStyles('s1', rules, { flush: false });
+    const { classes: s1, stylesheet: rendered1 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     setSeed(seed);
-    const { classes: s2, stylesheet: rendered2 } = createStyles('s1', rules, { flush: false });
+    const { classes: s2, stylesheet: rendered2 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     setSeed(seed);
-    const { classes: s3, stylesheet: rendered3 } = createStyles('s1', rules, { flush: false });
+    const { classes: s3, stylesheet: rendered3 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     expect(s1).toEqual(s2);
     expect(s1).toEqual(s3);
     expect(s2).toEqual(s3);
@@ -278,13 +345,14 @@ describe('createStyles tests', () => {
   it('Should generate styles and allow inserting after a desired element', () => {
     const insertAfter = document.createElement('div');
     document.body.appendChild(insertAfter);
-    const { stylesheet: styleContents } = createStyles('insert-after',
-      {
+    const { stylesheet: styleContents } = createStyles(
+      'insert-after',
+      () => ({
         test: {
           backgroundColor: 'purple',
           fontSize: '40px',
         },
-      },
+      }),
       { insertAfter },
     );
     const foundStyle = document.body.querySelector('style');
@@ -304,13 +372,14 @@ describe('createStyles tests', () => {
   it('Should generate styles and allow inserting before desired element', () => {
     const insertBefore = document.createElement('div');
     document.body.appendChild(insertBefore);
-    const { stylesheet: styleContents } = createStyles('insert-before',
-      {
+    const { stylesheet: styleContents } = createStyles(
+      'insert-before',
+      () => ({
         test: {
           backgroundColor: 'purple',
           fontSize: '40px',
         },
-      },
+      }),
       { insertBefore },
     );
     const foundStyle = document.body.querySelector('style');

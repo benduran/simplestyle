@@ -17,7 +17,8 @@ describe('generateClassName tests', () => {
   });
   it('Should throw errors if an invalid seed is provided', () => {
     try {
-      setSeed('bad' as any);
+      // @ts-expect-error - suppress the typing here solely for the test case
+      setSeed('bad');
     } catch (error) {
       const e = error as Error;
       expect(e).toBeInstanceOf(Error);

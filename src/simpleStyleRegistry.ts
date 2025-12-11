@@ -1,5 +1,8 @@
 /* eslint-disable unicorn/prefer-query-selector */
-const doc = globalThis.document as typeof globalThis.document | null | undefined;
+const doc = globalThis.document as
+  | typeof globalThis.document
+  | null
+  | undefined;
 
 /**
  * Acts as an accumulator for all

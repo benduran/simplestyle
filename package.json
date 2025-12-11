@@ -1,6 +1,6 @@
 {
   "name": "simplestyle-js",
-  "version": "4.3.2",
+  "version": "4.3.3-beta.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "type": "module",
   "repository": {
@@ -101,6 +101,16 @@
         "default": "./dist/esm/index.mjs"
       }
     },
+    "./makeStyles": {
+      "require": {
+        "types": "./dist/cjs/makeStyles.d.ts",
+        "default": "./dist/cjs/makeStyles.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/makeStyles.d.ts",
+        "default": "./dist/esm/makeStyles.mjs"
+      }
+    },
     "./next/SimpleStyleProvider": {
       "require": {
         "types": "./dist/cjs/next/SimpleStyleProvider.d.ts",
@@ -186,5 +196,8 @@
   },
   "module": "./dist/esm/index.mjs",
   "types": "./dist/cjs/index.d.ts",
-  "main": "./dist/cjs/index.cjs"
+  "main": "./dist/cjs/index.cjs",
+  "trustedDependencies": [
+    "@swc/core"
+  ]
 }

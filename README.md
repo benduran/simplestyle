@@ -14,6 +14,7 @@ A concise guide to the core `simplestyle-js` APIs, how they fit together, and ho
 - [Quick Start](#quick-start)
 - [API Reference](#api-reference)
 - [Patterns and Tips](#patterns-and-tips)
+  - [Creating reusable variables and / or design system-like tokens](#reusable-variables)
 - [SSR](#ssr)
   - [Next.js](#nextjs)
   - [Astro](#astro)
@@ -51,10 +52,10 @@ yarn add simplestyle-js
 
 ## Quick Start
 
-```tsx
+```jsx
 import createStyles from 'simplestyle-js';
 
-const { classes } = createStyles('Button', {
+const { classes } = createStyles('Button', () => ({
   root: {
     '&:hover': { backgroundColor: '#2d6cdf' },
     '@media (max-width: 768px)': { padding: '10px 12px' },
@@ -63,7 +64,7 @@ const { classes } = createStyles('Button', {
     color: '#fff',
     padding: '12px 16px',
   },
-});
+}));
 
 document.querySelector('button')?.classList.add(classes.root);
 
@@ -83,7 +84,7 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
   - `updateSheet(updatedRules)` merges rules and updates the existing sheet (works when `flush` is `true` or a `registry` is provided). Returns `{ classes, stylesheet } | null`.
   - Example:
     ```ts
-    const { classes, stylesheet } = createStyles('Nav', {
+    const { classes, stylesheet } = createStyles('Nav', () => ({
       wrapper: { display: 'flex', gap: 12 },
       link: {
         '&:hover': { textDecoration: 'underline' },
@@ -91,24 +92,29 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
       '@media (max-width: 600px)': {
         wrapper: { flexDirection: 'column' },
       },
-    }, { flush: false }); // do not write to the DOM automatically
+    }), { flush: false }); // do not write to the DOM automatically
     ```
 
-- `keyframes(ruleId, frames, options?)`
+- `keyframes(ruleId, framesFnc, options?)`
   - Generates a unique animation name and accompanying `@keyframes` CSS.
   - Returns `{ keyframe: string; stylesheet: string; }`. Respects `flush` and `insertBefore/After` options.
 
-- `rawStyles(ruleId, rules, options?)`
+- `rawStyles(ruleId, rulesFnc, options?)`
   - Writes rules without generating new class names. Keys must already be selectors (e.g., `html`, `body *`, `.app`).
   - Good for global resets or theme primitives. Respects `flush` and `registry`.
+
+- `makeCssFuncs({ registry?, variables? })`
+  - Returns `createStyles`, `keyframes` and `rawStyles` functions for you to use that are bound to an optional `SimpleStyleRegistry` and an optional `variables` object.
+  - Use this variant if you want to bind all of the CSS functions to a set of styling tokens / variables that you want accessible and available wherever you write your CSS, complete with IDE intellisense.
+  - Use this as a convenience if you don't want to manually wire up each CSS function (listed below) to your registry.
 
 - `makeCreateStyles(registry)`
   - Convenience wrapper that returns a `createStyles` instance pre-bound to a `SimpleStyleRegistry`. Use this when you want every call to accumulate in a registry (especially useful for SSR / Server-side rendering).
 
-- `makeRawStyles(registry)` *(from `simplestyle-js/createStyles`)*
+- `makeRawStyles(registry)`
   - Returns a `rawStyles` helper preconfigured with the provided registry; calls will auto-add to that registry instead of touching the DOM (same motivation as `makeCreateStyles` for SSR motivations).
 
-- `makeKeyframes(registry)` *(from `simplestyle-js/createStyles`)*
+- `makeKeyframes(registry)`
   - Returns a `keyframes` helper preconfigured with the provided registry; calls will auto-add to that registry instead of touching the DOM (same motivation as `makeCreateStyles` for SSR motivations).
 
 - `setSeed(seed: number | null)`
@@ -131,6 +137,35 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
 - **DOM placement**: `insertBefore` and `insertAfter` let you control the exact placement for where `<style />` tags will be rendered (does not apply to SSR / Server-side rendering).br
 - **Updating styles**: `updateSheet` merges the new rules and updates the existing `<style>` tag (or registry entry, if you're not letting `simplestyle-js` flush to the DOM automatically for you). It also returns `{ classes, stylesheet }` so you can re-use class names if needed.
 
+## Reusable Variables
+
+SimpleStyle provides an easy way to "bind" all of the CSS functions it exports to an object that contains your tokens, variables, etc.
+To do this, you would use the same API that's used to bind to a specific sheet registry, but specify the `variables` option:
+
+```typescript
+import { makeCssFuncs } from "simplestyle-js";
+import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
+
+
+export const { createStyles, keyframes } = makeCssFuncs({
+  variables: {
+    background: {
+      primary: '#f1f1f3',
+      secondary: '#555',
+    },
+  },
+});
+
+const { classes } = createStyles('my-component', vars => ({
+  card: {
+    // use all of your variables here.
+    // your IDE should provide code assistance to you
+    // to inform you of what variables are available
+    backgroundColor: vars.background.secondary,
+  },
+}));
+```
+
 ## SSR
 
 ### Next.js
@@ -140,7 +175,7 @@ Create your style registry and scoped CSS functions, then use the official Next.
 ```typescript
 // src/styleRegistry.ts
 
-import { makeCreateStyles, makeKeyframes, setSeed } from "simplestyle-js";
+import { makeCssFuncs, setSeed } from "simplestyle-js";
 import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
 
 // ensures deterministic creation of CSS classnames
@@ -148,8 +183,7 @@ setSeed(11223344);
 
 export const StyleRegistry = new SimpleStyleRegistry();
 
-export const createStyles = makeCreateStyles(StyleRegistry);
-export const keyframes = makeKeyframes(StyleRegistry);
+export const { createStyles, keyframes } = makeCssFuncs({ registry: StyleRegistry });
 ```
 
 ```tsx
@@ -159,12 +193,12 @@ import { SimpleStyleProvider } from "simplestyle-js/next";
 import { createStyles, StyleRegistry } from "./styleRegistry";
 
 // start writing CSS!
-const { classes } = createStyles('RootLayoutStyles', {
+const { classes } = createStyles('RootLayoutStyles', () => ({
   rootLayout: {
     backgroundColor: 'pink',
     padding: '1rem',
   },
-});
+}));
 
 export default function RootLayout({
   children,
@@ -193,7 +227,7 @@ Create your style registry and scoped CSS functions, then use the official Astro
 ```typescript
 // src/styleRegistry.ts
 
-import { makeCreateStyles, makeKeyframes, setSeed } from "simplestyle-js";
+import { makeCssFuncs, setSeed } from "simplestyle-js";
 import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
 
 // ensures deterministic creation of CSS classnames
@@ -201,8 +235,7 @@ setSeed(11223344);
 
 export const StyleRegistry = new SimpleStyleRegistry();
 
-export const createStyles = makeCreateStyles(StyleRegistry);
-export const keyframes = makeKeyframes(StyleRegistry);
+export { createStyles, keyframes } = makeCssFuncs({ registry: StyleRegistry });
 ```
 
 ```astro
@@ -216,7 +249,7 @@ import {
   rawStyles,
 } from "../styleRegistry";
 
-rawStyles("basic-css-reset", {
+rawStyles("basic-css-reset", ()  => ({
   "*": {
     boxSizing: "border-box",
   },
@@ -225,10 +258,10 @@ rawStyles("basic-css-reset", {
     fontSize: "16px",
     padding: 0,
   },
-});
+}));
 
 // make changes to me and I will hot reload!
-const { keyframe } = keyframes("HomePage", {
+const { keyframe } = keyframes("HomePage", () => ({
   "0%": {
     backgroundColor: "#cc2222cc",
   },
@@ -241,9 +274,9 @@ const { keyframe } = keyframes("HomePage", {
   "100%": {
     backgroundColor: "#cc2222cc",
   },
-});
+}));
 
-const { classes } = createStyles("HomePage", {
+const { classes } = createStyles("HomePage", () => ({
   background: {
     alignItems: "center",
     animation: `${keyframe} 5s linear infinite`,
@@ -260,7 +293,7 @@ const { classes } = createStyles("HomePage", {
     color: "white",
     padding: "1rem",
   },
-});
+}));
 ---
 
 <html lang="en">
@@ -295,8 +328,7 @@ The core APIs needed to make this work are:
 
 - `new SimpleStyleRegistry()` - creates a new StyleSheet registry where all of your styles will be accumulated
 - `setSeed(number)` - ensures that classNames are deterministically computed and will be the same on the server and when they're rehydrated on the client
-- `makeCreateStyle(registry)` - returns a `createStyles()` function that is locked to your StyleSheet registry
-- `makeKeyframes(registry)` - returns a `keyframes()` function that is locaked to your StyleSheet registry
+- `makeCssFuncs({ registry })` - returns `createStyles()`, `keyframes()` and `rawStyles()` functions that are locked to your StyleSheet registry
 
 ### SSR steps for most SSR / SSG frameworks
 
@@ -306,7 +338,7 @@ The core APIs needed to make this work are:
 For demonstration purposes, we'll locate this at our `src/` root, and name it `styleLib.js`
 
 ```javascript
-import { makeCreateStyles, makeKeyframes, makeRawStyles, setSeed } from "simplestyle-js";
+import { makeCssFuncs, setSeed } from "simplestyle-js";
 import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
 
 // set the className generation seed to ensure classNames are computed consistently
@@ -319,9 +351,7 @@ setSeed(1);
 export const StyleRegistry = new SimpleStyleRegistry();
 
 // export the style functions that will be locked to your registry
-export const createStyles = makeCreateStyles(StyleRegistry);
-export const keyframes = makeKeyframes(StyleRegistry);
-export const rawStyles = makeRawStyles(StyleRegistry);
+export const { createStyles, keyframes, rawStyles } = makeCssFuncs({ registry: })
 ```
 
 #### 2. Render the generated styles in your HTML
@@ -355,7 +385,7 @@ export default function Layout({ children }) {
 import { createStyles } from '../styleLib.js';
 
 // create your styles
-const { classes } = createStyles({
+const { classes } = createStyles('my-component', () => ({
   awesome: {
     backgroundColor: 'purple',
     fontSize: '2rem',
@@ -367,7 +397,7 @@ const { classes } = createStyles({
       textDecoration: 'underline',
     },
   },
-});
+}));
 
 export function MyCoolComponent() {
   // use your styles here!
