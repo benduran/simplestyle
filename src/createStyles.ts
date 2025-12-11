@@ -235,11 +235,13 @@ function coerceCreateStylesOptions(
 
 export function rawStyles<T extends SimpleStyleRules>(
   ruleId: string,
-  rules: T,
+  rulesFnc: () => T,
   options?: Partial<CreateStylesOptions>,
 ) {
   const rawStylesId = `${ruleId}_raw`;
   const coerced = coerceCreateStylesOptions(options);
+  const rules = rulesFnc();
+
   const {
     sheetBuffer: sheetContents,
     mediaQueriesBuffer: mediaQueriesContents,
@@ -257,11 +259,14 @@ export function rawStyles<T extends SimpleStyleRules>(
 
 export function keyframes<T extends Record<string, Properties>>(
   ruleId: string,
-  frames: T,
+  framesFnc: () => T,
   options?: CreateStylesOptions,
 ) {
   const coerced = coerceCreateStylesOptions(options);
   const keyframeId = generateClassName(`${ruleId}_keyframes`);
+
+  const frames = framesFnc();
+
   const { sheetBuffer: keyframesContents } = execCreateStyles(
     keyframeId,
     frames,
@@ -298,7 +303,7 @@ export function createStyles<
   let sheet: ReturnType<typeof flushSheetContents> = null;
 
   const updateSheet = <T2 extends SimpleStyleRules>(
-    updatedRules: Partial<T2>,
+    updatedRulesFnc: () => Partial<T2>,
   ) => {
     if (options?.flush || options?.registry || !options?.flush) {
       // We prefer the first set, and then we shallow merge
@@ -308,7 +313,7 @@ export function createStyles<
         mediaQueriesBuffer: updatedMediaQueriesContents,
       } = execCreateStyles(
         ruleId,
-        merge(rules, updatedRules),
+        merge(rules, updatedRulesFnc()),
         { flush: false },
         null,
       );

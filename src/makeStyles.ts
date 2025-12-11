@@ -43,7 +43,7 @@ export function makeCssFuncs<V extends SimpleStyleVariables>(
   ) {
     return keyframes<T>(
       ruleId,
-      rulesFnc('variables' in opts ? opts.variables : undefined),
+      () => rulesFnc('variables' in opts ? opts.variables : undefined),
       { registry: 'registry' in opts ? opts.registry : undefined },
     );
   }
@@ -54,7 +54,7 @@ export function makeCssFuncs<V extends SimpleStyleVariables>(
   ) {
     return rawStyles<T>(
       ruleId,
-      rulesFnc('variables' in opts ? opts.variables : undefined),
+      () => rulesFnc('variables' in opts ? opts.variables : undefined),
       { registry: 'registry' in opts ? opts.registry : undefined },
     );
   }

@@ -15,3 +15,7 @@ export type SimpleStyleVariables = {
     };
   };
 };
+
+export type HasProperty<T, K extends keyof T> = T extends Record<K, any>
+  ? true
+  : false;

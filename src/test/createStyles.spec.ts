@@ -212,7 +212,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const styleContents = rawStyles('raw', rules);
+    const styleContents = rawStyles('raw', () => rules);
 
     expect(styleContents).toContain(
       'body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}',
@@ -231,7 +231,7 @@ describe('createStyles tests', () => {
         minWidth: '300px',
       },
     };
-    const styleContents = rawStyles('raw-media', rules);
+    const styleContents = rawStyles('raw-media', () => rules);
     expect(styleContents).toBe(
       'button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}',
     );
@@ -259,15 +259,27 @@ describe('createStyles tests', () => {
         padding: '1rem',
       },
     };
-    const { classes: s1, stylesheet: rendered1 } = createStyles('s1', () => rules, {
-      flush: false,
-    });
-    const { classes: s2, stylesheet: rendered2 } = createStyles('s2', () => rules, {
-      flush: false,
-    });
-    const { classes: s3, stylesheet: rendered3 } = createStyles('s3', () => rules, {
-      flush: false,
-    });
+    const { classes: s1, stylesheet: rendered1 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
+    const { classes: s2, stylesheet: rendered2 } = createStyles(
+      's2',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
+    const { classes: s3, stylesheet: rendered3 } = createStyles(
+      's3',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     expect(s1).not.toEqual(s2);
     expect(s1).not.toEqual(s3);
     expect(s2).not.toEqual(s3);
@@ -300,17 +312,29 @@ describe('createStyles tests', () => {
     };
     const seed = 1234;
     setSeed(seed);
-    const { classes: s1, stylesheet: rendered1 } = createStyles('s1', () => rules, {
-      flush: false,
-    });
+    const { classes: s1, stylesheet: rendered1 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     setSeed(seed);
-    const { classes: s2, stylesheet: rendered2 } = createStyles('s1', () => rules, {
-      flush: false,
-    });
+    const { classes: s2, stylesheet: rendered2 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     setSeed(seed);
-    const { classes: s3, stylesheet: rendered3 } = createStyles('s1', () => rules, {
-      flush: false,
-    });
+    const { classes: s3, stylesheet: rendered3 } = createStyles(
+      's1',
+      () => rules,
+      {
+        flush: false,
+      },
+    );
     expect(s1).toEqual(s2);
     expect(s1).toEqual(s3);
     expect(s2).toEqual(s3);
