@@ -4,7 +4,9 @@ import { createStyles } from '../index.js';
 
 describe('updateStyles tests', () => {
   beforeAll(() => {
-    document.querySelectorAll('style').forEach(s => s.remove());
+    document.querySelectorAll('style').forEach((s) => {
+      s.remove();
+    });
   });
   it('Should create styles, then update them without creating a new sheet', () => {
     const {
@@ -33,7 +35,9 @@ describe('updateStyles tests', () => {
     expect(originalStyles).not.toBe(updatedStyles);
     expect(originalContents).not.toBe(updatedContents);
     expect(document.head.querySelectorAll('style').length).toBe(1);
-    expect(document.head.querySelector('style')?.innerHTML).toBe(updatedContents);
+    expect(document.head.querySelector('style')?.innerHTML).toBe(
+      updatedContents,
+    );
     expect(updatedContents).toBe(
       `.${updatedStyles.one}{background-color:red;box-sizing:border-box;}.${updatedStyles.two}{height:100px;}`,
     );

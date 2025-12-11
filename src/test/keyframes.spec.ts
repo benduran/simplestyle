@@ -14,6 +14,8 @@ describe('Keyframes generation', () => {
     });
     expect(keyframe).toBeDefined();
     expect(keyframe.length).toBeGreaterThan(0);
-    expect(stylesheet).toBe(`@keyframes ${keyframe}{0%{width:100px;}100%{width:200px;}}`);
+    expect(stylesheet).toBe(
+      `@keyframes ${keyframe}{0%{width:100px;}100%{width:200px;}}`,
+    );
   });
 });

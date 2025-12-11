@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+/** biome-ignore-all lint/style/noNonNullAssertion: this is a test file */
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { makeCreateStyles, makeKeyframes, makeRawStyles } from '../createStyles.js';
 import { setSeed } from '../generateClassName.js';
+import {
+  makeCreateStyles,
+  makeKeyframes,
+  makeRawStyles,
+} from '../makeStyles.js';
 import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 
 describe('SimpleStyleRegistry', () => {
@@ -32,7 +37,9 @@ describe('SimpleStyleRegistry', () => {
 
     expect(classes.root).toContain('root');
     const styles = registry?.getCSS() ?? '';
-    expect(styles).toContain(`root_a{background-color:${backgroundColor};font-size:${fontSize};}`);
+    expect(styles).toContain(
+      `root_a{background-color:${backgroundColor};font-size:${fontSize};}`,
+    );
     const allStyles = Array.from(document.querySelectorAll('style'));
     expect(allStyles.length).toBe(0);
   });
@@ -105,12 +112,12 @@ describe('SimpleStyleRegistry', () => {
 
     // must start with the keyframes
     expect(css).toMatch(
-      new RegExp(`^@keyframes simple-animation-registry_keyframes_a{0%{width:100px;}100%{width:200px;}}`),
+      /^@keyframes simple-animation-registry_keyframes_a{0%{width:100px;}100%{width:200px;}}/,
     );
     expect(css).toContain('*{box-sizing:border-box;outline:0;}');
     // and end with the styles that use them
     expect(css).toMatch(
-      new RegExp(`.button-anim_button_b{animation:simple-animation-registry_keyframes_a 1s linear infinite;}$`),
+      /.button-anim_button_b{animation:simple-animation-registry_keyframes_a 1s linear infinite;}$/,
     );
   });
 });

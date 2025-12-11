@@ -2,12 +2,19 @@ import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createStyles, PosthookPlugin, registerPosthook, SimpleStyleRules } from '../index.js';
+import {
+  createStyles,
+  type PosthookPlugin,
+  registerPosthook,
+  type SimpleStyleRules,
+} from '../index.js';
 import { getPosthooks } from '../plugins.js';
 
 describe('Plugin hooks', () => {
   beforeEach(() => {
-    Array.from(document.head.querySelectorAll('style')).forEach(s => s.remove());
+    Array.from(document.head.querySelectorAll('style')).forEach((s) => {
+      s.remove();
+    });
     getPosthooks().length = 0;
   });
   it('Should execute a posthook with the proper arguments', () => {
@@ -17,10 +24,12 @@ describe('Plugin hooks', () => {
         backgroundRepeat: 'no-repeat',
       },
     };
-    const posthook: PosthookPlugin = vi.fn(sheetContents => {
+    const posthook: PosthookPlugin = vi.fn((sheetContents) => {
       expect(sheetContents.length).toBeGreaterThan(0);
       expect(sheetContents.startsWith('.posthook')).toBeTruthy();
-      expect(sheetContents).toContain('{background-size:contain;background-repeat:no-repeat;}');
+      expect(sheetContents).toContain(
+        '{background-size:contain;background-repeat:no-repeat;}',
+      );
       return sheetContents;
     });
     registerPosthook(posthook);
@@ -35,9 +44,12 @@ describe('Plugin hooks', () => {
     };
     // Post CSS and autoprefixer types have changed
     // so we just brute-force the typings
-    const posthook: PosthookPlugin = sheetContents => postcss([autoprefixer() as any]).process(sheetContents).css;
+    const posthook: PosthookPlugin = (sheetContents) =>
+      postcss([autoprefixer() as any]).process(sheetContents).css;
     registerPosthook(posthook);
     const { classes, stylesheet } = createStyles('posthook-transform', rules);
-    expect(stylesheet).toBe(`.${classes.posthook}{-webkit-user-select:none;-moz-user-select:none;user-select:none;}`);
+    expect(stylesheet).toBe(
+      `.${classes.posthook}{-webkit-user-select:none;-moz-user-select:none;user-select:none;}`,
+    );
   });
 });

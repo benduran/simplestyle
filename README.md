@@ -14,6 +14,7 @@ A concise guide to the core `simplestyle-js` APIs, how they fit together, and ho
 - [Quick Start](#quick-start)
 - [API Reference](#api-reference)
 - [Patterns and Tips](#patterns-and-tips)
+  - [Creating reusable variables and / or design system-like tokens]()
 - [SSR](#ssr)
   - [Next.js](#nextjs)
   - [Astro](#astro)
@@ -102,13 +103,19 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
   - Writes rules without generating new class names. Keys must already be selectors (e.g., `html`, `body *`, `.app`).
   - Good for global resets or theme primitives. Respects `flush` and `registry`.
 
+
+- `makeCssFuncs({ registry?, variables? })`
+  - Returns `createStyles`, `keyframes` and `rawStyles` functions for you to use that are bound to an optional `SimpleStyleRegistry` and `variables`.
+  - Use this variant if you want to bind all of the CSS functions to a set of styling tokens / variables that you want accessible and available wherever you write your CSS, complete with IDE intellisense.
+  - Use this as a convenience if you don't want to manually wire up each CSS function (listed below) to your registry.
+
 - `makeCreateStyles(registry)`
   - Convenience wrapper that returns a `createStyles` instance pre-bound to a `SimpleStyleRegistry`. Use this when you want every call to accumulate in a registry (especially useful for SSR / Server-side rendering).
 
-- `makeRawStyles(registry)` *(from `simplestyle-js/createStyles`)*
+- `makeRawStyles(registry)`
   - Returns a `rawStyles` helper preconfigured with the provided registry; calls will auto-add to that registry instead of touching the DOM (same motivation as `makeCreateStyles` for SSR motivations).
 
-- `makeKeyframes(registry)` *(from `simplestyle-js/createStyles`)*
+- `makeKeyframes(registry)`
   - Returns a `keyframes` helper preconfigured with the provided registry; calls will auto-add to that registry instead of touching the DOM (same motivation as `makeCreateStyles` for SSR motivations).
 
 - `setSeed(seed: number | null)`
