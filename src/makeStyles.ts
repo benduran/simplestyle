@@ -1,9 +1,9 @@
 import type { Properties } from 'csstype';
 import { createStyles, keyframes, rawStyles } from './createStyles.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
-import type { SimpleStyleRules, SimpleStyleVariables } from './types.js';
+import type { SimpleStyleRules } from './types.js';
 
-type MakeCssFuncsOpts<T extends SimpleStyleVariables> =
+type MakeCssFuncsOpts<T extends object> =
   | {}
   | {
       registry: SimpleStyleRegistry;
@@ -23,9 +23,7 @@ type MakeCssFuncsOpts<T extends SimpleStyleVariables> =
  * they accept a function as the 2nd parameter, instead of the usual object.
  * The function will be provided with your variables
  */
-export function makeCssFuncs<V extends SimpleStyleVariables>(
-  opts: MakeCssFuncsOpts<V>,
-) {
+export function makeCssFuncs<V extends object>(opts: MakeCssFuncsOpts<V>) {
   function wrappedCreateStyles<
     T extends SimpleStyleRules,
     K extends keyof T,

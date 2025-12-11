@@ -25,11 +25,11 @@ describe('updateStyles tests', () => {
     expect(typeof updateSheet).toBe('function');
     const sheet = document.head.querySelector('style');
     expect(sheet?.innerHTML).toBe(originalContents);
-    const updates = updateSheet({
+    const updates = updateSheet(() => ({
       one: {
         backgroundColor: 'red',
       },
-    });
+    }));
     expect(updates).not.toBeNull();
     const { classes: updatedStyles, stylesheet: updatedContents } = updates!;
     expect(originalStyles).not.toBe(updatedStyles);
