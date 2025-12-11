@@ -14,7 +14,7 @@ A concise guide to the core `simplestyle-js` APIs, how they fit together, and ho
 - [Quick Start](#quick-start)
 - [API Reference](#api-reference)
 - [Patterns and Tips](#patterns-and-tips)
-  - [Creating reusable variables and / or design system-like tokens]()
+  - [Creating reusable variables and / or design system-like tokens](#reusable-variables)
 - [SSR](#ssr)
   - [Next.js](#nextjs)
   - [Astro](#astro)
@@ -136,6 +136,36 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
 - **Media queries**: Top-level `@media` keys contain further rule objects.
 - **DOM placement**: `insertBefore` and `insertAfter` let you control the exact placement for where `<style />` tags will be rendered (does not apply to SSR / Server-side rendering).br
 - **Updating styles**: `updateSheet` merges the new rules and updates the existing `<style>` tag (or registry entry, if you're not letting `simplestyle-js` flush to the DOM automatically for you). It also returns `{ classes, stylesheet }` so you can re-use class names if needed.
+
+## Reusable Variables
+
+SimpleStyle provides an easy way to "bind" all of the CSS functions it exports to an object that contains your tokens, variables, etc.
+To do this, you would use the same API that's used to bind to a specific sheet registry, but specify the `variables` option:
+
+```typescript
+import { makeCssFuncs } from "simplestyle-js";
+import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
+
+
+export const { createStyles, keyframes } = makeCssFuncs({
+  variables: {
+    background: {
+      primary: '#f1f1f3',
+      secondary: '#555',
+    },
+  },
+});
+
+const { classes } = createStyles('my-component', vars => ({
+  card: {
+    // use all of your variables here.
+    // your IDE should provide code assistance to you
+    // to inform you of what variables are available
+    backgroundColor: vars.background.secondary,
+  },
+}));
+```
+
 
 ## SSR
 
