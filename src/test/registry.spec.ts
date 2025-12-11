@@ -3,37 +3,34 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { setSeed } from '../generateClassName.js';
-import {
-  makeCreateStyles,
-  makeKeyframes,
-  makeRawStyles,
-} from '../makeStyles.js';
 import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
+import { makeCssFuncs } from '../makeStyles.js';
 
 describe('SimpleStyleRegistry', () => {
   let registry: SimpleStyleRegistry | null = null;
-
+  let fncs: ReturnType<typeof makeCssFuncs>;
+  
   beforeEach(() => {
     const styles = Array.from(document.querySelectorAll('style'));
     for (const style of styles) style.remove();
-
+    
     // we need deterministic classnames
     setSeed(0);
     registry = new SimpleStyleRegistry();
+    
+    fncs = makeCssFuncs({ registry });
   });
 
   it('should check to make sure all styles are accumulated in the registry', () => {
-    const createStyles = makeCreateStyles(registry!);
-
     const backgroundColor = 'palevioletred';
     const fontSize = '16rem';
 
-    const { classes } = createStyles('accumulated', {
+    const { classes } = fncs.createStyles('accumulated', () => ({
       root: {
         backgroundColor,
         fontSize,
       },
-    });
+    }));
 
     expect(classes.root).toContain('root');
     const styles = registry?.getCSS() ?? '';
@@ -45,15 +42,13 @@ describe('SimpleStyleRegistry', () => {
   });
 
   it('should ensure backreferences are replaced correctly', () => {
-    const createStyles = makeCreateStyles(registry!);
-
     const backgroundColor = 'palevioletred';
     const fontSize = '16rem';
     const height = '500px';
     const width = '1000px';
 
     const styleId = 'backreferences-registry';
-    const { classes } = createStyles(styleId, {
+    const { classes } = fncs.createStyles(styleId, () => ({
       someBtn: {
         height,
       },
@@ -65,7 +60,7 @@ describe('SimpleStyleRegistry', () => {
           width,
         },
       },
-    });
+    }));
     expect(classes.root).toContain('root');
     expect(classes.someBtn).toContain('someBtn');
 
@@ -80,30 +75,27 @@ describe('SimpleStyleRegistry', () => {
     const id = 'simple-animation-registry';
     const rawId = 'simple-registry-raw';
 
-    const rawStyles = makeRawStyles(registry!);
-    const keyframes = makeKeyframes(registry!);
-    const createStyles = makeCreateStyles(registry!);
-    const { keyframe } = keyframes(id, {
+    const { keyframe } = fncs.keyframes(id, () => ({
       '0%': {
         width: '100px',
       },
       '100%': {
         width: '200px',
       },
-    });
-    rawStyles(rawId, {
+    }));
+    fncs.rawStyles(rawId, () => ({
       '*': {
         boxSizing: 'border-box',
         outline: 0,
       },
-    });
+    }));
 
     const styleId = 'button-anim';
-    const { classes } = createStyles(styleId, {
+    const { classes } = fncs.createStyles(styleId, () => ({
       button: {
         animation: `${keyframe} 1s linear infinite`,
       },
-    });
+    }));
 
     expect(keyframe).toMatch(new RegExp(`^${id}`));
     expect(classes.button).toMatch(new RegExp(`^${styleId}`));

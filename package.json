@@ -186,5 +186,8 @@
   },
   "module": "./dist/esm/index.mjs",
   "types": "./dist/cjs/index.d.ts",
-  "main": "./dist/cjs/index.cjs"
+  "main": "./dist/cjs/index.cjs",
+  "trustedDependencies": [
+    "@swc/core"
+  ]
 }

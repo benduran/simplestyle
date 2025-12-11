@@ -33,7 +33,7 @@ describe('Plugin hooks', () => {
       return sheetContents;
     });
     registerPosthook(posthook);
-    createStyles('posthook', rules);
+    createStyles('posthook', () => rules);
     expect(posthook).toBeCalled();
   });
   it('Should execute a posthook and transform the contents', () => {
@@ -47,7 +47,10 @@ describe('Plugin hooks', () => {
     const posthook: PosthookPlugin = (sheetContents) =>
       postcss([autoprefixer() as any]).process(sheetContents).css;
     registerPosthook(posthook);
-    const { classes, stylesheet } = createStyles('posthook-transform', rules);
+    const { classes, stylesheet } = createStyles(
+      'posthook-transform',
+      () => rules,
+    );
     expect(stylesheet).toBe(
       `.${classes.posthook}{-webkit-user-select:none;-moz-user-select:none;user-select:none;}`,
     );

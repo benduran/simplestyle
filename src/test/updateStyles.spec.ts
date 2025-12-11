@@ -13,7 +13,7 @@ describe('updateStyles tests', () => {
       classes: originalStyles,
       stylesheet: originalContents,
       updateSheet,
-    } = createStyles('update-no-new-sheet', {
+    } = createStyles('update-no-new-sheet', () => ({
       one: {
         backgroundColor: 'grape',
         boxSizing: 'border-box',
@@ -21,7 +21,7 @@ describe('updateStyles tests', () => {
       two: {
         height: '100px',
       },
-    });
+    }));
     expect(typeof updateSheet).toBe('function');
     const sheet = document.head.querySelector('style');
     expect(sheet?.innerHTML).toBe(originalContents);

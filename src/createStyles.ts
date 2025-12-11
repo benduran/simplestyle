@@ -282,7 +282,8 @@ export function createStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
   O extends Record<K, string>,
->(ruleId: string, rules: T, options?: Partial<CreateStylesOptions>) {
+>(ruleId: string, rulesFnc: () => T, options?: Partial<CreateStylesOptions>) {
+  const rules = rulesFnc();
   const coerced = coerceCreateStylesOptions(options);
   const {
     classes: out,
