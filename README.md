@@ -3,7 +3,7 @@
 An ultra-tiny, neat, easy-to-use CSS-in-JS library with SSR support,
 tiny bundle size and only *one runtime dependency*.
 
-`6.06kB` / `2.55kB gzip` ([courtesy of bundlejs.com](https://bundlejs.com/?q=simplestyle-js%404.0.1))
+`6.48kB` / `2.69kB gzip` ([courtesy of bundlejs.com](https://bundlejs.com/?q=simplestyle-js))
 
 # Simplestyle-js Reference
 
