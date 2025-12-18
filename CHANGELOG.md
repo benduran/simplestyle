@@ -1,3 +1,11 @@
+## 5.2.1 (2025-12-18)
+
+### ✨ Features ✨
+
+- feat: added a special function for defining native CSS imports (af2961268e07e49a9ddc43b55e646478683385eb)
+
+---
+
 ## 5.2.0 (2025-12-18)
 
 ### ✨ Features ✨
