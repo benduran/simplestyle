@@ -1,5 +1,10 @@
 import type { Properties } from 'csstype';
-import { createStyles, keyframes, rawStyles } from './createStyles.js';
+import {
+  type CreateStylesOptions,
+  createStyles,
+  keyframes,
+  rawStyles,
+} from './createStyles.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
 import type { SimpleStyleRules } from './types.js';
 
@@ -28,32 +33,47 @@ export function makeCssFuncs<V extends object>(opts: MakeCssFuncsOpts<V>) {
     T extends SimpleStyleRules,
     K extends keyof T,
     O extends Record<K, string>,
-  >(ruleId: string, rulesFnc: (vars?: V) => T) {
+  >(
+    ruleId: string,
+    rulesFnc: (vars?: V) => T,
+    overrides?: CreateStylesOptions,
+  ) {
     return createStyles<T, K, O>(
       ruleId,
       () => rulesFnc('variables' in opts ? opts.variables : undefined),
-      { registry: 'registry' in opts ? opts.registry : undefined },
+      {
+        ...overrides,
+        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      },
     );
   }
   function wrappedCreateKeyframes<T extends Record<string, Properties>>(
     ruleId: string,
     rulesFnc: (vars?: V) => T,
+    overrides?: CreateStylesOptions,
   ) {
     return keyframes<T>(
       ruleId,
       () => rulesFnc('variables' in opts ? opts.variables : undefined),
-      { registry: 'registry' in opts ? opts.registry : undefined },
+      {
+        ...overrides,
+        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      },
     );
   }
 
   function wrappedRawStyles<T extends SimpleStyleRules>(
     ruleId: string,
     rulesFnc: (vars?: V) => T,
+    overrides?: CreateStylesOptions,
   ) {
     return rawStyles<T>(
       ruleId,
       () => rulesFnc('variables' in opts ? opts.variables : undefined),
-      { registry: 'registry' in opts ? opts.registry : undefined },
+      {
+        ...overrides,
+        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      },
     );
   }
 
