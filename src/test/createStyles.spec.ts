@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-
+import { imports } from '../createStyles.js';
 import { createStyles, rawStyles, setSeed } from '../index.js';
-import type { SimpleStyleRules } from '../types.js';
+import type { ImportStringType, SimpleStyleRules } from '../types.js';
 
 describe('createStyles tests', () => {
   beforeEach(() => {
@@ -395,5 +395,30 @@ describe('createStyles tests', () => {
       }
     }
     expect(success).toBeTruthy();
+  });
+  it('should add a style tag with @import rules if we use the imports() function', () => {
+    const theImports: ImportStringType[] = [
+      "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
+      "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
+    ];
+    imports('import-rules', () => theImports);
+
+    rawStyles('raw-import-subsequent-rules', () => ({
+      'body, html': {
+        fontFamily: 'Funnel Display',
+        fontSize: '16px',
+      },
+    }));
+
+    const [importsTag, rawTag] = Array.from(document.querySelectorAll('style'));
+    const contents = importsTag?.innerHTML ?? '';
+
+    for (const imp of theImports) {
+      expect(contents).toContain(imp);
+    }
+
+    expect(rawTag?.innerHTML ?? '').toBe(
+      'body, html{font-family:Funnel Display;font-size:16px;}',
+    );
   });
 });

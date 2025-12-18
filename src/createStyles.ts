@@ -5,7 +5,7 @@ import merge from 'deepmerge';
 import { generateClassName } from './generateClassName.js';
 import { getPosthooks } from './plugins.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
-import type { SimpleStyleRules } from './types.js';
+import type { ImportStringType, SimpleStyleRules } from './types.js';
 
 export type CreateStylesOptions = Partial<{
   /**
@@ -231,6 +231,38 @@ function coerceCreateStylesOptions(
   return {
     flush: options && typeof options.flush === 'boolean' ? options.flush : true,
   };
+}
+
+export function imports(
+  ruleId: string,
+  rulesFnc: () => ImportStringType[],
+  options?: CreateStylesOptions,
+) {
+  const coerced = coerceCreateStylesOptions(options);
+  const importRuleId = `${ruleId}_imports`;
+  const rules = rulesFnc();
+
+  if (!Array.isArray(rules)) {
+    throw new Error(
+      'the import() function expects the value returned to be an array of @import strings',
+    );
+  }
+
+  let sheetBuffer = '';
+
+  for (const importRule of rules) {
+    if (!importRule.startsWith('@import')) {
+      throw new Error(`found an invalid import string: ${importRule}`);
+    }
+
+    sheetBuffer += `${importRule}${importRule.endsWith(';') ? '' : ';'}`;
+  }
+
+  if (options?.registry) {
+    options.registry.add(importRuleId, sheetBuffer);
+  } else if (coerced.flush) {
+    flushSheetContents(importRuleId, sheetBuffer, options);
+  }
 }
 
 export function rawStyles<T extends SimpleStyleRules>(

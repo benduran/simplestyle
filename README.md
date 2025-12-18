@@ -95,6 +95,9 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
     }), { flush: false }); // do not write to the DOM automatically
     ```
 
+- `imports(ruleId, importRulesFnc, options?)`
+  - Allow you to define one or more `@import()` rules for importing or referencing external stylesheets. **Note**: These imports will not be transformed or attempted to have their contents imported.
+
 - `keyframes(ruleId, framesFnc, options?)`
   - Generates a unique animation name and accompanying `@keyframes` CSS.
   - Returns `{ keyframe: string; stylesheet: string; }`. Respects `flush` and `insertBefore/After` options.
@@ -183,7 +186,7 @@ setSeed(11223344);
 
 export const StyleRegistry = new SimpleStyleRegistry();
 
-export const { createStyles, keyframes } = makeCssFuncs({ registry: StyleRegistry });
+export const { createStyles, imports, keyframes, rawStyles } = makeCssFuncs({ registry: StyleRegistry });
 ```
 
 ```tsx
@@ -235,7 +238,7 @@ setSeed(11223344);
 
 export const StyleRegistry = new SimpleStyleRegistry();
 
-export { createStyles, keyframes } = makeCssFuncs({ registry: StyleRegistry });
+export { createStyles, imports, keyframes, rawStyles } = makeCssFuncs({ registry: StyleRegistry });
 ```
 
 ```astro
@@ -351,7 +354,7 @@ setSeed(1);
 export const StyleRegistry = new SimpleStyleRegistry();
 
 // export the style functions that will be locked to your registry
-export const { createStyles, keyframes, rawStyles } = makeCssFuncs({ registry: })
+export const { createStyles, imports, keyframes, rawStyles } = makeCssFuncs({ registry: })
 ```
 
 #### 2. Render the generated styles in your HTML

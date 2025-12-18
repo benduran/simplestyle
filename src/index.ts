@@ -8,4 +8,4 @@ export { setSeed } from './generateClassName.js';
 export * from './makeStyles.js';
 export type { PosthookPlugin } from './plugins.js';
 export { registerPosthook } from './plugins.js';
-export type { SimpleStyleRules } from './types.js';
+export type { ImportStringType, SimpleStyleRules } from './types.js';

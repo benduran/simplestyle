@@ -10,3 +10,5 @@ export type RenderableSimpleStyleRules = SimpleStyleRules &
 export type HasProperty<T, K extends keyof T> = T extends Record<K, any>
   ? true
   : false;
+
+export type ImportStringType = `@import ${string}`;

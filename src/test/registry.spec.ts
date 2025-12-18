@@ -3,21 +3,22 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { setSeed } from '../generateClassName.js';
-import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 import { makeCssFuncs } from '../makeStyles.js';
+import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
+import type { ImportStringType } from '../types.js';
 
 describe('SimpleStyleRegistry', () => {
   let registry: SimpleStyleRegistry | null = null;
   let fncs: ReturnType<typeof makeCssFuncs>;
-  
+
   beforeEach(() => {
     const styles = Array.from(document.querySelectorAll('style'));
     for (const style of styles) style.remove();
-    
+
     // we need deterministic classnames
     setSeed(0);
     registry = new SimpleStyleRegistry();
-    
+
     fncs = makeCssFuncs({ registry });
   });
 
@@ -111,5 +112,26 @@ describe('SimpleStyleRegistry', () => {
     expect(css).toMatch(
       /.button-anim_button_b{animation:simple-animation-registry_keyframes_a 1s linear infinite;}$/,
     );
+  });
+  it('should ensure imports are written to the registry, along with other rules', () => {
+    const theImports: ImportStringType[] = [
+      "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
+      "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
+    ];
+    fncs.imports('import-rules', () => theImports);
+
+    fncs.rawStyles('raw-import-subsequent-rules', () => ({
+      'body, html': {
+        fontFamily: 'Funnel Display',
+        fontSize: '16px',
+      },
+    }));
+
+    const styleTags = document.querySelectorAll('style');
+
+    expect(styleTags.length).toBe(0);
+    expect(registry?.getCSS()).toBe(`
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css');
+body, html{font-family:Funnel Display;font-size:16px;}`);
   });
 });

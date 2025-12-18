@@ -2,11 +2,12 @@ import type { Properties } from 'csstype';
 import {
   type CreateStylesOptions,
   createStyles,
+  imports,
   keyframes,
   rawStyles,
 } from './createStyles.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
-import type { SimpleStyleRules } from './types.js';
+import type { ImportStringType, SimpleStyleRules } from './types.js';
 
 type MakeCssFuncsOpts<T extends object> =
   | {}
@@ -77,8 +78,24 @@ export function makeCssFuncs<V extends object>(opts: MakeCssFuncsOpts<V>) {
     );
   }
 
+  function wrappedImports(
+    ruleId: string,
+    rulesFnc: (vars?: V) => ImportStringType[],
+    overrides?: CreateStylesOptions,
+  ) {
+    return imports(
+      ruleId,
+      () => rulesFnc('variables' in opts ? opts.variables : undefined),
+      {
+        ...overrides,
+        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      },
+    );
+  }
+
   return {
     createStyles: wrappedCreateStyles,
+    imports: wrappedImports,
     keyframes: wrappedCreateKeyframes,
     rawStyles: wrappedRawStyles,
   };
