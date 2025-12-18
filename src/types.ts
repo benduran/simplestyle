@@ -12,3 +12,6 @@ export type HasProperty<T, K extends keyof T> = T extends Record<K, any>
   : false;
 
 export type ImportStringType = `@import ${string}`;
+
+// re-export this type so we don't run into portability issues here
+export type { Properties };

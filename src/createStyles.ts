@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-deprecated */
-import type { Properties } from 'csstype';
 import merge from 'deepmerge';
 
 import { generateClassName } from './generateClassName.js';
 import { getPosthooks } from './plugins.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
-import type { ImportStringType, SimpleStyleRules } from './types.js';
+import type {
+  ImportStringType,
+  Properties,
+  SimpleStyleRules,
+} from './types.js';
 
 export type CreateStylesOptions = Partial<{
   /**
