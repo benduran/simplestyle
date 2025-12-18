@@ -1,3 +1,11 @@
+## 5.2.2 (2025-12-18)
+
+### 🛠️ Fixes 🛠️
+
+- fix: hopefully fixed type portability (947c33da1703c1a3c2bc62284905715a0d6026fd)
+
+---
+
 ## 5.2.1 (2025-12-18)
 
 ### ✨ Features ✨
