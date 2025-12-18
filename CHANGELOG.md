@@ -1,3 +1,11 @@
+## 5.2.0 (2025-12-18)
+
+### ✨ Features ✨
+
+- feat: continue supporting overrides, even when using the makeCssFuncs variants (b6cb9c8667f672e7bf7df7da3756dd32b69ba6d6)
+
+---
+
 ## 5.1.1 (2025-12-12)
 
 ### 📖 Docs 📖
