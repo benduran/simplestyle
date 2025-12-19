@@ -1,3 +1,11 @@
+## 5.3.0 (2025-12-19)
+
+### ✨ Features ✨
+
+- feat: treat numeric values as pixels and give proper variable types to the consumer if they do or don't specify variables (acd3a7d44dc9cd781e7979b41b1404c3cf8797df)
+
+---
+
 ## 5.2.2 (2025-12-18)
 
 ### 🛠️ Fixes 🛠️
