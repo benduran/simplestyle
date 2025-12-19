@@ -31,7 +31,7 @@ describe('makeCssFuncs', () => {
 
     createStyles('some-rule', (vars) => ({
       root: {
-        backgroundColor: vars?.background.primary.default,
+        backgroundColor: vars.background.primary.default,
         color: vars?.color.text.default,
       },
     }));

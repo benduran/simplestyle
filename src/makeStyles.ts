@@ -9,18 +9,10 @@ import {
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
 import type { ImportStringType, SimpleStyleRules } from './types.js';
 
-type MakeCssFuncsOpts<T extends object> =
-  | {}
-  | {
-      registry: SimpleStyleRegistry;
-    }
-  | {
-      variables: T;
-    }
-  | {
-      registry: SimpleStyleRegistry;
-      variables: T;
-    };
+type MakeCssFuncsOpts<T extends object | undefined | null> = {
+  registry?: SimpleStyleRegistry;
+  variables?: T;
+};
 
 /**
  * Creates all of your CSS functions, createStyles, keframes and rawStyles,
@@ -29,19 +21,27 @@ type MakeCssFuncsOpts<T extends object> =
  * they accept a function as the 2nd parameter, instead of the usual object.
  * The function will be provided with your variables
  */
-export function makeCssFuncs<V extends object>(opts: MakeCssFuncsOpts<V>) {
+export function makeCssFuncs<
+  V extends object | undefined | null | never = never,
+>(opts: MakeCssFuncsOpts<V>) {
+  type RulesCallback<ReturnType> = (
+    vars: V extends undefined | null | never ? never : V,
+  ) => ReturnType;
+
   function wrappedCreateStyles<
     T extends SimpleStyleRules,
     K extends keyof T,
     O extends Record<K, string>,
   >(
     ruleId: string,
-    rulesFnc: (vars?: V) => T,
+    rulesFnc: RulesCallback<T>,
     overrides?: CreateStylesOptions,
   ) {
     return createStyles<T, K, O>(
       ruleId,
-      () => rulesFnc('variables' in opts ? opts.variables : undefined),
+      // @ts-expect-error - we've gotten the consumption types this far
+      // so TSC can pound sand, because we know this operation is safe
+      () => rulesFnc(('variables' in opts ? opts.variables : undefined) as V),
       {
         ...overrides,
         registry: 'registry' in opts ? opts.registry : overrides?.registry,
@@ -50,11 +50,13 @@ export function makeCssFuncs<V extends object>(opts: MakeCssFuncsOpts<V>) {
   }
   function wrappedCreateKeyframes<T extends Record<string, Properties>>(
     ruleId: string,
-    rulesFnc: (vars?: V) => T,
+    rulesFnc: RulesCallback<T>,
     overrides?: CreateStylesOptions,
   ) {
     return keyframes<T>(
       ruleId,
+      // @ts-expect-error - we've gotten the consumption types this far
+      // so TSC can pound sand, because we know this operation is safe
       () => rulesFnc('variables' in opts ? opts.variables : undefined),
       {
         ...overrides,
@@ -65,11 +67,13 @@ export function makeCssFuncs<V extends object>(opts: MakeCssFuncsOpts<V>) {
 
   function wrappedRawStyles<T extends SimpleStyleRules>(
     ruleId: string,
-    rulesFnc: (vars?: V) => T,
+    rulesFnc: RulesCallback<T>,
     overrides?: CreateStylesOptions,
   ) {
     return rawStyles<T>(
       ruleId,
+      // @ts-expect-error - we've gotten the consumption types this far
+      // so TSC can pound sand, because we know this operation is safe
       () => rulesFnc('variables' in opts ? opts.variables : undefined),
       {
         ...overrides,
@@ -80,11 +84,13 @@ export function makeCssFuncs<V extends object>(opts: MakeCssFuncsOpts<V>) {
 
   function wrappedImports(
     ruleId: string,
-    rulesFnc: (vars?: V) => ImportStringType[],
+    rulesFnc: RulesCallback<ImportStringType[]>,
     overrides?: CreateStylesOptions,
   ) {
     return imports(
       ruleId,
+      // @ts-expect-error - we've gotten the consumption types this far
+      // so TSC can pound sand, because we know this operation is safe
       () => rulesFnc('variables' in opts ? opts.variables : undefined),
       {
         ...overrides,
