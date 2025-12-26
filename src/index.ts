@@ -8,4 +8,5 @@ export { setSeed } from './generateClassName.js';
 export * from './makeStyles.js';
 export type { PosthookPlugin } from './plugins.js';
 export { registerPosthook } from './plugins.js';
+export * from './simpleStyleRegistry.js';
 export * from './types.js';
