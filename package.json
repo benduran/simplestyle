@@ -1,6 +1,6 @@
 {
   "name": "simplestyle-js",
-  "version": "5.3.1-beta.0",
+  "version": "5.3.1-beta.1",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "type": "module",
   "repository": {
@@ -70,6 +70,26 @@
     "react": ">=16.8"
   },
   "exports": {
+    "./SimpleStyleProvider": {
+      "require": {
+        "types": "./dist/cjs/SimpleStyleProvider.d.ts",
+        "default": "./dist/cjs/SimpleStyleProvider.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/SimpleStyleProvider.d.ts",
+        "default": "./dist/esm/SimpleStyleProvider.mjs"
+      }
+    },
+    "./astro": {
+      "require": {
+        "types": "./dist/cjs/astro/index.d.ts",
+        "default": "./dist/cjs/astro/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/astro/index.d.ts",
+        "default": "./dist/esm/astro/index.mjs"
+      }
+    },
     "./createStyles": {
       "require": {
         "types": "./dist/cjs/createStyles.d.ts",
@@ -108,16 +128,6 @@
       "import": {
         "types": "./dist/esm/makeStyles.d.ts",
         "default": "./dist/esm/makeStyles.mjs"
-      }
-    },
-    "./next/SimpleStyleProvider": {
-      "require": {
-        "types": "./dist/cjs/next/SimpleStyleProvider.d.ts",
-        "default": "./dist/cjs/next/SimpleStyleProvider.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/next/SimpleStyleProvider.d.ts",
-        "default": "./dist/esm/next/SimpleStyleProvider.mjs"
       }
     },
     "./next": {

@@ -4,6 +4,10 @@
     "rootDir": "./src",
     "isolatedModules": false
   },
-  "include": ["src"],
-  "exclude": ["src/test"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/test"
+  ]
 }
