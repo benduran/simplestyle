@@ -1,3 +1,11 @@
+## 5.3.1-beta.2 (2025-12-26)
+
+### 🔀 Miscellaneous 🔀
+
+- Version bumped exactly to 5.3.1-beta.2
+
+---
+
 ## 5.3.1-beta.1 (2025-12-26)
 
 ### 🔀 Miscellaneous 🔀
