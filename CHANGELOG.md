@@ -1,3 +1,100 @@
+## 5.3.1-beta.0 (2025-12-26)
+
+### 🔀 Miscellaneous 🔀
+
+- fix\!: changed the nextjs and astro provider completely (6789b9dda67273b39f39f51979c68b5bc06fe05e)
+- Version Bump (9d181916a7e8525f2f788aa1203273b67aa129a9)
+- Version Bump (ba28b70eec7670f35651342041c1bfa9a2834455)
+- Version Bump (590d515b78bae5030192011ff6076b5dc8466dc8)
+- Version Bump (7bc4eeb58a198cf44e394202ccf9cea6adcc7f57)
+- Version Bump (b254e7a9e9c1b10d5a3977cdba95a2b490e7a93c)
+- Version Bump (9e6e4af416da717ff9d792ff01a9f618d9e5914f)
+- Version Bump (6c45e61b9f56da59920530a8edde98a890c11e58)
+- chore: updated docs and published beta (af65a7dd8bd48348d21ee8823fef36ba4299edae)
+- Version Bump (d0692defa62ddb9ebf6ddc61bd307b87801cefb1)
+- Version Bump (7338dbeb7ed5d53117f6a7fecc3fee380edbd8cb)
+- doc: updated readme with better next.js and astro docs (c8f1c80d14f2e2e46d8dea856cd6fa47dc9aa2ee)
+- Version Bump (c7837eeaad02853f66d526fc5197ab970c393d3d)
+- Version Bump (f7ef4c1d1dd8a1d1557d9e5e38e28cc012b37462)
+- Version Bump (17de8a5255f4aee8a94a2d14a5fb8c2ae556e20a)
+- Version Bump (c9e4150277fba1576718afcc4ce81688cb3655d5)
+- chore: bumped deps (e8361346444dc124506b5835d63d127477311fda)
+- chore: bumped deps (c9196b44991ee82c63462cc5c3b867de790ba431)
+- Version Bump (2137ac1bb3d3a6cc1d397eb1b601cd40d428b56b)
+- Version Bump (a61a93aafbab24fc660012ed4414f3e8f7bd709b)
+- Version Bump (609c856dd22f3cbb9369ec677ee0c881aa37a4c6)
+- Version Bump (718d428950cbe5da74fabc7d1e147be2418e9ecc)
+- Version Bump (a399f8afb3970ab4cef41ab511e3e890e9afadb1)
+- Version Bump (4ca76a4260db0cf82180fd0e9609e3d6550a06ed)
+- chore: removed dev deps from prod deps and updated readme (a85ff1c1ece2a47e8713d9c2d8e482b3fc84f526)
+- Version Bump (89e9a3c72420a9885c3eea3c5e8045c44f12aee8)
+- Version Bump (0d16f556969a79f4cd70b6ec71bc4fcddabdb118)
+- Merge pull request #52 from benduran/style-registry (19f235e44326a570922938d41ea4b970dce944b6)
+- chore: updated jsdoc (3fdec891f53ea5c73614d53addafbccdd314e58f)
+- Version Bump (31bb2a096d0955f5383c9adb56da1451bf4a7504)
+- Version Bump (601ca712a47dcd3c24f3d54885762c9a4efa4533)
+- Version Bump (68884810cbb24f45886736587ff6b3886511d4c6)
+- Version Bump (d0070004ca81c986ce1d9b0ce573a05b3806632a)
+- Version Bump (b0f354622ecaf93cf1213acd47be5e6fceeb3816)
+- Version Bump (94565bf4ff9e6b4ba075e8ff31f42c2ad9695830)
+- Version Bump (586d7e28658b2482c37c6c3464114bacae8952b5)
+- Merge pull request #51 from benduran/update-everything (aa20cc703cefcadd789d4039df0d35c6a5012da7)
+- Version Bump (b9e74ec35e8c7eaa2ca1d79607848adb5cd45af3)
+- chore: addressed all linting issues and updated some nullish checks (b3a7cf6d2a7f96fdc3c5bf987be5757ca053584f)
+- chore: updated everything (822f0820832462742d4a4c7a217b053b6174e522)
+
+
+
+### ✨ Features ✨
+
+- feat: treat numeric values as pixels and give proper variable types to the consumer if they do or don't specify variables (acd3a7d44dc9cd781e7979b41b1404c3cf8797df)
+- feat: added a special function for defining native CSS imports (af2961268e07e49a9ddc43b55e646478683385eb)
+- feat: continue supporting overrides, even when using the makeCssFuncs variants (b6cb9c8667f672e7bf7df7da3756dd32b69ba6d6)
+- feat: added support for scoped variables like design system-esque tokens (6b66be937a713aa0a3b2626ac87452f9d2f0e208)
+- feat: added astro export to package.json (3f71305805a043e35863b725cee9a90bbd39ec38)
+- feat: added a next.js and astro wrapper for convenience (de0ef26889f301af2d65ebfe9b173adacba355af)
+- feat: added function to return the tuples of ids to styles (6bdf17e345690699a904b780ed9efd7fab641868)
+- feat: render the styleId as the prefix for the generated classnames (293504d9bb76f63dd4551dea741ec56f5cb1631e)
+- feat: added required support for style ids (02dcacad27303686a86881e483da8e591d21b324)
+- feat: added a style registry option, which should hopefully be useful for SSR (6c994c06798b00784f87189074400cf74726332f)
+- feat: update to using ts-duality for building (e0b0a788d39bd63d8517ae31f35bebfc6e74a9c5)
+
+
+
+### 🛠️ Fixes 🛠️
+
+- fix: hopefully fixed type portability (947c33da1703c1a3c2bc62284905715a0d6026fd)
+- fix: swapped the typings over to be fully generic (7fd559382262fd5b41922cca9eb45a6f4054e65f)
+- fix: removed biome as a prod dep (f7e693169e226b389d3036adee6e78ceceaf796f)
+- fix: fixed how keyframes and raw styles are rendered to the registry (1f4c94b4c18e2d77d3bb14b9cde2c8b4fd341211)
+- fix: fixed issue where keyframes and raw styles aren't written to registry if registry is used (3084125c867d31e388cf3da561c7dbcd197d23e4)
+- fix: do not render a duplicate tag out if one already existed for the ID (45b234613327329d20affa1de558d6bbdaa57dae)
+- fix: files glob didn't include readme, oops (f4758163d756e22e9d0bcf96db262e736ebb3236)
+- fix: fixed exported names and also improved the documentation (343da7f95399ad701a7fe50dd299855504313efa)
+- fix: fixed updateSheet API not writing to the registry if it was set (0575ba78b967ce9eaedc25971afce9fcc06b23d2)
+- fix: forgot to export the new function (491efd5fc19b9770ecbbb77e27fda30b650eb7e5)
+- fix: fixed exports and updated license (6868e1e01323c352263c528442ea8af7f87ac5e7)
+
+
+
+### 📖 Docs 📖
+
+- docs: updated bundlejs link and size callout (597b05cdf3e8363d68f65004ee47221e9f7b7532)
+- docs: updated the readme (c133f14e9138db6760b547bc372fba49b5133c9c)
+- docs: updated docs to have links to the official next.js and astro integrations (f456859e7562b93b0c3f5622edd85f6b8e603e49)
+- docs: updated readme (bc547d7123b581828744da8390926599521e40f1)
+- docs: updated readme again because oops (6c46990716e6039a354b38830d76f7bd58689ba3)
+- docs: Update README.md (3d7b15ee53050ca75bac185ff12eecba68a5c3f4)
+
+
+
+### 🚨 Breaking Changes 🚨
+
+- feat!: moved all functions to callback-style (e4fb149e9185e183d558bc54c5cf15a58065894f)
+- feat!: moved to a callback-based handler for defining the variables (8241b75c5070fe15e7c6b75acf7f65818d8d2c2b)
+
+---
+
 ## 5.3.0 (2025-12-19)
 
 ### ✨ Features ✨
