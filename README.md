@@ -146,8 +146,7 @@ SimpleStyle provides an easy way to "bind" all of the CSS functions it exports t
 To do this, you would use the same API that's used to bind to a specific sheet registry, but specify the `variables` option:
 
 ```typescript
-import { makeCssFuncs } from "simplestyle-js";
-import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
+import { makeCssFuncs, SimpleStyleRegistry } from "simplestyle-js";
 
 
 export const { createStyles, keyframes } = makeCssFuncs({
@@ -225,32 +224,32 @@ Check out this [Code Sandbox w/Next.js integration to see how it works](https://
 
 ### Astro
 
-Create your style registry and scoped CSS functions, then use the official Astro integration here and wrap the `SimpleStyleProvider` around your page's `<head />` contents.
+Due to how Astro processes its front matter sections at build time, and how this also affects local development, each `.astro` file that has its own CSS rules will also need to have its own `SimpleStyleRegistry` instance.
+The overall developer experience is similar to Next.js, but requires a pinch more boilerplate.
 
 ```typescript
 // src/styleRegistry.ts
 
 import { makeCssFuncs, setSeed } from "simplestyle-js";
-import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
 
 // ensures deterministic creation of CSS classnames
 setSeed(11223344);
 
-export const StyleRegistry = new SimpleStyleRegistry();
-
-export { createStyles, imports, keyframes, rawStyles } = makeCssFuncs({ registry: StyleRegistry });
+export { createStyles, imports, keyframes, rawStyles } = makeCssFuncs({});
 ```
 
 ```astro
 ---
+import { SimpleStyleRegistry } from "simplestyle-js";
 import SimpleStyleProvider from "simplestyle-js/astro/SimpleStyleProvider";
 
 import {
-  StyleRegistry,
   createStyles,
   keyframes,
   rawStyles,
 } from "../styleRegistry";
+
+const registry = new SimpleStyleRegistry();
 
 rawStyles("basic-css-reset", ()  => ({
   "*": {
@@ -261,7 +260,10 @@ rawStyles("basic-css-reset", ()  => ({
     fontSize: "16px",
     padding: 0,
   },
-}));
+}), {
+  // provide the registry used for this `.astro` file here
+  registry,
+});
 
 // make changes to me and I will hot reload!
 const { keyframe } = keyframes("HomePage", () => ({
@@ -277,7 +279,10 @@ const { keyframe } = keyframes("HomePage", () => ({
   "100%": {
     backgroundColor: "#cc2222cc",
   },
-}));
+}), {
+  // provide the registry used for this `.astro` file here
+  registry,
+});
 
 const { classes } = createStyles("HomePage", () => ({
   background: {
@@ -296,20 +301,14 @@ const { classes } = createStyles("HomePage", () => ({
     color: "white",
     padding: "1rem",
   },
-}));
+}), {
+  // provide the registry used for this `.astro` file here
+  registry,
+});
 ---
-
-<html lang="en">
-  <head>
-    <SimpleStyleProvider registry={StyleRegistry}>
-      <meta charset="utf-8" />
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-      <meta name="viewport" content="width=device-width" />
-      <meta name="generator" content={Astro.generator} />
-      <title>Astro</title>
-    </SimpleStyleProvider>
-  </head>
-  <body class={classes.background}>
+<!-- wrap your astro content here with the provider and give it the registry you created in your front matter -->
+<SimpleStyleProvider registry={registry}>
+  <div class={classes.background}>
     <div class={classes.content}>
       <h1>Astro</h1>
       <p>
@@ -318,8 +317,8 @@ const { classes } = createStyles("HomePage", () => ({
       </p>
       <p>Feel free to edit me and I'll hot reload!</p>
     </div>
-  </body>
-</html>
+  </div>
+</SimpleStyleProvider>
 ```
 
 Check out this [Code Sandbox w/Astro integration to see how it works](https://codesandbox.io/p/devbox/mq9twt).
@@ -341,8 +340,7 @@ The core APIs needed to make this work are:
 For demonstration purposes, we'll locate this at our `src/` root, and name it `styleLib.js`
 
 ```javascript
-import { makeCssFuncs, setSeed } from "simplestyle-js";
-import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
+import { makeCssFuncs, setSeed, SimpleStyleRegistry } from "simplestyle-js";
 
 // set the className generation seed to ensure classNames are computed consistently
 // between the client and the server.
