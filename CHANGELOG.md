@@ -1,3 +1,11 @@
+## 5.3.2 (2025-12-27)
+
+### 📖 Docs 📖
+
+- docs: updated README to have the correct example for Astro (b9a6d34bafeb0be893cf2d5d8ada64b36d3e6961)
+
+---
+
 ## 5.3.1 (2025-12-27)
 
 ### 🔀 Miscellaneous 🔀
