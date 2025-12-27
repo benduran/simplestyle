@@ -1,3 +1,11 @@
+## 5.3.1 (2025-12-27)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: exported the registry class from the index for convenience (5fdd759547ff862bc8788b22833cefafa8f52326)
+
+---
+
 ## 5.3.0 (2025-12-19)
 
 ### ✨ Features ✨
