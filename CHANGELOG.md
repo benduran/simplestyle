@@ -1,3 +1,11 @@
+## 5.3.4 (2026-01-09)
+
+### 🛠️ Fixes 🛠️
+
+- fix: revert treating numbers as pixel values (f3794c6c59e3299f576594140a373a3454700c49)
+
+---
+
 ## 5.3.3 (2026-01-09)
 
 ### 🛠️ Fixes 🛠️
