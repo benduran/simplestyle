@@ -6,6 +6,7 @@ import { getPosthooks } from './plugins.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
 import type {
   ImportStringType,
+  Nullish,
   Properties,
   SimpleStyleRules,
 } from './types.js';
@@ -21,12 +22,12 @@ export type CreateStylesOptions = Partial<{
    * If set, along with flush: true,
    * will render the injected <style /> after this element
    */
-  insertAfter?: HTMLElement;
+  insertAfter?: Nullish<HTMLElement>;
   /**
    * If set, along with flush: true,
    * will render the injects <style /> before this element
    */
-  insertBefore?: HTMLElement;
+  insertBefore?: Nullish<HTMLElement>;
 
   /**
    * if set, will automatically prevent any styles from
@@ -35,7 +36,7 @@ export type CreateStylesOptions = Partial<{
    * and it will be up to you to determine how they should
    * be flushed.
    */
-  registry?: SimpleStyleRegistry;
+  registry?: Nullish<SimpleStyleRegistry>;
 }>;
 
 function isNestedSelector(r: string): boolean {

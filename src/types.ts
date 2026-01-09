@@ -1,5 +1,7 @@
 import type { Properties } from 'csstype';
 
+export type Nullish<T> = T | null | undefined;
+
 export type SimpleStyleRules = {
   [key: string]: Properties | SimpleStyleRules;
 };
