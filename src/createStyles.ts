@@ -54,7 +54,7 @@ function formatCSSRuleName(rule: string): string {
 function formatCSSRules(cssRules: Properties): string {
   return Object.entries(cssRules).reduce(
     (prev, [cssProp, cssVal]) =>
-      `${prev}${formatCSSRuleName(cssProp)}:${String(cssVal)}${typeof cssVal === 'number' ? 'px' : ''};`,
+      `${prev}${formatCSSRuleName(cssProp)}:${String(cssVal)};`,
     '',
   );
 }
