@@ -1,3 +1,11 @@
+## 5.3.3 (2026-01-09)
+
+### 🛠️ Fixes 🛠️
+
+- fix: fixed typings on the overrides to allow nullish values (d865551ba5d87a353918ab7f9bf209e7a7f6b579)
+
+---
+
 ## 5.3.2 (2025-12-27)
 
 ### 📖 Docs 📖
