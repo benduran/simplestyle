@@ -1,3 +1,11 @@
+## 5.3.5 (2026-01-11)
+
+### 🛠️ Fixes 🛠️
+
+- fix: fixed typings to allow nullish values for registry when making funcs (41ff18dd46292f0cdc37489853605a65c39dc58c)
+
+---
+
 ## 5.3.4 (2026-01-09)
 
 ### 🛠️ Fixes 🛠️
