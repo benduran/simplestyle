@@ -1,3 +1,11 @@
+## 5.4.0 (2026-01-11)
+
+### ✨ Features ✨
+
+- feat: added support for providing a callback to return options (75d786d844205da14f5f3b91d208373fff75093d)
+
+---
+
 ## 5.3.5 (2026-01-11)
 
 ### 🛠️ Fixes 🛠️
