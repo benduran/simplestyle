@@ -1,3 +1,11 @@
+## 5.4.1 (2026-01-11)
+
+### 🛠️ Fixes 🛠️
+
+- fix: nextjs is ridiculous (e3d9ebaf53cc952fa22255e72a535a50e81272c7)
+
+---
+
 ## 5.4.0 (2026-01-11)
 
 ### ✨ Features ✨
