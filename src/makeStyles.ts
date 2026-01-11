@@ -7,10 +7,10 @@ import {
   rawStyles,
 } from './createStyles.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
-import type { ImportStringType, SimpleStyleRules } from './types.js';
+import type { ImportStringType, Nullish, SimpleStyleRules } from './types.js';
 
 type MakeCssFuncsOpts<T extends object | undefined | null> = {
-  registry?: SimpleStyleRegistry;
+  registry?: Nullish<SimpleStyleRegistry>;
   variables?: T;
 };
 
