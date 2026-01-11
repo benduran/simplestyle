@@ -9,10 +9,32 @@ import {
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
 import type { ImportStringType, Nullish, SimpleStyleRules } from './types.js';
 
-type MakeCssFuncsOpts<T extends object | undefined | null> = {
-  registry?: Nullish<SimpleStyleRegistry>;
-  variables?: T;
-};
+type MakeCssFuncsOpts<T extends object | undefined | null> =
+  | {
+      registry?: Nullish<SimpleStyleRegistry>;
+      variables?: T;
+    }
+  | (() => {
+      registry?: Nullish<SimpleStyleRegistry>;
+      variables?: T;
+    });
+
+function extractOverridesAndOpts<T extends object | undefined | null>(
+  optsOrCallback: MakeCssFuncsOpts<T>,
+  overridesOrCallback?: CreateStylesOptions,
+) {
+  const opts =
+    typeof optsOrCallback === 'function' ? optsOrCallback() : optsOrCallback;
+  const overrides =
+    typeof overridesOrCallback === 'function'
+      ? overridesOrCallback()
+      : overridesOrCallback;
+
+  return {
+    ...opts,
+    ...overrides,
+  };
+}
 
 /**
  * Creates all of your CSS functions, createStyles, keframes and rawStyles,
@@ -23,7 +45,7 @@ type MakeCssFuncsOpts<T extends object | undefined | null> = {
  */
 export function makeCssFuncs<
   V extends object | undefined | null | never = never,
->(opts: MakeCssFuncsOpts<V>) {
+>(optsOrCallback: MakeCssFuncsOpts<V>) {
   type RulesCallback<ReturnType> = (
     vars: V extends undefined | null | never ? never : V,
   ) => ReturnType;
@@ -35,67 +57,83 @@ export function makeCssFuncs<
   >(
     ruleId: string,
     rulesFnc: RulesCallback<T>,
-    overrides?: CreateStylesOptions,
+    overridesOrCallback?: CreateStylesOptions,
   ) {
     return createStyles<T, K, O>(
       ruleId,
-      // @ts-expect-error - we've gotten the consumption types this far
-      // so TSC can pound sand, because we know this operation is safe
-      () => rulesFnc(('variables' in opts ? opts.variables : undefined) as V),
-      {
-        ...overrides,
-        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      () => {
+        const opts = extractOverridesAndOpts(
+          optsOrCallback,
+          overridesOrCallback,
+        );
+        return rulesFnc(
+          // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
+          ('variables' in opts ? opts.variables : undefined) as V,
+        );
       },
+      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
     );
   }
   function wrappedCreateKeyframes<T extends Record<string, Properties>>(
     ruleId: string,
     rulesFnc: RulesCallback<T>,
-    overrides?: CreateStylesOptions,
+    overridesOrCallback?: CreateStylesOptions,
   ) {
     return keyframes<T>(
       ruleId,
-      // @ts-expect-error - we've gotten the consumption types this far
-      // so TSC can pound sand, because we know this operation is safe
-      () => rulesFnc('variables' in opts ? opts.variables : undefined),
-      {
-        ...overrides,
-        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      () => {
+        const opts = extractOverridesAndOpts(
+          optsOrCallback,
+          overridesOrCallback,
+        );
+        return rulesFnc(
+          // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
+          ('variables' in opts ? opts.variables : undefined) as V,
+        );
       },
+      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
     );
   }
 
   function wrappedRawStyles<T extends SimpleStyleRules>(
     ruleId: string,
     rulesFnc: RulesCallback<T>,
-    overrides?: CreateStylesOptions,
+    overridesOrCallback?: CreateStylesOptions,
   ) {
     return rawStyles<T>(
       ruleId,
-      // @ts-expect-error - we've gotten the consumption types this far
-      // so TSC can pound sand, because we know this operation is safe
-      () => rulesFnc('variables' in opts ? opts.variables : undefined),
-      {
-        ...overrides,
-        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      () => {
+        const opts = extractOverridesAndOpts(
+          optsOrCallback,
+          overridesOrCallback,
+        );
+        return rulesFnc(
+          // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
+          ('variables' in opts ? opts.variables : undefined) as V,
+        );
       },
+      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
     );
   }
 
   function wrappedImports(
     ruleId: string,
     rulesFnc: RulesCallback<ImportStringType[]>,
-    overrides?: CreateStylesOptions,
+    overridesOrCallback?: CreateStylesOptions,
   ) {
     return imports(
       ruleId,
-      // @ts-expect-error - we've gotten the consumption types this far
-      // so TSC can pound sand, because we know this operation is safe
-      () => rulesFnc('variables' in opts ? opts.variables : undefined),
-      {
-        ...overrides,
-        registry: 'registry' in opts ? opts.registry : overrides?.registry,
+      () => {
+        const opts = extractOverridesAndOpts(
+          optsOrCallback,
+          overridesOrCallback,
+        );
+        return rulesFnc(
+          // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
+          ('variables' in opts ? opts.variables : undefined) as V,
+        );
       },
+      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
     );
   }
 

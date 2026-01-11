@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { imports } from '../createStyles.js';
 import { createStyles, rawStyles, setSeed } from '../index.js';
+import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 import type { ImportStringType, SimpleStyleRules } from '../types.js';
 
 describe('createStyles tests', () => {
@@ -236,6 +237,22 @@ describe('createStyles tests', () => {
       'button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}',
     );
   });
+  it('Should allow raw styles to be written to a registry with options callback', () => {
+    const registry = new SimpleStyleRegistry();
+    const styleContents = rawStyles(
+      'raw-registry-callback',
+      () => ({
+        body: {
+          fontFamily: 'Arial',
+          fontSize: '14px',
+        },
+      }),
+      () => ({ registry }),
+    );
+    expect(styleContents).toBe('body{font-family:Arial;font-size:14px;}');
+    expect(registry.getCSS()).toBe(`\n${styleContents}`);
+    expect(document.querySelectorAll('style').length).toBe(0);
+  });
   it('Should generate different classnames across multiple passes', () => {
     const rules: SimpleStyleRules = {
       simple: {
@@ -369,6 +386,33 @@ describe('createStyles tests', () => {
     }
     expect(success).toBeTruthy();
   });
+  it('Should generate styles and allow inserting after a desired element with options callback', () => {
+    const insertAfter = document.createElement('div');
+    document.body.appendChild(insertAfter);
+    const { stylesheet: styleContents } = createStyles(
+      'insert-after-callback',
+      () => ({
+        test: {
+          backgroundColor: 'orange',
+          fontSize: '16px',
+        },
+      }),
+      () => ({ insertAfter }),
+    );
+    const foundStyle = document.body.querySelector('style');
+    expect(foundStyle?.innerHTML).toBe(styleContents);
+    const children = Array.from(document.body.children);
+    let success = false;
+    for (let i = 0; i < children.length; i += 1) {
+      const child = children[i];
+      if (child === insertAfter) {
+        success = true;
+        expect(children[i + 1]).toBe(foundStyle);
+        break;
+      }
+    }
+    expect(success).toBeTruthy();
+  });
   it('Should generate styles and allow inserting before desired element', () => {
     const insertBefore = document.createElement('div');
     document.body.appendChild(insertBefore);
@@ -420,5 +464,18 @@ describe('createStyles tests', () => {
     expect(rawTag?.innerHTML ?? '').toBe(
       'body, html{font-family:Funnel Display;font-size:16px;}',
     );
+  });
+  it('should write @import rules to the registry with options callback', () => {
+    const registry = new SimpleStyleRegistry();
+    const theImports: ImportStringType[] = [
+      "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
+      "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
+    ];
+    imports('import-rules-callback', () => theImports, () => ({ registry }));
+    const contents = registry.getCSS();
+    for (const imp of theImports) {
+      expect(contents).toContain(imp);
+    }
+    expect(document.querySelectorAll('style').length).toBe(0);
   });
 });

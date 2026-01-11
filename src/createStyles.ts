@@ -11,7 +11,7 @@ import type {
   SimpleStyleRules,
 } from './types.js';
 
-export type CreateStylesOptions = Partial<{
+export type BaselineCreateStylesOptions = Partial<{
   /**
    * If true, automatically renders generated styles
    * to the DOM in an injected <style /> tag
@@ -38,6 +38,16 @@ export type CreateStylesOptions = Partial<{
    */
   registry?: Nullish<SimpleStyleRegistry>;
 }>;
+
+export type CreateStylesOptions =
+  | BaselineCreateStylesOptions
+  | (() => BaselineCreateStylesOptions);
+
+function extractOptions(optionsOrCallback?: CreateStylesOptions) {
+  return typeof optionsOrCallback === 'function'
+    ? optionsOrCallback()
+    : optionsOrCallback;
+}
 
 function isNestedSelector(r: string): boolean {
   return /&/g.test(r);
@@ -208,8 +218,9 @@ function createSheet(ruleId: string, sheetContents: string) {
 function flushSheetContents(
   ruleId: string,
   sheetContents: string,
-  options?: CreateStylesOptions,
+  optionsOrCallback?: CreateStylesOptions,
 ) {
+  const options = extractOptions(optionsOrCallback);
   // In case we're in come weird test environment that doesn't support JSDom
   const { existing, styleTag } = createSheet(ruleId, sheetContents);
   // if the tag existed, DO NOT render it back out to the DOM.
@@ -230,8 +241,10 @@ function flushSheetContents(
 }
 
 function coerceCreateStylesOptions(
-  options?: CreateStylesOptions,
-): CreateStylesOptions {
+  optionsOrCallback?: CreateStylesOptions,
+): BaselineCreateStylesOptions {
+  const options = extractOptions(optionsOrCallback);
+
   return {
     flush: options && typeof options.flush === 'boolean' ? options.flush : true,
   };
@@ -240,8 +253,9 @@ function coerceCreateStylesOptions(
 export function imports(
   ruleId: string,
   rulesFnc: () => ImportStringType[],
-  options?: CreateStylesOptions,
+  optionsOrCallback?: CreateStylesOptions,
 ) {
+  const options = extractOptions(optionsOrCallback);
   const coerced = coerceCreateStylesOptions(options);
   const importRuleId = `${ruleId}_imports`;
   const rules = rulesFnc();
@@ -272,8 +286,10 @@ export function imports(
 export function rawStyles<T extends SimpleStyleRules>(
   ruleId: string,
   rulesFnc: () => T,
-  options?: Partial<CreateStylesOptions>,
+  optionsOrCallback?: Partial<CreateStylesOptions>,
 ) {
+  const options = extractOptions(optionsOrCallback);
+
   const rawStylesId = `${ruleId}_raw`;
   const coerced = coerceCreateStylesOptions(options);
   const rules = rulesFnc();
@@ -296,8 +312,9 @@ export function rawStyles<T extends SimpleStyleRules>(
 export function keyframes<T extends Record<string, Properties>>(
   ruleId: string,
   framesFnc: () => T,
-  options?: CreateStylesOptions,
+  optionsOrCallback?: CreateStylesOptions,
 ) {
+  const options = extractOptions(optionsOrCallback);
   const coerced = coerceCreateStylesOptions(options);
   const keyframeId = generateClassName(`${ruleId}_keyframes`);
 
@@ -323,7 +340,12 @@ export function createStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
   O extends Record<K, string>,
->(ruleId: string, rulesFnc: () => T, options?: Partial<CreateStylesOptions>) {
+>(
+  ruleId: string,
+  rulesFnc: () => T,
+  optionsOrCallback?: Partial<CreateStylesOptions>,
+) {
+  const options = extractOptions(optionsOrCallback);
   const rules = rulesFnc();
   const coerced = coerceCreateStylesOptions(options);
   const {
