@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import type { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
+import { ClientBoundary } from './ClientBoundary.js';
 
 export type SimpleStyleProviderProps = PropsWithChildren & {
   registry: SimpleStyleRegistry;
@@ -16,13 +17,13 @@ export function SimpleStyleProvider({
   registry,
 }: SimpleStyleProviderProps) {
   return (
-    <>
+    <ClientBoundary>
       {registry.getRulesById().map(([ruleId, css]) => (
         <style id={ruleId} key={ruleId}>
           {css}
         </style>
       ))}
       {children}
-    </>
+    </ClientBoundary>
   );
 }
