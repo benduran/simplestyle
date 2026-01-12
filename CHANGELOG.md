@@ -1,3 +1,11 @@
+## 5.4.3 (2026-01-12)
+
+### 🛠️ Fixes 🛠️
+
+- fix: added next.js client boundary to allow styles to flush (09f4fa6d26d8b49970946016c6fe3384715fcf35)
+
+---
+
 ## 5.4.2 (2026-01-11)
 
 ### 🔀 Miscellaneous 🔀
