@@ -4,22 +4,20 @@
 // Next.js to collect the styles on the server
 // but allow flushing them to the DOM at runtime
 
-import { type PropsWithChildren, use } from 'react';
-import { IHateNextJSContext } from './IHateNextJsContext.js';
+import type { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 
-export function ClientBoundary({ children }: PropsWithChildren) {
-  const ctx = use(IHateNextJSContext);
-
-  if (!ctx) return null;
-
+export function ClientBoundary({
+  rules,
+}: {
+  rules: ReturnType<SimpleStyleRegistry['getRulesById']>;
+}) {
   return (
     <>
-      {ctx.registry.getRulesById().map(([ruleId, css]) => (
+      {rules.map(([ruleId, css]) => (
         <style id={ruleId} key={ruleId}>
           {css}
         </style>
       ))}
-      {children}
     </>
   );
 }
