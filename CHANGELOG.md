@@ -1,3 +1,11 @@
+## 5.4.4-beta.1 (2026-01-12)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: ugh (53bcfadf44be3e22090c3e63c420da892db939ce)
+
+---
+
 ## 5.4.4-beta.0 (2026-01-12)
 
 ### 🔀 Miscellaneous 🔀
