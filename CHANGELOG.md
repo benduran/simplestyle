@@ -1,3 +1,11 @@
+## 5.4.4 (2026-01-12)
+
+### 🔀 Miscellaneous 🔀
+
+- Version bump forced for all
+
+---
+
 ## 5.4.4-beta.2 (2026-01-12)
 
 ### 🔀 Miscellaneous 🔀
