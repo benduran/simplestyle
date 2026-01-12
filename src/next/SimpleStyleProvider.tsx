@@ -1,10 +1,6 @@
 import type { PropsWithChildren } from 'react';
+import type { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 import { ClientBoundary } from './ClientBoundary.js';
-import {
-  IHateNextJSContext,
-  type IHateNextJSProps,
-} from './IHateNextJsContext.js';
-
 /**
  * Accumulates all CSS rules and writes
  * them to your layout.
@@ -13,11 +9,12 @@ import {
  */
 export function SimpleStyleProvider({
   children,
-  ...rest
-}: PropsWithChildren & IHateNextJSProps) {
+  registry,
+}: PropsWithChildren & { registry: SimpleStyleRegistry }) {
   return (
-    <IHateNextJSContext value={rest}>
-      <ClientBoundary>{children}</ClientBoundary>
-    </IHateNextJSContext>
+    <>
+      <ClientBoundary rules={registry.getRulesById()} />
+      {children}
+    </>
   );
 }
