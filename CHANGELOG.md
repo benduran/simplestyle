@@ -1,3 +1,11 @@
+## 5.4.4-beta.2 (2026-01-12)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: changed client boundary API (d42b37b4b81bc1d1787718ffbebfe94f7c563b31)
+
+---
+
 ## 5.4.4-beta.1 (2026-01-12)
 
 ### 🔀 Miscellaneous 🔀
