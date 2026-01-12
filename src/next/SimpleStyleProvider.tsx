@@ -1,4 +1,9 @@
-import { ClientBoundary, type ClientBoundaryProps } from './ClientBoundary.js';
+import type { PropsWithChildren } from 'react';
+import { ClientBoundary } from './ClientBoundary.js';
+import {
+  IHateNextJSContext,
+  type IHateNextJSProps,
+} from './IHateNextJsContext.js';
 
 /**
  * Accumulates all CSS rules and writes
@@ -9,6 +14,10 @@ import { ClientBoundary, type ClientBoundaryProps } from './ClientBoundary.js';
 export function SimpleStyleProvider({
   children,
   ...rest
-}: ClientBoundaryProps) {
-  return <ClientBoundary {...rest}>{children}</ClientBoundary>;
+}: PropsWithChildren & IHateNextJSProps) {
+  return (
+    <IHateNextJSContext value={rest}>
+      <ClientBoundary>{children}</ClientBoundary>
+    </IHateNextJSContext>
+  );
 }
