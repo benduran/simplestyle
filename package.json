@@ -110,6 +110,16 @@
         "default": "./dist/esm/makeStyles.mjs"
       }
     },
+    "./next/ClientBoundary": {
+      "require": {
+        "types": "./dist/cjs/next/ClientBoundary.d.ts",
+        "default": "./dist/cjs/next/ClientBoundary.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/next/ClientBoundary.d.ts",
+        "default": "./dist/esm/next/ClientBoundary.mjs"
+      }
+    },
     "./next/SimpleStyleProvider": {
       "require": {
         "types": "./dist/cjs/next/SimpleStyleProvider.d.ts",

@@ -1,10 +1,4 @@
-import type { PropsWithChildren } from 'react';
-import type { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
-import { ClientBoundary } from './ClientBoundary.js';
-
-export type SimpleStyleProviderProps = PropsWithChildren & {
-  registry: SimpleStyleRegistry;
-};
+import { ClientBoundary, type ClientBoundaryProps } from './ClientBoundary.js';
 
 /**
  * Accumulates all CSS rules and writes
@@ -14,16 +8,7 @@ export type SimpleStyleProviderProps = PropsWithChildren & {
  */
 export function SimpleStyleProvider({
   children,
-  registry,
-}: SimpleStyleProviderProps) {
-  return (
-    <ClientBoundary>
-      {registry.getRulesById().map(([ruleId, css]) => (
-        <style id={ruleId} key={ruleId}>
-          {css}
-        </style>
-      ))}
-      {children}
-    </ClientBoundary>
-  );
+  ...rest
+}: ClientBoundaryProps) {
+  return <ClientBoundary {...rest}>{children}</ClientBoundary>;
 }
