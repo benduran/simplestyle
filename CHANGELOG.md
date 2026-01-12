@@ -1,3 +1,11 @@
+## 5.4.4-beta.0 (2026-01-12)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: more next.js ridiculousness (a999f5a5cf9dc389ac1299a5691cfed9e1dd6ea3)
+
+---
+
 ## 5.4.3 (2026-01-12)
 
 ### 🛠️ Fixes 🛠️
