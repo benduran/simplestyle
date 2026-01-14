@@ -37,7 +37,7 @@ export class SimpleStyleRegistry {
 
   private callbacks: CallbackEntry[] = [];
 
-  private addTimeout: NodeJS.Timeout | null = null;
+  private addTimeout: any = null;
 
   add(ruleId: string, contents: string) {
     if (this.sheets.has(ruleId) && doc) {
