@@ -1,3 +1,11 @@
+## 5.4.5-beta.0 (2026-01-14)
+
+### ✨ Features ✨
+
+- feat: added a set registry function that will clamp to a local override (cec216ad619e2028d8ec6b200624e3d38449223f)
+
+---
+
 ## 5.4.4 (2026-01-12)
 
 ### 🔀 Miscellaneous 🔀
