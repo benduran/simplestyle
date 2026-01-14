@@ -21,6 +21,7 @@ type MakeCssFuncsOpts<T extends object | undefined | null> =
 
 function extractOverridesAndOpts<T extends object | undefined | null>(
   optsOrCallback: MakeCssFuncsOpts<T>,
+  localRegistryOverride: Nullish<SimpleStyleRegistry>,
   overridesOrCallback?: CreateStylesOptions,
 ) {
   const opts =
@@ -30,10 +31,14 @@ function extractOverridesAndOpts<T extends object | undefined | null>(
       ? overridesOrCallback()
       : overridesOrCallback;
 
-  return {
+  const out = {
     ...opts,
     ...overrides,
   };
+
+  if (localRegistryOverride) out.registry = localRegistryOverride;
+
+  return out;
 }
 
 /**
@@ -50,6 +55,8 @@ export function makeCssFuncs<
     vars: V extends undefined | null | never ? never : V,
   ) => ReturnType;
 
+  let localRegistryOverride: Nullish<SimpleStyleRegistry> = null;
+
   function wrappedCreateStyles<
     T extends SimpleStyleRules,
     K extends keyof T,
@@ -64,6 +71,7 @@ export function makeCssFuncs<
       () => {
         const opts = extractOverridesAndOpts(
           optsOrCallback,
+          localRegistryOverride,
           overridesOrCallback,
         );
         return rulesFnc(
@@ -71,7 +79,12 @@ export function makeCssFuncs<
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      () =>
+        extractOverridesAndOpts(
+          optsOrCallback,
+          localRegistryOverride,
+          overridesOrCallback,
+        ),
     );
   }
   function wrappedCreateKeyframes<T extends Record<string, Properties>>(
@@ -84,6 +97,7 @@ export function makeCssFuncs<
       () => {
         const opts = extractOverridesAndOpts(
           optsOrCallback,
+          localRegistryOverride,
           overridesOrCallback,
         );
         return rulesFnc(
@@ -91,7 +105,12 @@ export function makeCssFuncs<
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      () =>
+        extractOverridesAndOpts(
+          optsOrCallback,
+          localRegistryOverride,
+          overridesOrCallback,
+        ),
     );
   }
 
@@ -105,6 +124,7 @@ export function makeCssFuncs<
       () => {
         const opts = extractOverridesAndOpts(
           optsOrCallback,
+          localRegistryOverride,
           overridesOrCallback,
         );
         return rulesFnc(
@@ -112,7 +132,12 @@ export function makeCssFuncs<
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      () =>
+        extractOverridesAndOpts(
+          optsOrCallback,
+          localRegistryOverride,
+          overridesOrCallback,
+        ),
     );
   }
 
@@ -126,6 +151,7 @@ export function makeCssFuncs<
       () => {
         const opts = extractOverridesAndOpts(
           optsOrCallback,
+          localRegistryOverride,
           overridesOrCallback,
         );
         return rulesFnc(
@@ -133,14 +159,32 @@ export function makeCssFuncs<
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      () =>
+        extractOverridesAndOpts(
+          optsOrCallback,
+          localRegistryOverride,
+          overridesOrCallback,
+        ),
     );
   }
+
+  /**
+   * this is a useful function to use if you are building a component library
+   * that is installed / shared in other packages, and these packages that
+   * use your component library are server-side rendered.
+   * this function should be called as the very first thing before any of your
+   * other component code is loaded, as this will ensure your CSS registry
+   * is clamped to the instance you need
+   */
+  const setRegistryOverride = (registry: Nullish<SimpleStyleRegistry>) => {
+    localRegistryOverride = registry;
+  };
 
   return {
     createStyles: wrappedCreateStyles,
     imports: wrappedImports,
     keyframes: wrappedCreateKeyframes,
     rawStyles: wrappedRawStyles,
+    setRegistryOverride,
   };
 }
