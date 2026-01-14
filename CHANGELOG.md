@@ -1,3 +1,11 @@
+## 5.4.5-beta.2 (2026-01-14)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: moved usestate usage to a client component (c0923825b9bcb9bbbb08db3773398a40325e4c41)
+
+---
+
 ## 5.4.5-beta.1 (2026-01-14)
 
 ### 🔀 Miscellaneous 🔀
