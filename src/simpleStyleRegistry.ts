@@ -4,6 +4,28 @@ const doc = globalThis.document as
   | null
   | undefined;
 
+type AnyEventName = 'add' | 'settled';
+
+export type SimpleStyleRegistryAddEventCallback = (
+  this: SimpleStyleRegistry,
+  ruleId: string,
+  contents: string,
+) => void;
+
+export type SimpleStyleRegistrySettledEventCallback = (
+  this: SimpleStyleRegistry,
+) => void;
+
+type CallbackEntry =
+  | {
+      callback: SimpleStyleRegistryAddEventCallback;
+      eventName: 'add';
+    }
+  | {
+      callback: SimpleStyleRegistrySettledEventCallback;
+      eventName: 'settled';
+    };
+
 /**
  * Acts as an accumulator for all
  * generated css that occurs via createStyles().
@@ -13,6 +35,10 @@ const doc = globalThis.document as
 export class SimpleStyleRegistry {
   private sheets = new Map<string, string>();
 
+  private callbacks: CallbackEntry[] = [];
+
+  private addTimeout: NodeJS.Timeout | null = null;
+
   add(ruleId: string, contents: string) {
     if (this.sheets.has(ruleId) && doc) {
       const tag = doc.getElementById(ruleId);
@@ -21,6 +47,22 @@ export class SimpleStyleRegistry {
       }
     }
     this.sheets.set(ruleId, contents);
+    this.callbacks.forEach((entry) => {
+      if (entry.eventName === 'add') {
+        entry.callback.call(this, ruleId, contents);
+      }
+    });
+
+    if (this.addTimeout) {
+      clearTimeout(this.addTimeout);
+    }
+    this.addTimeout = setTimeout(() => {
+      this.callbacks.forEach((entry) => {
+        if (entry.eventName === 'settled') {
+          entry.callback.call(this);
+        }
+      });
+    }, 50);
   }
 
   /**
@@ -56,5 +98,43 @@ ${contents}`,
    */
   getRulesById() {
     return [...this.sheets.entries()];
+  }
+
+  /**
+   * bind an event handler to one of the various events
+   * that occur on the registry
+   */
+  on<
+    E extends AnyEventName,
+    Cb = E extends 'add'
+      ? SimpleStyleRegistryAddEventCallback
+      : E extends 'settled'
+        ? SimpleStyleRegistrySettledEventCallback
+        : never,
+  >(eventName: E, callback: Cb) {
+    // @ts-expect-error - gross typings
+    this.callbacks.push({ eventName, callback });
+  }
+
+  /**
+   * disconnects an event handler from the registry.
+   * if no callback is specified when calling off,
+   * all event handlers are unbound
+   */
+  off<
+    E extends AnyEventName,
+    Cb = E extends 'add'
+      ? SimpleStyleRegistryAddEventCallback
+      : E extends 'settled'
+        ? SimpleStyleRegistrySettledEventCallback
+        : never,
+  >(eventName: E, callback?: Cb) {
+    const cbIsFunc = typeof callback === 'function';
+
+    this.callbacks = this.callbacks.filter(
+      (entry) =>
+        entry.eventName !== eventName &&
+        ((cbIsFunc && entry.callback !== callback) || !cbIsFunc),
+    );
   }
 }
