@@ -213,7 +213,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const styleContents = rawStyles('raw', () => rules);
+    const { stylesheet: styleContents } = rawStyles('raw', () => rules);
 
     expect(styleContents).toContain(
       'body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}',
@@ -232,14 +232,14 @@ describe('createStyles tests', () => {
         minWidth: '300px',
       },
     };
-    const styleContents = rawStyles('raw-media', () => rules);
+    const { stylesheet: styleContents } = rawStyles('raw-media', () => rules);
     expect(styleContents).toBe(
       'button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}',
     );
   });
   it('Should allow raw styles to be written to a registry with options callback', () => {
     const registry = new SimpleStyleRegistry();
-    const styleContents = rawStyles(
+    const { stylesheet: styleContents } = rawStyles(
       'raw-registry-callback',
       () => ({
         body: {
@@ -471,7 +471,11 @@ describe('createStyles tests', () => {
       "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
       "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
     ];
-    imports('import-rules-callback', () => theImports, () => ({ registry }));
+    imports(
+      'import-rules-callback',
+      () => theImports,
+      () => ({ registry }),
+    );
     const contents = registry.getCSS();
     for (const imp of theImports) {
       expect(contents).toContain(imp);

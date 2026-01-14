@@ -281,6 +281,8 @@ export function imports(
   } else if (coerced.flush) {
     flushSheetContents(importRuleId, sheetBuffer, options);
   }
+
+  return { registry: options?.registry };
 }
 
 export function rawStyles<T extends SimpleStyleRules>(
@@ -306,7 +308,7 @@ export function rawStyles<T extends SimpleStyleRules>(
   } else if (coerced.flush) {
     flushSheetContents(rawStylesId, mergedContents, options);
   }
-  return mergedContents;
+  return { registry: options?.registry, stylesheet: mergedContents };
 }
 
 export function keyframes<T extends Record<string, Properties>>(
@@ -333,7 +335,7 @@ export function keyframes<T extends Record<string, Properties>>(
   } else if (coerced.flush) {
     flushSheetContents(keyframeId, stylesheet);
   }
-  return { keyframe: keyframeId, stylesheet };
+  return { keyframe: keyframeId, registry: options?.registry, stylesheet };
 }
 
 export function createStyles<
@@ -402,10 +404,12 @@ export function createStyles<
   // Need this TS cast to get solid code assist from the consumption-side
   return {
     classes: out as unknown,
+    registry: options?.registry,
     stylesheet: replacedSheetContents,
     updateSheet,
   } as {
     classes: O;
+    registry: SimpleStyleRegistry;
     stylesheet: string;
     updateSheet: typeof updateSheet;
   };
