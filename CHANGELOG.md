@@ -1,3 +1,11 @@
+## 5.4.5-beta.3 (2026-01-14)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: attempting to unfuck next.js. (b202f480be31c44a7ed3052ab26b6a1032901ee0)
+
+---
+
 ## 5.4.5-beta.2 (2026-01-14)
 
 ### 🔀 Miscellaneous 🔀
