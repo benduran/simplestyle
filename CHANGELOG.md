@@ -1,3 +1,11 @@
+## 5.4.6 (2026-01-14)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: remove the client boundary (c5b8432dd9d88f8f090732e3595e8d114559ea60)
+
+---
+
 ## 5.4.5 (2026-01-14)
 
 ### 🔀 Miscellaneous 🔀
