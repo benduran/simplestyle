@@ -1,3 +1,11 @@
+## 5.4.5 (2026-01-14)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: return the registry from each style func, for convenience (6f839c32ab7090956d105db89fe408740c55f5f0)
+
+---
+
 ## 5.4.4 (2026-01-12)
 
 ### 🔀 Miscellaneous 🔀
