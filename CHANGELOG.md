@@ -1,3 +1,11 @@
+## 5.4.5-beta.0 (2026-01-14)
+
+### ✨ Features ✨
+
+- feat: added registry events to help with the next.js integration (7b8f7c4b2f596d5236f0c1ff75c8fdd01648bab2)
+
+---
+
 ## 5.4.4 (2026-01-12)
 
 ### 🔀 Miscellaneous 🔀
