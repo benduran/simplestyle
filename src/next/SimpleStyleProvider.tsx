@@ -1,6 +1,5 @@
 import type { PropsWithChildren } from 'react';
 import type { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
-import { ClientBoundary } from './ClientBoundary.js';
 /**
  * Accumulates all CSS rules and writes
  * them to your layout.
@@ -13,7 +12,11 @@ export function SimpleStyleProvider({
 }: PropsWithChildren & { registry: SimpleStyleRegistry }) {
   return (
     <>
-      <ClientBoundary rules={registry.getRulesById()} />
+      {registry.getRulesById().map(([ruleId, css]) => (
+        <style id={ruleId} key={ruleId}>
+          {css}
+        </style>
+      ))}
       {children}
     </>
   );
