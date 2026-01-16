@@ -1,3 +1,5 @@
+'use client';
+
 // @ts-expect-error - this is a tsc error in this project because it's not a full next.js app
 import { useServerInsertedHTML } from 'next/navigation';
 import type { PropsWithChildren } from 'react';

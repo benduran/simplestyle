@@ -130,6 +130,16 @@
         "default": "./dist/esm/next/index.mjs"
       }
     },
+    "./next/registry": {
+      "require": {
+        "types": "./dist/cjs/next/registry.d.ts",
+        "default": "./dist/cjs/next/registry.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/next/registry.d.ts",
+        "default": "./dist/esm/next/registry.mjs"
+      }
+    },
     "./numToAlpha": {
       "require": {
         "types": "./dist/cjs/numToAlpha.d.ts",
@@ -158,6 +168,16 @@
       "import": {
         "types": "./dist/esm/simpleStyleRegistry.d.ts",
         "default": "./dist/esm/simpleStyleRegistry.mjs"
+      }
+    },
+    "./styleCache": {
+      "require": {
+        "types": "./dist/cjs/styleCache.d.ts",
+        "default": "./dist/cjs/styleCache.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/styleCache.d.ts",
+        "default": "./dist/esm/styleCache.mjs"
       }
     },
     "./types": {
