@@ -1,3 +1,11 @@
+## 5.5.0 (2026-01-16)
+
+### ✨ Features ✨
+
+- feat: add a unique data attribute only when a tag was created at runtime (d3c7a7dd3636b4a8637581ba647cc05d5d73c3b1)
+
+---
+
 ## 5.4.7 (2026-01-16)
 
 ### 🔀 Miscellaneous 🔀
