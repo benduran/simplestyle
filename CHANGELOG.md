@@ -1,3 +1,17 @@
+## 5.5.1-alpha.1 (2026-01-16)
+
+### 🛠️ Fixes 🛠️
+
+- fix: added missing use client (214e10aa21fb151c568343d8126401d77156f3dc)
+
+
+
+### 🔀 Miscellaneous 🔀
+
+- chore: tsc error (15b59885fa489c8acc6a1aa3e5350322d6c8016c)
+
+---
+
 ## 5.5.1-alpha.0 (2026-01-16)
 
 ### 🔀 Miscellaneous 🔀
