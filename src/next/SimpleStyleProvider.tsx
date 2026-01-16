@@ -24,7 +24,11 @@ export function SimpleStyleProvider({
     return (
       <>
         {rules.map(([ruleId, css]) => (
-          <style id={ruleId} key={ruleId}>
+          <style
+            data-simplestyle-created-at-runtime={false}
+            id={ruleId}
+            key={ruleId}
+          >
             {css}
           </style>
         ))}
