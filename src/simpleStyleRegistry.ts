@@ -61,6 +61,13 @@ ${contents}`,
   }
 
   /**
+   * clears all accumulated rules from the registry
+   */
+  clear() {
+    this.sheets.clear();
+  }
+
+  /**
    * unique ID for this registry, based on the time when it was created
    */
   get id() {

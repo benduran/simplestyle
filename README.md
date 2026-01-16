@@ -172,27 +172,27 @@ const { classes } = createStyles('my-component', vars => ({
 
 ### Next.js
 
-Create your style registry and scoped CSS functions, then use the official Next.js integration here and wrap the `SimpleStyleProvider` around your `layout` file.
+Create your scoped CSS functions using the per-request Next.js registry, then wrap the `SimpleStyleProvider` around your `layout` file. This ensures styles are collected during server rendering and injected into the `<head />` during streaming.
 
 ```typescript
 // src/styleRegistry.ts
 
 import { makeCssFuncs, setSeed } from "simplestyle-js";
-import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
+import { getSimpleStyleRegistry } from "simplestyle-js/next";
 
 // ensures deterministic creation of CSS classnames
 setSeed(11223344);
 
-export const StyleRegistry = new SimpleStyleRegistry();
-
-export const { createStyles, imports, keyframes, rawStyles } = makeCssFuncs({ registry: StyleRegistry });
+export const { createStyles, imports, keyframes, rawStyles } = makeCssFuncs(() => ({
+  registry: getSimpleStyleRegistry(),
+}));
 ```
 
 ```tsx
 // src/app/layout.tsx
 import type { Metadata } from "next";
 import { SimpleStyleProvider } from "simplestyle-js/next";
-import { createStyles, StyleRegistry } from "./styleRegistry";
+import { createStyles } from "./styleRegistry";
 
 // start writing CSS!
 const { classes } = createStyles('RootLayoutStyles', () => ({
@@ -210,7 +210,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={classes.rootLayout}>
-        <SimpleStyleProvider registry={StyleRegistry}>
+        <SimpleStyleProvider>
           {children}
         </SimpleStyleProvider>
       </body>
@@ -220,6 +220,8 @@ export default function RootLayout({
 ```
 
 Check out this [Code Sandbox w/Next.js integration to see how it works](https://codesandbox.io/p/devbox/t3smf4).
+
+If you're building a component library that needs to work in Next.js with SSR, use the same `getSimpleStyleRegistry()` callback inside that library's `makeCssFuncs` call so it participates in the app's per-request registry. On the client, `getSimpleStyleRegistry()` returns `null`, so styles fall back to runtime injection.
 
 
 ### Astro

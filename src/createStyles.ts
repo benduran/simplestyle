@@ -4,6 +4,7 @@ import merge from 'deepmerge';
 import { generateClassName } from './generateClassName.js';
 import { getPosthooks } from './plugins.js';
 import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
+import { setCachedRule } from './styleCache.js';
 import type {
   ImportStringType,
   Nullish,
@@ -288,6 +289,7 @@ export function imports(
   } else if (coerced.flush) {
     flushSheetContents(importRuleId, sheetBuffer, options);
   }
+  setCachedRule(importRuleId, sheetBuffer);
 
   return { registry: options?.registry };
 }
@@ -315,6 +317,7 @@ export function rawStyles<T extends SimpleStyleRules>(
   } else if (coerced.flush) {
     flushSheetContents(rawStylesId, mergedContents, options);
   }
+  setCachedRule(rawStylesId, mergedContents);
   return { registry: options?.registry, stylesheet: mergedContents };
 }
 
@@ -342,6 +345,7 @@ export function keyframes<T extends Record<string, Properties>>(
   } else if (coerced.flush) {
     flushSheetContents(keyframeId, stylesheet);
   }
+  setCachedRule(keyframeId, stylesheet);
   return { keyframe: keyframeId, registry: options?.registry, stylesheet };
 }
 
@@ -366,6 +370,7 @@ export function createStyles<
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
   const replacedSheetContents = replaceBackReferences(out, mergedContents);
+  setCachedRule(ruleId, replacedSheetContents);
 
   let sheet: ReturnType<typeof flushSheetContents> = null;
 
@@ -395,6 +400,7 @@ export function createStyles<
       else if (options?.registry) {
         options.registry.add(ruleId, updatedReplacedSheetContents);
       }
+      setCachedRule(ruleId, updatedReplacedSheetContents);
       return { classes: updatedOut, stylesheet: updatedSheetContents } as {
         classes: typeof updatedOut;
         stylesheet: string;
