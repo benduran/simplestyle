@@ -13,6 +13,8 @@ const doc = globalThis.document as
 export class SimpleStyleRegistry {
   private sheets = new Map<string, string>();
 
+  private _id = performance.now().toString();
+
   add(ruleId: string, contents: string) {
     if (this.sheets.has(ruleId) && doc) {
       const tag = doc.getElementById(ruleId);
@@ -56,5 +58,12 @@ ${contents}`,
    */
   getRulesById() {
     return [...this.sheets.entries()];
+  }
+
+  /**
+   * unique ID for this registry, based on the time when it was created
+   */
+  get id() {
+    return this._id;
   }
 }
