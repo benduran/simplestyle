@@ -1,3 +1,11 @@
+## 5.5.1-alpha.2 (2026-01-16)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: added another attribute for the next.js rendered tags (6385ee74639aece5b69bf3aa7721f2750848f266)
+
+---
+
 ## 5.5.1-alpha.1 (2026-01-16)
 
 ### 🛠️ Fixes 🛠️
