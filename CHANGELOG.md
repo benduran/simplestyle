@@ -1,3 +1,11 @@
+## 5.4.7 (2026-01-16)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: added a unique id to each registry instance and bumped ts-duality dep (6a40a5906f6ab5f3135561695e7c4121a8133c05)
+
+---
+
 ## 5.4.6 (2026-01-14)
 
 ### 🔀 Miscellaneous 🔀
