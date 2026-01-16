@@ -204,9 +204,16 @@ function createSheet(ruleId: string, sheetContents: string) {
   )
     return out;
   // attempt to reuse the style tag, if it existed
-  const existingTag = doc.getElementById?.(ruleId);
+  const existingTag = doc.getElementById?.(ruleId) as Nullish<HTMLStyleElement>;
   const existing = Boolean(existingTag);
-  const styleTag = existingTag ?? doc.createElement('style');
+
+  let styleTag: Nullish<HTMLStyleElement> = existingTag;
+
+  if (!styleTag) {
+    styleTag = doc.createElement('style');
+    styleTag.dataset.simplestyleCreatedAtRuntime = 'true';
+  }
+
   styleTag.id = ruleId;
   styleTag.innerHTML = sheetContents;
   out.existing = existing;
