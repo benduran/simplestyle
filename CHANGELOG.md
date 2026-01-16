@@ -1,3 +1,11 @@
+## 5.5.1-alpha.0 (2026-01-16)
+
+### 🔀 Miscellaneous 🔀
+
+- feat\!: attempting yet another next.js integration (529addc7b933d7dad97516d1b873ab1581ec2dd2)
+
+---
+
 ## 5.5.0 (2026-01-16)
 
 ### ✨ Features ✨
