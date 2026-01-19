@@ -4,7 +4,6 @@ export {
   keyframes,
   rawStyles,
 } from './createStyles.js';
-export { setSeed } from './generateClassName.js';
 export * from './makeStyles.js';
 export type { PosthookPlugin } from './plugins.js';
 export { registerPosthook } from './plugins.js';

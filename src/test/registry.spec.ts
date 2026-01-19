@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /** biome-ignore-all lint/style/noNonNullAssertion: this is a test file */
 import { beforeEach, describe, expect, it } from 'vitest';
-
-import { setSeed } from '../generateClassName.js';
+import { objectToHash } from '../generateClassName.js';
 import { makeCssFuncs } from '../makeStyles.js';
 import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 import type { ImportStringType } from '../types.js';
@@ -15,8 +14,6 @@ describe('SimpleStyleRegistry', () => {
     const styles = Array.from(document.querySelectorAll('style'));
     for (const style of styles) style.remove();
 
-    // we need deterministic classnames
-    setSeed(0);
     registry = new SimpleStyleRegistry();
 
     fncs = makeCssFuncs({ registry });
@@ -35,8 +32,12 @@ describe('SimpleStyleRegistry', () => {
 
     expect(classes.root).toContain('root');
     const styles = registry?.getCSS() ?? '';
+    const expectedHash = objectToHash({
+      backgroundColor,
+      fontSize,
+    });
     expect(styles).toContain(
-      `root_a{background-color:${backgroundColor};font-size:${fontSize};}`,
+      `root_${expectedHash}{background-color:${backgroundColor};font-size:${fontSize};}`,
     );
     const allStyles = Array.from(document.querySelectorAll('style'));
     expect(allStyles.length).toBe(0);
@@ -67,8 +68,16 @@ describe('SimpleStyleRegistry', () => {
 
     const styles = registry?.getCSS() ?? '';
 
+    const someBtnHash = objectToHash({ height });
+    const rootHash = objectToHash({
+      backgroundColor,
+      fontSize,
+      '& > $someBtn': {
+        width,
+      },
+    });
     expect(styles).toContain(
-      `.${styleId}_someBtn_a{height:${height};}.${styleId}_root_b{background-color:${backgroundColor};font-size:${fontSize};}.${styleId}_root_b > .${styleId}_someBtn_a{width:${width};}`,
+      `.${styleId}_someBtn_${someBtnHash}{height:${height};}.${styleId}_root_${rootHash}{background-color:${backgroundColor};font-size:${fontSize};}.${styleId}_root_${rootHash} > .${styleId}_someBtn_${someBtnHash}{width:${width};}`,
     );
   });
 
@@ -104,13 +113,24 @@ describe('SimpleStyleRegistry', () => {
     const css = registry?.getCSS().trim() ?? '';
 
     // must start with the keyframes
+    const keyframesHash = objectToHash({
+      '0%': { width: '100px' },
+      '100%': { width: '200px' },
+    });
     expect(css).toMatch(
-      /^@keyframes simple-animation-registry_keyframes_a{0%{width:100px;}100%{width:200px;}}/,
+      new RegExp(
+        `^@keyframes simple-animation-registry_keyframes_${keyframesHash}\\{0%\\{width:100px;\\}100%\\{width:200px;\\}\\}`,
+      ),
     );
     expect(css).toContain('*{box-sizing:border-box;outline:0;}');
     // and end with the styles that use them
+    const buttonHash = objectToHash({
+      animation: `simple-animation-registry_keyframes_${keyframesHash} 1s linear infinite`,
+    });
     expect(css).toMatch(
-      /.button-anim_button_b{animation:simple-animation-registry_keyframes_a 1s linear infinite;}$/,
+      new RegExp(
+        `\\.button-anim_button_${buttonHash}\\{animation:simple-animation-registry_keyframes_${keyframesHash} 1s linear infinite;\\}$`,
+      ),
     );
   });
   it('should ensure imports are written to the registry, along with other rules', () => {

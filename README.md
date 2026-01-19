@@ -120,9 +120,6 @@ Rules support nested selectors via `&`, media queries, and `$className` back-ref
 - `makeKeyframes(registry)`
   - Returns a `keyframes` helper preconfigured with the provided registry; calls will auto-add to that registry instead of touching the DOM (same motivation as `makeCreateStyles` for SSR motivations).
 
-- `setSeed(seed: number | null)`
-  - Controls the deterministic suffix used for generated class names. Setting the same seed in server and client renders keeps class names stable for hydration. Pass `null` to reset to `Date.now()`.
-
 - `registerPosthook(fn: (sheet: string) => string)`
   - Adds a transform that runs after CSS strings are generated but before they are flushed or stored. Use for autoprefixing, minification, or custom transforms. Hooks run in registration order.
 
@@ -177,11 +174,8 @@ Create your style registry and scoped CSS functions, then use the official Next.
 ```typescript
 // src/styleRegistry.ts
 
-import { makeCssFuncs, setSeed } from "simplestyle-js";
+import { makeCssFuncs } from "simplestyle-js";
 import { SimpleStyleRegistry } from "simplestyle-js/simpleStyleRegistry";
-
-// ensures deterministic creation of CSS classnames
-setSeed(11223344);
 
 export const StyleRegistry = new SimpleStyleRegistry();
 
@@ -230,10 +224,7 @@ The overall developer experience is similar to Next.js, but requires a pinch mor
 ```typescript
 // src/styleRegistry.ts
 
-import { makeCssFuncs, setSeed } from "simplestyle-js";
-
-// ensures deterministic creation of CSS classnames
-setSeed(11223344);
+import { makeCssFuncs } from "simplestyle-js";
 
 export { createStyles, imports, keyframes, rawStyles } = makeCssFuncs({});
 ```
@@ -329,7 +320,6 @@ Check out this [Code Sandbox w/Astro integration to see how it works](https://co
 The core APIs needed to make this work are:
 
 - `new SimpleStyleRegistry()` - creates a new StyleSheet registry where all of your styles will be accumulated
-- `setSeed(number)` - ensures that classNames are deterministically computed and will be the same on the server and when they're rehydrated on the client
 - `makeCssFuncs({ registry })` - returns `createStyles()`, `keyframes()` and `rawStyles()` functions that are locked to your StyleSheet registry
 
 ### SSR steps for most SSR / SSG frameworks
@@ -340,13 +330,7 @@ The core APIs needed to make this work are:
 For demonstration purposes, we'll locate this at our `src/` root, and name it `styleLib.js`
 
 ```javascript
-import { makeCssFuncs, setSeed, SimpleStyleRegistry } from "simplestyle-js";
-
-// set the className generation seed to ensure classNames are computed consistently
-// between the client and the server.
-// the number you use is arbitrary.
-// set it higher to have most characters injected in your generated class names
-setSeed(1);
+import { makeCssFuncs, SimpleStyleRegistry } from "simplestyle-js";
 
 // create the registry to hold all of the styles on the server
 export const StyleRegistry = new SimpleStyleRegistry();

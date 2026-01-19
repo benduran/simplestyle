@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { imports } from '../createStyles.js';
-import { createStyles, rawStyles, setSeed } from '../index.js';
+import { createStyles, rawStyles } from '../index.js';
 import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 import type { ImportStringType, SimpleStyleRules } from '../types.js';
 
@@ -303,61 +303,6 @@ describe('createStyles tests', () => {
     expect(rendered1).not.toEqual(rendered2);
     expect(rendered1).not.toEqual(rendered3);
     expect(rendered2).not.toEqual(rendered3);
-  });
-  it('Should generate the same classnames across multiple passes if a custom seed is set', () => {
-    const rules: SimpleStyleRules = {
-      simple: {
-        width: '100%',
-      },
-      deep: {
-        '& > span, & > div': {
-          '& button': {
-            '@media(max-width: 600px)': {
-              padding: '0.5em',
-            },
-            padding: '1em',
-          },
-        },
-        color: 'pink',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-      },
-      finder: {
-        backgroundColor: 'pink',
-        marginLeft: '40px',
-        padding: '1rem',
-      },
-    };
-    const seed = 1234;
-    setSeed(seed);
-    const { classes: s1, stylesheet: rendered1 } = createStyles(
-      's1',
-      () => rules,
-      {
-        flush: false,
-      },
-    );
-    setSeed(seed);
-    const { classes: s2, stylesheet: rendered2 } = createStyles(
-      's1',
-      () => rules,
-      {
-        flush: false,
-      },
-    );
-    setSeed(seed);
-    const { classes: s3, stylesheet: rendered3 } = createStyles(
-      's1',
-      () => rules,
-      {
-        flush: false,
-      },
-    );
-    expect(s1).toEqual(s2);
-    expect(s1).toEqual(s3);
-    expect(s2).toEqual(s3);
-    expect(rendered1).toEqual(rendered2);
-    expect(rendered1).toEqual(rendered3);
-    expect(rendered2).toEqual(rendered3);
   });
   it('Should generate styles and allow inserting after a desired element', () => {
     const insertAfter = document.createElement('div');

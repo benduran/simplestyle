@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { setSeed } from '../generateClassName.js';
+import { clearClassNameCountsMap, objectToHash } from '../generateClassName.js';
 import { makeCssFuncs } from '../makeStyles.js';
 import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
 
-setSeed(999);
-
 describe('makeCssFuncs', () => {
   beforeEach(() => {
+    clearClassNameCountsMap();
     document.querySelectorAll('style').forEach((s) => {
       s.remove();
     });
@@ -46,8 +45,12 @@ describe('makeCssFuncs', () => {
     ) as HTMLStyleElement | null;
     const contents = styleElem?.innerHTML ?? '';
 
+    const expectedHash = objectToHash({
+      backgroundColor: lolBackgroundColor,
+      color: lolColor,
+    });
     expect(contents.trim()).toBe(
-      `.some-rule_root_jjj{background-color:${lolBackgroundColor};color:${lolColor};}`,
+      `.some-rule_root_${expectedHash}{background-color:${lolBackgroundColor};color:${lolColor};}`,
     );
   });
   it('should ensure that a class name is created with rules from our defined variables with a registry', () => {
@@ -83,8 +86,12 @@ describe('makeCssFuncs', () => {
       },
     }));
 
+    const expectedHash = objectToHash({
+      backgroundColor: lolBackgroundColor,
+      color: lolColor,
+    });
     expect(registry.getCSS().trim()).toBe(
-      `.some-rule_root_ka{background-color:${lolBackgroundColor};color:${lolColor};}`,
+      `.some-rule_root_${expectedHash}{background-color:${lolBackgroundColor};color:${lolColor};}`,
     );
   });
   it('should allow opts and overrides callbacks', () => {

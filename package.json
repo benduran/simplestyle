@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "bun run clean && bun run build:package",
-    "build:package": "bun run --bun ts-duality --clean --copyOtherFiles",
+    "build:package": "bun run --bun ts-duality --clean --copyOtherFiles --indexFilesOnly",
     "clean": "rm -rf ./dist",
     "coveralls": "bun run test:coverage && bun run coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",

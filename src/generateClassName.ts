@@ -1,11 +1,23 @@
 import stringifyObj from 'fast-json-stable-stringify';
 
+const classNameCounts = new Map<string, number>();
+
+/**
+ * used exclusively for tests, this clears the internal cache
+ * of className counts that tracks for collisions
+ */
+export function clearClassNameCountsMap() {
+  for (const key of classNameCounts.keys()) {
+    classNameCounts.delete(key);
+  }
+}
+
 /**
  * given a javascript object,
  * computes a reliable, stable
  * hash of its string representation
  */
-function objectToHash<T extends object>(obj: T) {
+export function objectToHash<T extends object>(obj: T) {
   // deterministically stringifty an object for a stable hash
   const str = stringifyObj(obj);
 
@@ -17,9 +29,24 @@ function objectToHash<T extends object>(obj: T) {
   return (hash >>> 0).toString(36);
 }
 
+/**
+ * given a desired prefix and a CSS ruleset,
+ * generates a stable, reliable, repeatable but unique
+ * class name. if collisions are detected, an integer counter
+ * is appended to the end as the sole uniquely-identifying factor
+ */
 export function generateClassName<T extends object>(
   prefix: string,
   obj: T,
 ): string {
-  return `${prefix}${objectToHash(obj)}`;
+  const hash = objectToHash(obj);
+  const baseName = `${prefix}_${hash}`;
+  const count = classNameCounts.get(baseName) ?? 0;
+  classNameCounts.set(baseName, count + 1);
+
+  if (!count) {
+    return baseName;
+  }
+
+  return `${baseName}_${count.toString(36)}`;
 }
