@@ -40,27 +40,31 @@
   "devDependencies": {
     "astro": ">=5",
     "@better-builds/lets-version": "^1.6.0",
-    "@testing-library/react": "^16.3.1",
+    "@testing-library/react": "^16.3.2",
     "@types/autoprefixer": "^10.2.4",
     "@types/react": ">=18",
     "@types/react-dom": ">=18",
+    "@types/minimist": "^1.2.5",
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
-    "@biomejs/biome": "^2.3.10",
+    "@biomejs/biome": "^2.3.11",
     "coveralls": "^3.1.1",
     "husky": "^9.1.7",
-    "jsdom": "^27.3.0",
+    "jsdom": "^27.4.0",
     "postcss": "^8.5.6",
     "react": ">=18",
     "react-dom": ">=18",
     "@better-builds/ts-duality": "^1.2.5",
     "typescript": "^5.9.3",
-    "vite": "^7.3.0",
-    "vitest": "^4.0.16"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.17"
   },
   "dependencies": {
     "csstype": "^3.2.3",
-    "deepmerge": "^4.3.1"
+    "deepmerge": "^4.3.1",
+    "glob": "^13.0.0",
+    "jiti": "^2.6.1",
+    "minimist": "^1.2.8"
   },
   "optionalDependencies": {
     "astro": ">=5",
@@ -70,6 +74,66 @@
     "react": ">=16.8"
   },
   "exports": {
+    "./compiler/cli": {
+      "require": {
+        "types": "./dist/cjs/compiler/cli.d.ts",
+        "default": "./dist/cjs/compiler/cli.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/compiler/cli.d.ts",
+        "default": "./dist/esm/compiler/cli.mjs"
+      }
+    },
+    "./compiler/collector": {
+      "require": {
+        "types": "./dist/cjs/compiler/collector.d.ts",
+        "default": "./dist/cjs/compiler/collector.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/compiler/collector.d.ts",
+        "default": "./dist/esm/compiler/collector.mjs"
+      }
+    },
+    "./compiler/interceptor": {
+      "require": {
+        "types": "./dist/cjs/compiler/interceptor.d.ts",
+        "default": "./dist/cjs/compiler/interceptor.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/compiler/interceptor.d.ts",
+        "default": "./dist/esm/compiler/interceptor.mjs"
+      }
+    },
+    "./compiler/mock": {
+      "require": {
+        "types": "./dist/cjs/compiler/mock.d.ts",
+        "default": "./dist/cjs/compiler/mock.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/compiler/mock.d.ts",
+        "default": "./dist/esm/compiler/mock.mjs"
+      }
+    },
+    "./compiler/register": {
+      "require": {
+        "types": "./dist/cjs/compiler/register.d.ts",
+        "default": "./dist/cjs/compiler/register.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/compiler/register.d.ts",
+        "default": "./dist/esm/compiler/register.mjs"
+      }
+    },
+    "./compiler/tester": {
+      "require": {
+        "types": "./dist/cjs/compiler/tester.d.ts",
+        "default": "./dist/cjs/compiler/tester.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/compiler/tester.d.ts",
+        "default": "./dist/esm/compiler/tester.mjs"
+      }
+    },
     "./createStyles": {
       "require": {
         "types": "./dist/cjs/createStyles.d.ts",
@@ -196,7 +260,5 @@
   "module": "./dist/esm/index.mjs",
   "types": "./dist/cjs/index.d.ts",
   "main": "./dist/cjs/index.cjs",
-  "trustedDependencies": [
-    "@swc/core"
-  ]
+  "trustedDependencies": []
 }
