@@ -130,7 +130,7 @@ function execCreateStyles<
       guardCloseRuleWrite();
       const generated = noGenerateClassName
         ? classNameOrCSSRule
-        : generateClassName(`${ruleId}_${classNameOrCSSRule}`);
+        : generateClassName(`${ruleId}_${classNameOrCSSRule}`, classNameRules);
       // @ts-expect-error - yes, we can index this object here, so be quiet
       out[classNameOrCSSRule] = generated;
       const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
@@ -289,7 +289,7 @@ export function imports(
     flushSheetContents(importRuleId, sheetBuffer, options);
   }
 
-  return { registry: options?.registry };
+  return { registry: options?.registry, stylesheet: sheetBuffer };
 }
 
 export function rawStyles<T extends SimpleStyleRules>(
@@ -323,11 +323,11 @@ export function keyframes<T extends Record<string, Properties>>(
   framesFnc: () => T,
   optionsOrCallback?: CreateStylesOptions,
 ) {
+  const frames = framesFnc();
+
   const options = extractOptions(optionsOrCallback);
   const coerced = coerceCreateStylesOptions(options);
-  const keyframeId = generateClassName(`${ruleId}_keyframes`);
-
-  const frames = framesFnc();
+  const keyframeId = generateClassName(`${ruleId}_keyframes`, frames);
 
   const { sheetBuffer: keyframesContents } = execCreateStyles(
     keyframeId,
@@ -423,5 +423,3 @@ export function createStyles<
 }
 
 export type CreateStylesArgs = Parameters<typeof createStyles>;
-
-export default createStyles;

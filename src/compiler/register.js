@@ -6,6 +6,7 @@ const j = createJiti(import.meta.url, {
   alias: {
     'simplestyle-js': path.join(import.meta.dirname, 'mock.js'),
   },
+  interopDefault: true,
   jsx: true,
 });
 
@@ -17,7 +18,6 @@ COLLECTOR.length = 0;
  * @param {string} userFilePath
  */
 export async function extract(userFilePath) {
-  console.info('processing user file:', userFilePath);
   await j.import(userFilePath);
 
   return COLLECTOR;

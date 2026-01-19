@@ -1,51 +1,25 @@
-import numToAlpha from './numToAlpha.js';
+import stringifyObj from 'fast-json-stable-stringify';
 
-let inc = Date.now();
+/**
+ * given a javascript object,
+ * computes a reliable, stable
+ * hash of its string representation
+ */
+function objectToHash<T extends object>(obj: T) {
+  // deterministically stringifty an object for a stable hash
+  const str = stringifyObj(obj);
 
-export function setSeed(seed: number | null): void {
-  if (seed === null) {
-    inc = Date.now();
-    return;
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
   }
-  if (typeof seed !== 'number')
-    throw new Error(
-      'Unable to setSeed as provided seed was not a valid number',
-    );
-  if (seed === Number.MAX_SAFE_INTEGER)
-    throw new Error(
-      'Unable to setSeed because the seed was already the maximum safe JavaScript number allowed',
-    );
-  if (seed === Number.POSITIVE_INFINITY || seed === Number.NEGATIVE_INFINITY)
-    throw new Error(
-      'Unable to setSeed. Positive or negative infinity is not allowed',
-    );
-  if (seed < 0)
-    throw new Error('Unable to setSeed. Seed must be a number >= 0');
-  inc = seed;
+  return (hash >>> 0).toString(36);
 }
 
-const numPairsRegex = /(\d{1,2})/g;
-
-export function getUniqueSuffix(): string {
-  const numPairs: string[] = [];
-  const incStr = inc.toString();
-  let result = numPairsRegex.exec(incStr);
-  while (result) {
-    numPairs.push(result[0]);
-    result = numPairsRegex.exec(incStr);
-  }
-  let out = '_';
-  for (const pair of numPairs) {
-    const val = +pair;
-    if (val > 25) {
-      const [first, second] = pair.split('');
-      out += `${numToAlpha(Number(first))}${numToAlpha(Number(second))}`;
-    } else out += numToAlpha(val);
-  }
-  inc += 1;
-  return out;
-}
-
-export function generateClassName(c: string): string {
-  return `${c}${getUniqueSuffix()}`;
+export function generateClassName<T extends object>(
+  prefix: string,
+  obj: T,
+): string {
+  return `${prefix}${objectToHash(obj)}`;
 }

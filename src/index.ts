@@ -1,6 +1,6 @@
 export type { CreateStylesArgs, CreateStylesOptions } from './createStyles.js';
 export {
-  default as createStyles,
+  createStyles,
   keyframes,
   rawStyles,
 } from './createStyles.js';
