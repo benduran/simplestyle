@@ -1,3 +1,11 @@
+## 5.5.1-alpha.10 (2026-01-19)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: I am really starting to despire react server components and next.js (ebefc4eb88bf81ddd813078e5b807e0f153e7603)
+
+---
+
 ## 5.5.0 (2026-01-16)
 
 ### ✨ Features ✨
