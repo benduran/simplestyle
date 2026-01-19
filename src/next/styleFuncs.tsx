@@ -1,9 +1,8 @@
-// @ts-expect-error - this package is not defined because we're not in an actual next.js project
-import { useServerInsertedHTML } from 'next/navigation';
 import type { PropsWithChildren } from 'react';
 import { setSeed } from '../generateClassName.js';
 import { makeCssFuncs } from '../makeStyles.js';
 import { getSimpleStyleRegistryForNext } from './registry.js';
+import { useSafeServerInsertedHTML } from './useSafeServerInsertedHTML.js';
 
 /**
  * variant of the makeCssFuncs function, but returns
@@ -22,7 +21,7 @@ export function makeNextCssFuncs<
   }));
 
   function SimpleStyleProvider({ children }: PropsWithChildren) {
-    useServerInsertedHTML(() => {
+    useSafeServerInsertedHTML(() => {
       const registry = getSimpleStyleRegistryForNext();
       const rulesById = registry?.getRulesById() ?? [];
 
