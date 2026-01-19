@@ -1,1 +1,1 @@
-export * from './SimpleStyleProvider.js';
+export * from './styleFuncs.js';

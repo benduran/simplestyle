@@ -46,7 +46,7 @@
     "@types/react-dom": ">=18",
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
-    "@biomejs/biome": "^2.3.10",
+    "@biomejs/biome": "^2.3.11",
     "coveralls": "^3.1.1",
     "husky": "^9.1.7",
     "jsdom": "^27.3.0",
@@ -110,16 +110,6 @@
         "default": "./dist/esm/makeStyles.mjs"
       }
     },
-    "./next/SimpleStyleProvider": {
-      "require": {
-        "types": "./dist/cjs/next/SimpleStyleProvider.d.ts",
-        "default": "./dist/cjs/next/SimpleStyleProvider.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/next/SimpleStyleProvider.d.ts",
-        "default": "./dist/esm/next/SimpleStyleProvider.mjs"
-      }
-    },
     "./next": {
       "require": {
         "types": "./dist/cjs/next/index.d.ts",
@@ -128,6 +118,26 @@
       "import": {
         "types": "./dist/esm/next/index.d.ts",
         "default": "./dist/esm/next/index.mjs"
+      }
+    },
+    "./next/registry": {
+      "require": {
+        "types": "./dist/cjs/next/registry.d.ts",
+        "default": "./dist/cjs/next/registry.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/next/registry.d.ts",
+        "default": "./dist/esm/next/registry.mjs"
+      }
+    },
+    "./next/styleFuncs": {
+      "require": {
+        "types": "./dist/cjs/next/styleFuncs.d.ts",
+        "default": "./dist/cjs/next/styleFuncs.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/next/styleFuncs.d.ts",
+        "default": "./dist/esm/next/styleFuncs.mjs"
       }
     },
     "./numToAlpha": {
