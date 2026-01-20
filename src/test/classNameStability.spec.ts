@@ -1,9 +1,9 @@
 import { afterAll, describe, expect, it } from 'vitest';
+import { makeCssFuncs } from '../browser/index.js';
 import {
   clearClassNameCountsMap,
   objectToHash,
 } from '../makeStyles/generateClassName.js';
-import { makeCssFuncs } from '../makeStyles/index.js';
 import type { SimpleStyleRules } from '../makeStyles/types.js';
 
 const complexRules: SimpleStyleRules = {

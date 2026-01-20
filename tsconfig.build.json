@@ -4,11 +4,6 @@
     "rootDir": "./src",
     "isolatedModules": false
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "src/compiler",
-    "src/test"
-  ]
+  "include": ["src"],
+  "exclude": ["src/compiler", "src/test"]
 }

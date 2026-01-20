@@ -11,11 +11,6 @@
     "dist/**",
     "README.md"
   ],
-  "ts-duality": {
-    "extraExports": {
-      "./astro/SimpleStyleProvider": "./dist/esm/astro/SimpleStyleProvider.astro"
-    }
-  },
   "scripts": {
     "build": "bun run clean && bun run build:package",
     "build:package": "bun run --bun ts-duality --clean --copyOtherFiles --indexFilesOnly",
@@ -77,14 +72,14 @@
     "react": ">=16.8"
   },
   "exports": {
-    ".": {
+    "./browser": {
       "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.cjs"
+        "types": "./dist/cjs/browser/index.d.ts",
+        "default": "./dist/cjs/browser/index.cjs"
       },
       "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.mjs"
+        "types": "./dist/esm/browser/index.d.ts",
+        "default": "./dist/esm/browser/index.mjs"
       }
     },
     "./ssr": {
@@ -97,18 +92,7 @@
         "default": "./dist/esm/ssr/index.mjs"
       }
     },
-    "./util": {
-      "require": {
-        "types": "./dist/cjs/util/index.d.ts",
-        "default": "./dist/cjs/util/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/util/index.d.ts",
-        "default": "./dist/esm/util/index.mjs"
-      }
-    },
-    "./package.json": "./package.json",
-    "./astro/SimpleStyleProvider": "./dist/esm/astro/SimpleStyleProvider.astro"
+    "./package.json": "./package.json"
   },
   "module": "./dist/esm/index.mjs",
   "types": "./dist/cjs/index.d.ts",

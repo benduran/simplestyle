@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { makeCssFuncs } from '../makeStyles/index.js';
+import { makeCssFuncs } from '../browser/index.js';
 
 describe('updateStyles tests', () => {
   const { createStyles } = makeCssFuncs();
