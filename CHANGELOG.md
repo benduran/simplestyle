@@ -1,3 +1,11 @@
+## 5.5.1-alpha.105 (2026-01-20)
+
+### 🛠️ Fixes 🛠️
+
+- fix: return all detected files from the topograph for the watcher (befe4dd9dc9c1b98596229f2c4cf070991f66349)
+
+---
+
 ## 5.5.1-alpha.104 (2026-01-20)
 
 ### 🛠️ Fixes 🛠️
