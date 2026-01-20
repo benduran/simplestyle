@@ -4,7 +4,7 @@ import { COLLECTOR } from './collector.js';
 
 const j = createJiti(import.meta.url, {
   alias: {
-    'simplestyle-js': path.join(import.meta.dirname, 'mock.js'),
+    'simplestyle-js/ssr': path.join(import.meta.dirname, 'mock.js'),
   },
   interopDefault: true,
   jsx: true,
