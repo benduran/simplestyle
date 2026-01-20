@@ -1,3 +1,29 @@
+## 5.5.1-alpha.100 (2026-01-20)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: I sure hope the compiler works (e80965c0fc367e55c1db6f69dc9784db80f3fac7)
+- chore: updates (8610cc168a7048913430dde92afe258b05e0ee2b)
+- chore: moved the compiler around (2e73fe0e97c921a5bcb6ab39c5334d1be2a63027)
+- chore: compiler export updates (6d176f545144fd40c04343389b347b95ba9cc0a7)
+- chore: omissions (9ec4189a94a210fc97388b4b4e2ebe39472d9394)
+- chore: added tests (7415e7e06c1047e1dc5754a4e846c490895c8a21)
+- chore: omg, jiti and its aliases work (6f72f77bf15fcb8f2ac048cfa1705f62e2258c4b)
+
+
+
+### 🚨 Breaking Changes 🚨
+
+- chore!: dramatically changed the API and moved to a map of maps to maintain isolation between makeCssFuncs usages (d03ee10f0a4740e52a636a6bc81f698e6871c6ab)
+
+
+
+### ✨ Features ✨
+
+- feat: the CLI works and it compiles styles to a single file (32f722a6af590ce714422bafd5d14a0cdda2616e)
+
+---
+
 ## 5.5.0 (2026-01-16)
 
 ### ✨ Features ✨
