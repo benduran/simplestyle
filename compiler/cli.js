@@ -47,7 +47,13 @@ async function doCompile(cwd, entrypoints, outfile) {
 
   const styleFiles = topoSorted.filter(isStyleFile);
 
+  if (!styleFiles) {
+    console.warn('no style files were detected so', outfile, 'was not written');
+    return topoSorted;
+  }
+
   for (const filePath of styleFiles) {
+    console.info('processing', path.relative(cwd, filePath));
     await extract(filePath);
   }
 
