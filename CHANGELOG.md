@@ -1,3 +1,11 @@
+## 5.5.1-alpha.106 (2026-01-20)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: logging tweaks to compiler (4829b33b97b5baf5c6716e446590f400db88306d)
+
+---
+
 ## 5.5.1-alpha.105 (2026-01-20)
 
 ### 🛠️ Fixes 🛠️
