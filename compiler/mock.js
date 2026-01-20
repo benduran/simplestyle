@@ -67,9 +67,9 @@ export const makeCssFuncs = (...args) => {
 
   const {
     createStyles: localCreateStyles,
-    imports: localImports,
-    keyframes: localKeyframes,
-    rawStyles: localRawStyles,
+    createImports: localCreateImports,
+    createKeyframes: localCreateKeyframes,
+    createRawStyles: localCreateRawStyles,
   } = out;
 
   // @ts-expect-error - seriously, stop it
@@ -79,18 +79,18 @@ export const makeCssFuncs = (...args) => {
 
     return result;
   };
-  out.imports = (...args) => {
-    const result = localImports(...args);
+  out.createImports = (...args) => {
+    const result = localCreateImports(...args);
     COLLECTOR.push(result.stylesheet);
     return result;
   };
-  out.keyframes = (...args) => {
-    const result = localKeyframes(...args);
+  out.createKeyframes = (...args) => {
+    const result = localCreateKeyframes(...args);
     COLLECTOR.push(result.stylesheet);
     return result;
   };
-  out.rawStyles = (...args) => {
-    const result = localRawStyles(...args);
+  out.createRawStyles = (...args) => {
+    const result = localCreateRawStyles(...args);
     COLLECTOR.push(result.stylesheet);
     return result;
   };

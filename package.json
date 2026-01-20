@@ -4,7 +4,7 @@
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "type": "module",
   "bin": {
-    "ssjs": "./compiler/cli.mjs"
+    "ssjs": "./compiler/cli.js"
   },
   "repository": {
     "type": "git",
