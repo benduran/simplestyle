@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseSync } from '@babel/core';
 import traverseModule from '@babel/traverse';
@@ -52,13 +53,33 @@ function resolveImport(fromFile, source) {
 }
 
 const traverseAst = traverseModule.default ?? traverseModule;
+const require = createRequire(import.meta.url);
+
+function getPresets() {
+  try {
+    const presetTypescript =
+      require('@babel/preset-typescript').default ??
+      require('@babel/preset-typescript');
+    const presetReact =
+      require('@babel/preset-react').default ?? require('@babel/preset-react');
+    return [
+      [presetTypescript, { allExtensions: true, isTSX: true }],
+      [presetReact, { runtime: 'automatic' }],
+    ];
+  } catch (err) {
+    throw new Error(
+      'Missing Babel presets. Ensure @babel/preset-typescript and @babel/preset-react are installed as dependencies of simplestyle-js.',
+      { cause: err },
+    );
+  }
+}
 
 function parseFileToAst(filePath, source) {
   return parseSync(source, {
     babelrc: false,
     configFile: false,
     filename: filePath,
-    presets: ['@babel/preset-env', '@babel/preset-typescript'],
+    presets: getPresets(),
     sourceType: 'unambiguous',
   });
 }
