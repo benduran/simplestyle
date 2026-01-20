@@ -1,3 +1,11 @@
+## 5.5.1-alpha.107 (2026-01-20)
+
+### 🛠️ Fixes 🛠️
+
+- fix: do not kill the process if the watcher fails to compile (8032ee509143fd41ec2b462c4a047d65137911f5)
+
+---
+
 ## 5.5.1-alpha.106 (2026-01-20)
 
 ### 🔀 Miscellaneous 🔀
