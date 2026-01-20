@@ -5,7 +5,7 @@ import { createStyles as _createStyles } from '../dist/makeStyles/createStyles.m
 import { makeCssFuncs as _makeCssFuncs } from '../dist/ssr/index.mjs';
 import { COLLECTOR } from './collector.js';
 
-export * from '../src/ssr/index.js';
+export * from '../dist/ssr/index.mjs';
 
 /** @type {typeof _createStyles} */
 export const createStyles = (ruleId, rulesFnc, opts) => {
