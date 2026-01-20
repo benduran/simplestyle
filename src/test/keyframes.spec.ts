@@ -1,22 +1,26 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-
-import { keyframes } from '../index.js';
+import { afterEach, describe, expect, it } from 'vitest';
+import { makeCssFuncs } from '../browser/index.js';
 
 describe('Keyframes generation', () => {
-  beforeEach(() => {
+  const { createKeyframes } = makeCssFuncs();
+
+  afterEach(() => {
     document.querySelectorAll('style').forEach((s) => {
       s.remove();
     });
   });
   it('Should generate simple animation keyframes', () => {
-    const { keyframe, stylesheet } = keyframes('simple-animation', () => ({
-      '0%': {
-        width: '100px',
-      },
-      '100%': {
-        width: '200px',
-      },
-    }));
+    const { keyframe, stylesheet } = createKeyframes(
+      'simple-animation',
+      () => ({
+        '0%': {
+          width: '100px',
+        },
+        '100%': {
+          width: '200px',
+        },
+      }),
+    );
     expect(keyframe).toBeDefined();
     expect(keyframe.length).toBeGreaterThan(0);
     expect(stylesheet).toBe(
@@ -24,7 +28,7 @@ describe('Keyframes generation', () => {
     );
   });
   it('Should generate keyframes with options callback and skip flushing', () => {
-    const { keyframe, stylesheet } = keyframes(
+    const { keyframe, stylesheet } = createKeyframes(
       'simple-animation-callback',
       () => ({
         '0%': {
@@ -34,7 +38,7 @@ describe('Keyframes generation', () => {
           width: '200px',
         },
       }),
-      () => ({ flush: false }),
+      { flush: false },
     );
     expect(stylesheet).toBe(
       `@keyframes ${keyframe}{0%{width:100px;}100%{width:200px;}}`,

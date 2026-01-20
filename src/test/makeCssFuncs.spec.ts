@@ -1,11 +1,15 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { clearClassNameCountsMap, objectToHash } from '../generateClassName.js';
-import { makeCssFuncs } from '../makeStyles.js';
-import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
+import { makeCssFuncs } from '../browser/index.js';
+import {
+  clearClassNameCountsMap,
+  objectToHash,
+} from '../makeStyles/generateClassName.js';
 
 describe('makeCssFuncs', () => {
-  beforeEach(() => {
+  afterAll(() => {
     clearClassNameCountsMap();
+  });
+  afterEach(() => {
     document.querySelectorAll('style').forEach((s) => {
       s.remove();
     });
@@ -53,50 +57,9 @@ describe('makeCssFuncs', () => {
       `.some-rule_root_${expectedHash}{background-color:${lolBackgroundColor};color:${lolColor};}`,
     );
   });
-  it('should ensure that a class name is created with rules from our defined variables with a registry', () => {
-    const lolBackgroundColor = 'uno banana';
-    const lolBackgroundColorSecondary = 'dos tacos';
-    const lolColor = 'tres colores';
-    const lolColorSecondary = 'quatro quesos';
-
-    const registry = new SimpleStyleRegistry();
-
-    const { createStyles } = makeCssFuncs({
-      registry,
-      variables: {
-        background: {
-          primary: {
-            default: lolBackgroundColor,
-            secondary: lolBackgroundColorSecondary,
-          },
-        },
-        color: {
-          text: {
-            default: lolColor,
-            somethingElse: lolColorSecondary,
-          },
-        },
-      },
-    });
-
-    createStyles('some-rule', (vars) => ({
-      root: {
-        backgroundColor: vars?.background.primary.default,
-        color: vars?.color.text.default,
-      },
-    }));
-
-    const expectedHash = objectToHash({
-      backgroundColor: lolBackgroundColor,
-      color: lolColor,
-    });
-    expect(registry.getCSS().trim()).toBe(
-      `.some-rule_root_${expectedHash}{background-color:${lolBackgroundColor};color:${lolColor};}`,
-    );
-  });
   it('should allow opts and overrides callbacks', () => {
     const lolColor = 'racing stripes';
-    const { createStyles } = makeCssFuncs(() => ({
+    const { createStyles } = makeCssFuncs({
       variables: {
         color: {
           text: {
@@ -104,7 +67,7 @@ describe('makeCssFuncs', () => {
           },
         },
       },
-    }));
+    });
 
     const { classes, stylesheet } = createStyles(
       'callback-rule',
@@ -113,7 +76,7 @@ describe('makeCssFuncs', () => {
           color: vars.color.text.default,
         },
       }),
-      () => ({ flush: false }),
+      { flush: false },
     );
 
     expect(stylesheet).toBe(`.${classes.root}{color:${lolColor};}`);

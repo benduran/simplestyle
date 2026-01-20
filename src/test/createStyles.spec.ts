@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { imports } from '../createStyles.js';
-import { createStyles, rawStyles } from '../index.js';
-import { SimpleStyleRegistry } from '../simpleStyleRegistry.js';
-import type { ImportStringType, SimpleStyleRules } from '../types.js';
+import { afterEach, describe, expect, it } from 'vitest';
+import type { ImportStringType, SimpleStyleRules } from '../browser/index.js';
+import { makeCssFuncs } from '../browser/index.js';
 
 describe('createStyles tests', () => {
-  beforeEach(() => {
+  const { createStyles, createImports, createRawStyles } = makeCssFuncs();
+
+  afterEach(() => {
     Array.from(document.querySelectorAll('style')).forEach((s) => {
       s.remove();
     });
@@ -213,7 +213,7 @@ describe('createStyles tests', () => {
         },
       },
     };
-    const { stylesheet: styleContents } = rawStyles('raw', () => rules);
+    const { stylesheet: styleContents } = createRawStyles('raw', () => rules);
 
     expect(styleContents).toContain(
       'body{font-family:Arial, Helvetica, sans-serif;font-size:16px;}',
@@ -232,26 +232,13 @@ describe('createStyles tests', () => {
         minWidth: '300px',
       },
     };
-    const { stylesheet: styleContents } = rawStyles('raw-media', () => rules);
+    const { stylesheet: styleContents } = createRawStyles(
+      'raw-media',
+      () => rules,
+    );
     expect(styleContents).toBe(
       'button{min-width:300px;}@media(max-width:300px){button > svg{font-size:1em;}button{max-width:100%;}}',
     );
-  });
-  it('Should allow raw styles to be written to a registry with options callback', () => {
-    const registry = new SimpleStyleRegistry();
-    const { stylesheet: styleContents } = rawStyles(
-      'raw-registry-callback',
-      () => ({
-        body: {
-          fontFamily: 'Arial',
-          fontSize: '14px',
-        },
-      }),
-      () => ({ registry }),
-    );
-    expect(styleContents).toBe('body{font-family:Arial;font-size:14px;}');
-    expect(registry.getCSS()).toBe(`\n${styleContents}`);
-    expect(document.querySelectorAll('style').length).toBe(0);
   });
   it('Should generate different classnames across multiple passes', () => {
     const rules: SimpleStyleRules = {
@@ -342,7 +329,7 @@ describe('createStyles tests', () => {
           fontSize: '16px',
         },
       }),
-      () => ({ insertAfter }),
+      { insertAfter },
     );
     const foundStyle = document.body.querySelector('style');
     expect(foundStyle?.innerHTML).toBe(styleContents);
@@ -390,9 +377,9 @@ describe('createStyles tests', () => {
       "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
       "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
     ];
-    imports('import-rules', () => theImports);
+    createImports('import-rules', () => theImports);
 
-    rawStyles('raw-import-subsequent-rules', () => ({
+    createRawStyles('raw-import-subsequent-rules', () => ({
       'body, html': {
         fontFamily: 'Funnel Display',
         fontSize: '16px',
@@ -409,22 +396,5 @@ describe('createStyles tests', () => {
     expect(rawTag?.innerHTML ?? '').toBe(
       'body, html{font-family:Funnel Display;font-size:16px;}',
     );
-  });
-  it('should write @import rules to the registry with options callback', () => {
-    const registry = new SimpleStyleRegistry();
-    const theImports: ImportStringType[] = [
-      "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
-      "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
-    ];
-    imports(
-      'import-rules-callback',
-      () => theImports,
-      () => ({ registry }),
-    );
-    const contents = registry.getCSS();
-    for (const imp of theImports) {
-      expect(contents).toContain(imp);
-    }
-    expect(document.querySelectorAll('style').length).toBe(0);
   });
 });

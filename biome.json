@@ -16,7 +16,15 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "style": {
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType"
+          }
+        }
+      }
     }
   },
   "javascript": {
@@ -43,7 +51,12 @@
         "rules": {
           "style": {
             "useConst": "off",
-            "useImportType": "on"
+            "useImportType": {
+              "level": "error",
+              "options": {
+                "style": "separatedType"
+              }
+            }
           },
           "correctness": {
             "noUnusedVariables": "off",

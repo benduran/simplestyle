@@ -1,8 +1,9 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-
-import { createStyles } from '../index.js';
+import { makeCssFuncs } from '../makeStyles/index.js';
 
 describe('updateStyles tests', () => {
+  const { createStyles } = makeCssFuncs();
+
   beforeAll(() => {
     document.querySelectorAll('style').forEach((s) => {
       s.remove();

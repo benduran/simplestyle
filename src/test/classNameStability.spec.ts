@@ -1,8 +1,10 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-
-import { createStyles } from '../createStyles.js';
-import { clearClassNameCountsMap, objectToHash } from '../generateClassName.js';
-import type { SimpleStyleRules } from '../types.js';
+import { afterAll, describe, expect, it } from 'vitest';
+import {
+  clearClassNameCountsMap,
+  objectToHash,
+} from '../makeStyles/generateClassName.js';
+import { makeCssFuncs } from '../makeStyles/index.js';
+import type { SimpleStyleRules } from '../makeStyles/types.js';
 
 const complexRules: SimpleStyleRules = {
   card: {
@@ -33,7 +35,9 @@ const complexRules: SimpleStyleRules = {
 };
 
 describe('classname stability and repeatability', () => {
-  beforeEach(() => {
+  const { createStyles } = makeCssFuncs();
+
+  afterAll(() => {
     clearClassNameCountsMap();
   });
 

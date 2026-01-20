@@ -1,17 +1,14 @@
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-import {
-  createStyles,
-  type PosthookPlugin,
-  registerPosthook,
-  type SimpleStyleRules,
-} from '../index.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { PosthookPlugin, SimpleStyleRules } from '../browser/index.js';
+import { makeCssFuncs, registerPosthook } from '../browser/index.js';
 import { getPosthooks } from '../plugins.js';
 
 describe('Plugin hooks', () => {
-  beforeEach(() => {
+  const { createStyles } = makeCssFuncs();
+
+  afterEach(() => {
     Array.from(document.head.querySelectorAll('style')).forEach((s) => {
       s.remove();
     });

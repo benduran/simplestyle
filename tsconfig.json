@@ -36,6 +36,7 @@
     "src/"
   ],
   "exclude": [
+    "src/compiler",
     "node_modules"
   ]
 }
