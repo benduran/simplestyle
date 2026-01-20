@@ -45,6 +45,7 @@
     "@types/react": ">=18",
     "@types/react-dom": ">=18",
     "@types/minimist": "^1.2.5",
+    "@types/yargs": "^17.0.35",
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
     "@biomejs/biome": "^2.3.11",
@@ -70,7 +71,7 @@
     "fs-extra": "^11.3.3",
     "glob": "^13.0.0",
     "jiti": "^2.6.1",
-    "minimist": "^1.2.8"
+    "yargs": "^18.0.0"
   },
   "optionalDependencies": {
     "astro": ">=5",

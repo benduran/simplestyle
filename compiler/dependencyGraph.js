@@ -21,8 +21,12 @@ export function isStyleFile(filePath) {
   return STYLE_FILE_REGEX.test(filePath);
 }
 
-function isInsideRoot(rootDir, candidate) {
-  const relative = path.relative(rootDir, candidate);
+/**
+ * Helper to ensure we don't crawl outside the project root
+ * (e.g. into node_modules or system files)
+ */
+function isInsideCwd(cwd, filePath) {
+  const relative = path.relative(cwd, filePath);
   return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
 }
 
@@ -74,73 +78,98 @@ function parseFileToAst(filePath, source) {
   });
 }
 
-export async function buildDependencyGraph(files, inputDir) {
-  const rootDir = path.resolve(inputDir);
+/**
+ * Checks if a file extension is parseable by Babel
+ */
+function isParseable(filePath) {
+  return /\.(js|ts|jsx|tsx|mjs|cjs|mts|cts)$/.test(filePath);
+}
+
+/**
+ * Builds a full topological dependency graph,
+ * based on user-provided entrypoints
+ *
+ * @param {string} cwd -
+ * @param {string[]} files
+ * @returns
+ */
+export async function buildDependencyGraph(cwd, entryPoints) {
   const graph = new Map();
-  const sortedFiles = [...files].sort();
+  // Files we need to process
+  const queue = [...entryPoints];
+  // Files we have already parsed to avoid infinite loops
+  const visited = new Set();
 
-  for (const filePath of sortedFiles) {
-    graph.set(filePath, new Set());
-  }
+  while (queue.length > 0) {
+    const filePath = queue.shift();
 
-  for (const filePath of sortedFiles) {
-    const source = await fs.readFile(filePath, 'utf-8');
-    const ast = parseFileToAst(filePath, source);
-    if (!ast) continue;
+    if (visited.has(filePath)) continue;
+    visited.add(filePath);
 
-    traverseAst(ast, {
-      ImportDeclaration(pathRef) {
-        const resolved = resolveImport(
-          path.resolve(filePath),
-          pathRef.node.source?.value,
-        );
-        if (resolved && isInsideRoot(rootDir, resolved)) {
-          graph.get(filePath)?.add(resolved);
-        }
-      },
-      ExportAllDeclaration(pathRef) {
-        const resolved = resolveImport(
-          path.resolve(filePath),
-          pathRef.node.source?.value,
-        );
-        if (resolved && isInsideRoot(rootDir, resolved)) {
-          graph.get(filePath)?.add(resolved);
-        }
-      },
-      ExportNamedDeclaration(pathRef) {
-        const resolved = resolveImport(
-          path.resolve(filePath),
-          pathRef.node.source?.value,
-        );
-        if (resolved && isInsideRoot(rootDir, resolved)) {
-          graph.get(filePath)?.add(resolved);
-        }
-      },
-      CallExpression(pathRef) {
-        const callee = pathRef.node.callee;
-        if (callee.type === 'Import') {
-          const arg = pathRef.node.arguments[0];
-          const resolved =
-            arg && arg.type === 'StringLiteral'
-              ? resolveImport(path.resolve(filePath), arg.value)
-              : null;
-          if (resolved && isInsideRoot(rootDir, resolved)) {
-            graph.get(filePath)?.add(resolved);
+    // Initialize the graph entry for this file
+    if (!graph.has(filePath)) {
+      graph.set(filePath, new Set());
+    }
+
+    const relFilePath = path.relative(cwd, filePath);
+
+    // Only parse JS/TS files. If it's a CSS/Asset file,
+    // we record it in the graph but don't "walk" into it.
+    if (!isParseable(filePath)) {
+      continue;
+    }
+
+    try {
+      const source = await fs.readFile(filePath, 'utf-8');
+      const ast = parseFileToAst(filePath, source);
+      if (!ast) continue;
+
+      traverseAst(ast, {
+        // Collect all types of imports/exports.
+        // this is legal babel support for grouping the handling
+        // of multiple different node types
+        'ImportDeclaration|ExportAllDeclaration|ExportNamedDeclaration'(
+          pathRef,
+        ) {
+          if (!pathRef.node.source) return;
+
+          const resolved = resolveImport(filePath, pathRef.node.source.value);
+
+          // If we resolved it and it's inside our project, add to graph and queue
+          if (resolved && isInsideCwd(cwd, resolved)) {
+            graph.get(filePath).add(resolved);
+            if (!visited.has(resolved)) {
+              queue.push(resolved);
+            }
           }
-          return;
-        }
-        if (callee.type === 'Identifier' && callee.name === 'require') {
-          const arg = pathRef.node.arguments[0];
-          const resolved =
-            arg && arg.type === 'StringLiteral'
-              ? resolveImport(path.resolve(filePath), arg.value)
-              : null;
-          if (resolved && isInsideRoot(rootDir, resolved)) {
-            graph.get(filePath)?.add(resolved);
+        },
+        CallExpression(pathRef) {
+          const callee = pathRef.node.callee;
+          const isImport = callee.type === 'Import';
+          const isRequire =
+            callee.type === 'Identifier' && callee.name === 'require';
+
+          if (isImport || isRequire) {
+            const arg = pathRef.node.arguments[0];
+            if (arg && arg.type === 'StringLiteral') {
+              const resolved = resolveImport(filePath, arg.value);
+              if (resolved && isInsideCwd(cwd, resolved)) {
+                graph.get(filePath).add(resolved);
+                if (!visited.has(resolved)) {
+                  queue.push(resolved);
+                }
+              }
+            }
           }
-        }
-      },
-    });
+        },
+      });
+    } catch (err) {
+      console.error('error processing', relFilePath);
+      console.warn(
+        `[simplestyle-js] Parse error in ${relFilePath}:`,
+        err.message,
+      );
+    }
   }
 
   return graph;

@@ -4,9 +4,8 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'fs-extra';
 import { glob } from 'glob';
-import minimist from 'minimist';
+import createCLI from 'yargs';
 import { COLLECTOR } from './collector.js';
-import { EXTENSIONS } from './constants.js';
 import {
   buildDependencyGraph,
   isStyleFile,
@@ -22,27 +21,53 @@ import { extract } from './register.js';
  */
 
 async function executeCompiler() {
-  const cliOpts = minimist(process.argv.slice(2));
+  const yargs = createCLI(process.argv.slice(2));
+  const {
+    _,
+    cwd: cwdArg,
+    entrypoints,
+    outfile,
+  } = await yargs
+    .option('cwd', {
+      default: process.cwd(),
+      description: 'Path to use as the current working directory',
+      type: 'string',
+    })
+    .option('entrypoints', {
+      demandOption: true,
+      description: `One or more specific files or file globs for files that will be treated as your entrypoints.
+All style imports will be resolved from these starting points, ensuring styles are written in the correct order.`,
+      type: 'array',
+    })
+    .option('outfile', {
+      demandOption: true,
+      description:
+        'location where the final, combined CSS file will be written',
+      type: 'string',
+    })
+    .help()
+    .showHelpOnFail(false).argv;
 
-  let cwd = cliOpts.cwd ?? process.cwd();
-  cwd = path.isAbsolute(cwd) ? cwd : path.resolve(cwd);
-  const inputDir = cliOpts.input || path.join(cwd, 'src');
-  const outfile = cliOpts.outfile || path.join(inputDir, 'index.css');
+  const cwd = path.isAbsolute(cwdArg) ? cwdArg : path.resolve(cwdArg);
+  if (entrypoints.some((entry) => typeof entry !== 'string' || !entry)) {
+    throw new Error('one or more of your entrypoints is not valid');
+  }
 
-  const inputGlobs = EXTENSIONS.map((ext) =>
-    path.join(inputDir, '**', `*${ext}`),
+  const absEntrypoints = entrypoints.map((entry) =>
+    path.isAbsolute(entry) ? entry : path.join(cwd, entry),
   );
 
   const inputFiles = (
-    await Promise.all(
-      inputGlobs.map((g) => glob(g, { absolute: true, nodir: true })),
-    )
+    await glob(absEntrypoints, {
+      absolute: true,
+      nodir: true,
+      windowsPathsNoEscape: true,
+    })
   )
-    .flat()
     .filter((fp) => !fp.includes('node_modules'))
     .sort();
 
-  const dependencyGraph = await buildDependencyGraph(inputFiles, inputDir);
+  const dependencyGraph = await buildDependencyGraph(cwd, inputFiles);
 
   const topoSorted = topoSortGraph(dependencyGraph);
 
@@ -57,6 +82,7 @@ async function executeCompiler() {
   }
 
   await fs.ensureFile(outfile);
+
   await fs.writeFile(outfile, COLLECTOR.join(os.EOL), 'utf-8');
 
   console.info('✅ successfully wrote all of your styles to', outfile);
