@@ -1,3 +1,18 @@
+## 5.5.1-alpha.102 (2026-01-20)
+
+### ✨ Features ✨
+
+- feat: added layers to ensure style precedence actually works correctly (5a82afeb900d107e3a909cdc0bb0e8220396417f)
+
+
+
+### 🛠️ Fixes 🛠️
+
+- fix: properly detect all inputs in the topo sort (ae747121489d08a172c87ebaa4eb95d8894dd77f)
+- fix: fixed dependency graph walking (9dbfefe2ff7869a904c97f09abb897699fc052ac)
+
+---
+
 ## 5.5.1-alpha.101 (2026-01-20)
 
 ### 🔀 Miscellaneous 🔀
