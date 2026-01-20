@@ -77,13 +77,19 @@ All style imports will be resolved from these starting points, ensuring styles a
     await extract(filePath);
   }
 
-  if (!COLLECTOR.length) {
-    return console.warn('no styles were created so no output file was written');
-  }
-
   await fs.ensureFile(outfile);
 
-  await fs.writeFile(outfile, COLLECTOR.join(os.EOL), 'utf-8');
+  const collectorEntries = [...COLLECTOR.entries()];
+
+  const header = `@layer ${collectorEntries.map(([layerName]) => layerName).join(', ')};`;
+
+  const styles = collectorEntries.reduce((prev, [layerName, styleChunks]) => {
+    const strChunks = styleChunks.join(os.EOL);
+
+    return `${prev}${os.EOL}@layer ${layerName} {${strChunks}}`;
+  }, header);
+
+  await fs.writeFile(outfile, styles, 'utf-8');
 
   console.info('✅ successfully wrote all of your styles to', outfile);
 }

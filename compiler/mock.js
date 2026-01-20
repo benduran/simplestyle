@@ -16,7 +16,7 @@ export const createStyles = (ruleId, rulesFnc, opts) => {
     registry: null,
   });
 
-  COLLECTOR.push(output.stylesheet);
+  COLLECTOR.get('ssjs-styles').push(output.stylesheet);
 
   // @ts-expect-error - shut it!
   return output;
@@ -30,7 +30,7 @@ export const createImports = (ruleId, rulesFnc, opts) => {
     registry: null,
   });
 
-  COLLECTOR.push(output.stylesheet);
+  COLLECTOR.get('ssjs-imports').push(output.stylesheet);
 
   return output;
 };
@@ -43,7 +43,7 @@ export const createKeyframes = (ruleId, rulesFnc, opts) => {
     registry: null,
   });
 
-  COLLECTOR.push(output.stylesheet);
+  COLLECTOR.get('ssjs-styles').push(output.stylesheet);
 
   return output;
 };
@@ -56,7 +56,7 @@ export const createRawStyles = (ruleId, rulesFnc, opts) => {
     registry: null,
   });
 
-  COLLECTOR.push(output.stylesheet);
+  COLLECTOR.get('ssjs-globals').push(output.stylesheet);
 
   return output;
 };
@@ -75,23 +75,22 @@ export const makeCssFuncs = (...args) => {
   // @ts-expect-error - seriously, stop it
   out.createStyles = (...args) => {
     const result = localCreateStyles(...args);
-    COLLECTOR.push(result.stylesheet);
-
+    COLLECTOR.get('ssjs-styles').push(result.stylesheet);
     return result;
   };
   out.createImports = (...args) => {
     const result = localCreateImports(...args);
-    COLLECTOR.push(result.stylesheet);
+    COLLECTOR.get('ssjs-imports').push(result.stylesheet);
     return result;
   };
   out.createKeyframes = (...args) => {
     const result = localCreateKeyframes(...args);
-    COLLECTOR.push(result.stylesheet);
+    COLLECTOR.get('ssjs-styles').push(result.stylesheet);
     return result;
   };
   out.createRawStyles = (...args) => {
     const result = localCreateRawStyles(...args);
-    COLLECTOR.push(result.stylesheet);
+    COLLECTOR.get('ssjs-globals').push(result.stylesheet);
     return result;
   };
 
