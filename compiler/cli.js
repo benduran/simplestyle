@@ -166,7 +166,6 @@ All style imports will be resolved from these starting points, ensuring styles a
 
         doCompile(cwd, entrypoints, outfile).catch((err) => {
           console.error(err);
-          process.exit(1);
         });
 
         changedFiles = new Set();
