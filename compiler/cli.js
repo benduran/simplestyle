@@ -2,56 +2,30 @@
 
 import os from 'node:os';
 import path from 'node:path';
+import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import createCLI from 'yargs';
-import { COLLECTOR } from './collector.js';
+import { COLLECTOR, resetCollector } from './collector.js';
 import {
   buildDependencyGraph,
   isStyleFile,
   topoSortGraph,
 } from './dependencyGraph.js';
+import { getCommonRootPath } from './getCommonRootPath.js';
 import { extract } from './register.js';
 
+/** @type {ReturnType<typeof chokidar.watch> | null | undefined} */
+let watcher = null;
+
 /**
- * @typedef {object} CompilerOpts
- * @property {string} cwd
- * @property {string} inputDir
- * @property {string} outfile
+ * actually compiles the css file
+ * @param {string} cwd
+ * @param {string[]} entrypoints
+ * @param {string}
  */
-
-async function executeCompiler() {
-  const yargs = createCLI(process.argv.slice(2));
-  const {
-    _,
-    cwd: cwdArg,
-    entrypoints,
-    outfile,
-  } = await yargs
-    .option('cwd', {
-      default: process.cwd(),
-      description: 'Path to use as the current working directory',
-      type: 'string',
-    })
-    .option('entrypoints', {
-      demandOption: true,
-      description: `One or more specific files or file globs for files that will be treated as your entrypoints.
-All style imports will be resolved from these starting points, ensuring styles are written in the correct order.`,
-      type: 'array',
-    })
-    .option('outfile', {
-      demandOption: true,
-      description:
-        'location where the final, combined CSS file will be written',
-      type: 'string',
-    })
-    .help()
-    .showHelpOnFail(false).argv;
-
-  const cwd = path.isAbsolute(cwdArg) ? cwdArg : path.resolve(cwdArg);
-  if (entrypoints.some((entry) => typeof entry !== 'string' || !entry)) {
-    throw new Error('one or more of your entrypoints is not valid');
-  }
+async function doCompile(cwd, entrypoints, outfile) {
+  resetCollector();
 
   const absEntrypoints = entrypoints.map((entry) =>
     path.isAbsolute(entry) ? entry : path.join(cwd, entry),
@@ -92,6 +66,126 @@ All style imports will be resolved from these starting points, ensuring styles a
   await fs.writeFile(outfile, styles, 'utf-8');
 
   console.info('✅ successfully wrote all of your styles to', outfile);
+
+  return inputFiles;
+}
+
+async function executeCompiler() {
+  const yargs = createCLI(process.argv.slice(2));
+  const {
+    _,
+    cwd: cwdArg,
+    entrypoints,
+    outfile,
+    watch,
+  } = await yargs
+    .option('cwd', {
+      default: process.cwd(),
+      description: 'Path to use as the current working directory',
+      type: 'string',
+    })
+    .option('entrypoints', {
+      demandOption: true,
+      description: `One or more specific files or file globs for files that will be treated as your entrypoints.
+All style imports will be resolved from these starting points, ensuring styles are written in the correct order.`,
+      type: 'array',
+    })
+    .option('outfile', {
+      demandOption: true,
+      description:
+        'location where the final, combined CSS file will be written',
+      type: 'string',
+    })
+    .option('watch', {
+      default: false,
+      description:
+        'if true, watches all *.style files and rebuilds the resulting css file when changes occur.',
+      type: 'boolean',
+    })
+    .help()
+    .showHelpOnFail(false).argv;
+
+  const cwd = path.isAbsolute(cwdArg) ? cwdArg : path.resolve(cwdArg);
+  if (entrypoints.some((entry) => typeof entry !== 'string' || !entry)) {
+    throw new Error('one or more of your entrypoints is not valid');
+  }
+
+  const filesTraversed = await doCompile(cwd, entrypoints, outfile);
+
+  if (watch) {
+    const longestCommonParent = getCommonRootPath(filesTraversed);
+    const normalizedOutfile = path.isAbsolute(outfile)
+      ? outfile
+      : path.join(cwd, outfile);
+
+    watcher = chokidar.watch(path.join(longestCommonParent, '.'), {
+      awaitWriteFinish: {
+        pollInterval: 100,
+        stabilityThreshold: 100,
+      },
+      cwd,
+      followSymlinks: true,
+      ignored: (fp) => {
+        const normalizedPath = path.isAbsolute(fp) ? fp : path.join(cwd, fp);
+        if (normalizedPath === normalizedOutfile) return true;
+        return (
+          normalizedPath.includes(`${path.sep}node_modules${path.sep}`) ||
+          normalizedPath.includes(`${path.sep}.git${path.sep}`)
+        );
+      },
+      ignoreInitial: true,
+    });
+
+    console.info('👀 watching for file changes in', longestCommonParent);
+
+    let recompilerTimeout = null;
+
+    /** @type {Set<string>} */
+    let changedFiles = new Set();
+
+    /**
+     * determines if things need recompiling
+     * @param {string} fp
+     */
+    const determineIfRecompile = (fp) => {
+      changedFiles.add(fp);
+
+      if (recompilerTimeout) {
+        clearTimeout(recompilerTimeout);
+      }
+      recompilerTimeout = setTimeout(() => {
+        console.info(
+          `recompiling due to the following files changed:${os.EOL}${[...changedFiles].map((fp) => `  ${fp}`).join(os.EOL)}`,
+        );
+
+        doCompile(cwd, entrypoints, outfile).catch((err) => {
+          console.error(err);
+          process.exit(1);
+        });
+
+        changedFiles = new Set();
+      }, 250);
+    };
+
+    watcher.on('add', determineIfRecompile);
+    watcher.on('change', determineIfRecompile);
+    watcher.on('unlink', determineIfRecompile);
+
+    const attempGracefulShutdown = async () => {
+      try {
+        if (recompilerTimeout) {
+          clearTimeout(recompilerTimeout);
+        }
+        await watcher?.close();
+      } catch {
+        /* no-op */
+      }
+      process.exit(0);
+    };
+
+    process.once('SIGINT', attempGracefulShutdown);
+    process.once('SIGTERM', attempGracefulShutdown);
+  }
 }
 
 void executeCompiler();

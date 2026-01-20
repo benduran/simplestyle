@@ -3,7 +3,17 @@ import path from 'node:path';
 import { parseSync } from '@babel/core';
 import traverseModule from '@babel/traverse';
 import fs from 'fs-extra';
-import { EXTENSIONS } from './constants.js';
+
+const EXTENSIONS = [
+  '.ts',
+  '.tsx',
+  '.cts',
+  '.mts',
+  '.cjs',
+  '.mjs',
+  '.js',
+  '.jsx',
+];
 
 const STYLE_FILE_REGEX = /\.styles\.(js|cjs|mjs|ts|mts|cts|jsx|tsx)$/;
 

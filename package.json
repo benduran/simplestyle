@@ -66,6 +66,7 @@
     "@babel/preset-typescript": "^7.28.5",
     "@babel/traverse": "^7.28.6",
     "csstype": "^3.2.3",
+    "chokidar": "^5.0.0",
     "deepmerge": "^4.3.1",
     "fast-json-stable-stringify": "^2.1.0",
     "fs-extra": "^11.3.3",

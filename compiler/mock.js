@@ -9,7 +9,6 @@ export * from '../src/ssr/index.js';
 
 /** @type {typeof _createStyles} */
 export const createStyles = (ruleId, rulesFnc, opts) => {
-  console.info('mock called!');
   const output = _createStyles(ruleId, rulesFnc, {
     ...opts,
     flush: false,
