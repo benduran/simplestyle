@@ -67,7 +67,7 @@ async function doCompile(cwd, entrypoints, outfile) {
 
   console.info('✅ successfully wrote all of your styles to', outfile);
 
-  return inputFiles;
+  return topoSorted;
 }
 
 async function executeCompiler() {
