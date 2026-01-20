@@ -1,13 +1,11 @@
-import { makeCssFuncs as _makeCssFuncs } from '../makeStyles.js';
-import {
-  createStyles as _createStyles,
-  imports as _imports,
-  keyframes as _keyframes,
-  rawStyles as _rawStyles,
-} from '../ssr/index.js';
+import { createImports as _createImports } from '../dist/makeStyles/createImports.mjs';
+import { createKeyframes as _createKeyframes } from '../dist/makeStyles/createKeyframes.mjs';
+import { createRawStyles as _createRawStyles } from '../dist/makeStyles/createRawStyles.mjs';
+import { createStyles as _createStyles } from '../dist/makeStyles/createStyles.mjs';
+import { makeCssFuncs as _makeCssFuncs } from '../dist/ssr/index.mjs';
 import { COLLECTOR } from './collector.js';
 
-export * from '../ssr/index.js';
+export * from '../src/ssr/index.js';
 
 /** @type {typeof _createStyles} */
 export const createStyles = (ruleId, rulesFnc, opts) => {
@@ -24,9 +22,9 @@ export const createStyles = (ruleId, rulesFnc, opts) => {
   return output;
 };
 
-/** @type {typeof _imports} */
-export const imports = (ruleId, rulesFnc, opts) => {
-  const output = _imports(ruleId, rulesFnc, {
+/** @type {typeof _createImports} */
+export const createImports = (ruleId, rulesFnc, opts) => {
+  const output = _createImports(ruleId, rulesFnc, {
     ...opts,
     flush: false,
     registry: null,
@@ -37,9 +35,9 @@ export const imports = (ruleId, rulesFnc, opts) => {
   return output;
 };
 
-/** @type {typeof _keyframes} */
-export const keyframes = (ruleId, rulesFnc, opts) => {
-  const output = _keyframes(ruleId, rulesFnc, {
+/** @type {typeof _createKeyframes} */
+export const createKeyframes = (ruleId, rulesFnc, opts) => {
+  const output = _createKeyframes(ruleId, rulesFnc, {
     ...opts,
     flush: false,
     registry: null,
@@ -50,9 +48,9 @@ export const keyframes = (ruleId, rulesFnc, opts) => {
   return output;
 };
 
-/** @type {typeof _rawStyles} */
-export const rawStyles = (ruleId, rulesFnc, opts) => {
-  const output = _rawStyles(ruleId, rulesFnc, {
+/** @type {typeof _createRawStyles} */
+export const createRawStyles = (ruleId, rulesFnc, opts) => {
+  const output = _createRawStyles(ruleId, rulesFnc, {
     ...opts,
     flush: false,
     registry: null,

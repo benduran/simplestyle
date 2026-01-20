@@ -5,5 +5,5 @@
     "isolatedModules": false
   },
   "include": ["src"],
-  "exclude": ["src/compiler", "src/test"]
+  "exclude": ["src/test"]
 }

@@ -3,17 +3,21 @@
   "version": "5.5.0",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "type": "module",
+  "bin": {
+    "ssjs": "./compiler/cli.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
   "files": [
     "dist/**",
+    "compiler/**",
     "README.md"
   ],
   "scripts": {
     "build": "bun run clean && bun run build:package",
-    "build:package": "bun run --bun ts-duality --clean --copyOtherFiles --indexFilesOnly",
+    "build:package": "bun run --bun ts-duality --noCjs --clean --copyOtherFiles --indexFilesOnly",
     "clean": "rm -rf ./dist",
     "coveralls": "bun run test:coverage && bun run coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
@@ -71,31 +75,16 @@
   "peerDependencies": {
     "react": ">=16.8"
   },
+  "trustedDependencies": [],
   "exports": {
     "./browser": {
-      "require": {
-        "types": "./dist/cjs/browser/index.d.ts",
-        "default": "./dist/cjs/browser/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/browser/index.d.ts",
-        "default": "./dist/esm/browser/index.mjs"
-      }
+      "types": "./dist/browser/index.d.ts",
+      "default": "./dist/browser/index.mjs"
     },
     "./ssr": {
-      "require": {
-        "types": "./dist/cjs/ssr/index.d.ts",
-        "default": "./dist/cjs/ssr/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/ssr/index.d.ts",
-        "default": "./dist/esm/ssr/index.mjs"
-      }
+      "types": "./dist/ssr/index.d.ts",
+      "default": "./dist/ssr/index.mjs"
     },
     "./package.json": "./package.json"
-  },
-  "module": "./dist/esm/index.mjs",
-  "types": "./dist/cjs/index.d.ts",
-  "main": "./dist/cjs/index.cjs",
-  "trustedDependencies": []
+  }
 }

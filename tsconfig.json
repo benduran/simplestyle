@@ -8,7 +8,7 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "declaration": true,
     "jsx": "react-jsx",
     "outDir": "./dist",
@@ -33,10 +33,11 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/"
+    "src/",
+    "compiler"
   ],
   "exclude": [
-    "src/compiler",
+    "compiler",
     "node_modules"
   ]
 }
