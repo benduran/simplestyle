@@ -43,7 +43,9 @@ async function executeCompiler() {
     .sort();
 
   const dependencyGraph = await buildDependencyGraph(inputFiles, inputDir);
+
   const topoSorted = topoSortGraph(dependencyGraph);
+
   const styleFiles = topoSorted.filter(isStyleFile);
 
   for (const filePath of styleFiles) {

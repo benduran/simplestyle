@@ -7,6 +7,16 @@ import { EXTENSIONS } from './constants.js';
 
 const STYLE_FILE_REGEX = /\.styles\.(js|cjs|mjs|ts|mts|cts|jsx|tsx)$/;
 
+const require = createRequire(import.meta.url);
+
+const PRESETS = [
+  [require.resolve('@babel/preset-env')],
+  [
+    require.resolve('@babel/preset-typescript'),
+    { allExtensions: true, isTSX: true },
+  ],
+];
+
 export function isStyleFile(filePath) {
   return STYLE_FILE_REGEX.test(filePath);
 }
@@ -53,34 +63,14 @@ function resolveImport(fromFile, source) {
 }
 
 const traverseAst = traverseModule.default ?? traverseModule;
-const require = createRequire(import.meta.url);
-
-function getPresets() {
-  try {
-    const presetTypescript =
-      require('@babel/preset-typescript').default ??
-      require('@babel/preset-typescript');
-    const presetReact =
-      require('@babel/preset-react').default ?? require('@babel/preset-react');
-    return [
-      [presetTypescript, { allExtensions: true, isTSX: true }],
-      [presetReact, { runtime: 'automatic' }],
-    ];
-  } catch (err) {
-    throw new Error(
-      'Missing Babel presets. Ensure @babel/preset-typescript and @babel/preset-react are installed as dependencies of simplestyle-js.',
-      { cause: err },
-    );
-  }
-}
 
 function parseFileToAst(filePath, source) {
   return parseSync(source, {
     babelrc: false,
     configFile: false,
     filename: filePath,
-    presets: getPresets(),
-    sourceType: 'unambiguous',
+    presets: PRESETS,
+    sourceType: 'module',
   });
 }
 
