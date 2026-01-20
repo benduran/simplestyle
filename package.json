@@ -60,6 +60,10 @@
     "vitest": "^4.0.17"
   },
   "dependencies": {
+    "@babel/core": "^7.28.6",
+    "@babel/preset-env": "^7.28.6",
+    "@babel/preset-typescript": "^7.28.5",
+    "@babel/traverse": "^7.28.6",
     "csstype": "^3.2.3",
     "deepmerge": "^4.3.1",
     "fast-json-stable-stringify": "^2.1.0",

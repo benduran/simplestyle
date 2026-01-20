@@ -7,6 +7,11 @@ import { glob } from 'glob';
 import minimist from 'minimist';
 import { COLLECTOR } from './collector.js';
 import { EXTENSIONS } from './constants.js';
+import {
+  buildDependencyGraph,
+  isStyleFile,
+  topoSortGraph,
+} from './dependencyGraph.js';
 import { extract } from './register.js';
 
 /**
@@ -34,26 +39,23 @@ async function executeCompiler() {
     )
   )
     .flat()
-    .filter(
-      (fp) =>
-        !fp.includes('node_modules') &&
-        /\.styles\.(js|cjs|mjs|ts|mts|cts)/.test(fp),
-    );
+    .filter((fp) => !fp.includes('node_modules'))
+    .sort();
 
-  await Promise.all(
-    inputFiles.map(async (fp) => {
-      await extract(fp);
-    }),
-  );
+  const dependencyGraph = await buildDependencyGraph(inputFiles, inputDir);
+  const topoSorted = topoSortGraph(dependencyGraph);
+  const styleFiles = topoSorted.filter(isStyleFile);
 
-  // collector will have all of its styles in reverse order,
-  // so a simple reverse() on the array should right everything
+  for (const filePath of styleFiles) {
+    await extract(filePath);
+  }
+
   if (!COLLECTOR.length) {
     return console.warn('no styles were created so no output file was written');
   }
 
   await fs.ensureFile(outfile);
-  await fs.writeFile(outfile, COLLECTOR.reverse().join(os.EOL), 'utf-8');
+  await fs.writeFile(outfile, COLLECTOR.join(os.EOL), 'utf-8');
 
   console.info('✅ successfully wrote all of your styles to', outfile);
 }
