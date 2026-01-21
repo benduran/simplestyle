@@ -22,7 +22,7 @@ let watcher = null;
  * actually compiles the css file
  * @param {string} cwd
  * @param {string[]} entrypoints
- * @param {string}
+ * @param {string} outfile
  */
 async function doCompile(cwd, entrypoints, outfile) {
   resetCollector();
@@ -82,7 +82,7 @@ async function executeCompiler() {
   const {
     _,
     cwd: cwdArg,
-    entrypoints,
+    entrypoints: entrypointsArg,
     outfile,
     watch,
   } = await yargs
@@ -113,9 +113,11 @@ All style imports will be resolved from these starting points, ensuring styles a
     .showHelpOnFail(false).argv;
 
   const cwd = path.isAbsolute(cwdArg) ? cwdArg : path.resolve(cwdArg);
-  if (entrypoints.some((entry) => typeof entry !== 'string' || !entry)) {
+  if (entrypointsArg.some((entry) => typeof entry !== 'string' || !entry)) {
     throw new Error('one or more of your entrypoints is not valid');
   }
+
+  const entrypoints = /** @type {string[]} */ (entrypointsArg);
 
   const filesTraversed = await doCompile(cwd, entrypoints, outfile);
 
@@ -145,6 +147,7 @@ All style imports will be resolved from these starting points, ensuring styles a
 
     console.info('👀 watching for file changes in', longestCommonParent);
 
+    /** @type {any} */
     let recompilerTimeout = null;
 
     /** @type {Set<string>} */

@@ -8,11 +8,10 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
     "declaration": true,
     "jsx": "react-jsx",
     "outDir": "./dist",
-    "rootDir": "./src",
     "importsNotUsedAsValues": "remove",
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
@@ -37,7 +36,6 @@
     "compiler"
   ],
   "exclude": [
-    "compiler",
     "node_modules"
   ]
 }
