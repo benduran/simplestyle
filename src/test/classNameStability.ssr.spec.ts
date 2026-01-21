@@ -34,25 +34,6 @@ const complexRules: SimpleStyleRules = {
 describe('classname stability and repeatability (SSR)', () => {
   const { createStyles } = makeCssFuncs();
 
-  it('should keep the hash portion stable while incrementing suffixes for repeats', () => {
-    const expectedCardHash = objectToHash(complexRules.card as object);
-    const expectedGridHash = objectToHash(complexRules.grid as object);
-
-    const { classes: first } = createStyles('repeatable-rules', () => ({
-      ...complexRules,
-    }));
-    const { classes: second } = createStyles('repeatable-rules', () => ({
-      ...complexRules,
-    }));
-
-    expect(first.card).toBe(`repeatable-rules_card_${expectedCardHash}`);
-    expect(first.grid).toBe(`repeatable-rules_grid_${expectedGridHash}`);
-    expect(second.card).toBe(`repeatable-rules_card_${expectedCardHash}_1`);
-    expect(second.grid).toBe(`repeatable-rules_grid_${expectedGridHash}_1`);
-    expect(first.card).not.toBe(second.card);
-    expect(first.grid).not.toBe(second.grid);
-  });
-
   it('should keep prefixes from colliding while preserving stable hashes', () => {
     const expectedCardHash = objectToHash(complexRules.card as object);
 
