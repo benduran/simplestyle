@@ -1,3 +1,11 @@
+## 5.5.1-alpha.109 (2026-01-21)
+
+### 🛠️ Fixes 🛠️
+
+- fix: use the new helper function (59992f9f64df570b337b0f6a2ec7dc81c83c9a1a)
+
+---
+
 ## 5.5.1-alpha.108 (2026-01-21)
 
 ### 🔀 Miscellaneous 🔀
