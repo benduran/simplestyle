@@ -1,10 +1,7 @@
-import { afterAll, describe, expect, it } from 'vitest';
-import { makeCssFuncs } from '../ssr/index.js';
-import {
-  clearClassNameCountsMap,
-  objectToHash,
-} from '../makeStyles/generateClassName.js';
+import { describe, expect, it } from 'vitest';
+import { objectToHash } from '../makeStyles/generateClassName.js';
 import type { SimpleStyleRules } from '../makeStyles/types.js';
+import { makeCssFuncs } from '../ssr/index.js';
 
 const complexRules: SimpleStyleRules = {
   card: {
@@ -37,26 +34,16 @@ const complexRules: SimpleStyleRules = {
 describe('classname stability and repeatability (SSR)', () => {
   const { createStyles } = makeCssFuncs();
 
-  afterAll(() => {
-    clearClassNameCountsMap();
-  });
-
   it('should keep the hash portion stable while incrementing suffixes for repeats', () => {
     const expectedCardHash = objectToHash(complexRules.card as object);
     const expectedGridHash = objectToHash(complexRules.grid as object);
 
-    const { classes: first } = createStyles(
-      'repeatable-rules',
-      () => ({
-        ...complexRules,
-      }),
-    );
-    const { classes: second } = createStyles(
-      'repeatable-rules',
-      () => ({
-        ...complexRules,
-      }),
-    );
+    const { classes: first } = createStyles('repeatable-rules', () => ({
+      ...complexRules,
+    }));
+    const { classes: second } = createStyles('repeatable-rules', () => ({
+      ...complexRules,
+    }));
 
     expect(first.card).toBe(`repeatable-rules_card_${expectedCardHash}`);
     expect(first.grid).toBe(`repeatable-rules_grid_${expectedGridHash}`);
@@ -69,18 +56,12 @@ describe('classname stability and repeatability (SSR)', () => {
   it('should keep prefixes from colliding while preserving stable hashes', () => {
     const expectedCardHash = objectToHash(complexRules.card as object);
 
-    const { classes: primary } = createStyles(
-      'prefix-a',
-      () => ({
-        ...complexRules,
-      }),
-    );
-    const { classes: secondary } = createStyles(
-      'prefix-b',
-      () => ({
-        ...complexRules,
-      }),
-    );
+    const { classes: primary } = createStyles('prefix-a', () => ({
+      ...complexRules,
+    }));
+    const { classes: secondary } = createStyles('prefix-b', () => ({
+      ...complexRules,
+    }));
 
     expect(primary.card).toBe(`prefix-a_card_${expectedCardHash}`);
     expect(secondary.card).toBe(`prefix-b_card_${expectedCardHash}`);

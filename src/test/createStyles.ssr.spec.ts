@@ -1,14 +1,9 @@
-import { afterAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { ImportStringType, SimpleStyleRules } from '../ssr/index.js';
 import { makeCssFuncs } from '../ssr/index.js';
-import { clearClassNameCountsMap } from '../makeStyles/generateClassName.js';
 
 describe('createStyles tests (SSR)', () => {
   const { createStyles, createImports, createRawStyles } = makeCssFuncs();
-
-  afterAll(() => {
-    clearClassNameCountsMap();
-  });
 
   it('Should generate some basic styles', () => {
     const rules: SimpleStyleRules = {

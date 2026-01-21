@@ -5,7 +5,6 @@ import { generateClassName } from './generateClassName.js';
 import type { CreateStylesOptions } from './types.js';
 
 export function createKeyframes<T extends Record<string, Properties>>(
-  mapId: string,
   ruleId: string,
   framesFnc: () => T,
   options?: CreateStylesOptions,
@@ -16,10 +15,9 @@ export function createKeyframes<T extends Record<string, Properties>>(
     ...options,
     flush: options?.flush ?? true,
   };
-  const keyframeId = generateClassName(mapId, `${ruleId}_keyframes`, frames);
+  const keyframeId = generateClassName(`${ruleId}_keyframes`, frames);
 
   const { sheetBuffer: keyframesContents } = execCreateStyles(
-    mapId,
     keyframeId,
     frames,
     coerced,

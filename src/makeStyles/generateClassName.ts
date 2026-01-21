@@ -1,25 +1,5 @@
 import stringifyObj from 'fast-json-stable-stringify';
 
-const mapOfMaps = new Map<string, Map<string, number>>();
-
-export function setClassnameCountsMap(mapId: string, map: Map<string, number>) {
-  mapOfMaps.set(mapId, map);
-}
-
-export function addClassnameCountsMap(mapId: string) {
-  mapOfMaps.set(mapId, new Map());
-}
-
-/**
- * used exclusively for tests, this clears the internal cache
- * of className counts that tracks for collisions
- */
-export function clearClassNameCountsMap() {
-  for (const key of mapOfMaps.keys()) {
-    mapOfMaps.delete(key);
-  }
-}
-
 /**
  * given a javascript object,
  * computes a reliable, stable
@@ -44,26 +24,9 @@ export function objectToHash<T extends object>(obj: T) {
  * is appended to the end as the sole uniquely-identifying factor
  */
 export function generateClassName<T extends object>(
-  mapId: string,
   prefix: string,
   obj: T,
 ): string {
   const hash = objectToHash(obj);
-  const baseName = `${prefix}_${hash}`;
-  const classNameCounts = mapOfMaps.get(mapId);
-
-  if (!classNameCounts) {
-    throw new Error(
-      'an internal error occurred when generateClassName() called. this is a bug with simplestyle-js',
-    );
-  }
-
-  const count = classNameCounts.get(baseName) ?? 0;
-  classNameCounts.set(baseName, count + 1);
-
-  if (!count) {
-    return baseName;
-  }
-
-  return `${baseName}_${count.toString(36)}`;
+  return `${prefix}_${hash}`;
 }

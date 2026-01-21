@@ -7,7 +7,6 @@ export function execCreateStyles<
   K extends keyof T,
   O extends Record<K, string>,
 >(
-  mapId: string,
   ruleId: string,
   rules: T,
   options: CreateStylesOptions,
@@ -36,7 +35,6 @@ export function execCreateStyles<
         mediaQueriesBuffer: mediaQueriesOutput,
         sheetBuffer: regularOutput,
       } = execCreateStyles(
-        mapId,
         ruleId,
         classNameRules as T,
         options,
@@ -57,13 +55,7 @@ export function execCreateStyles<
         const {
           mediaQueriesBuffer: mediaQueriesOutput,
           sheetBuffer: regularOutput,
-        } = execCreateStyles(
-          mapId,
-          ruleId,
-          classNameRules as T,
-          options,
-          selector,
-        );
+        } = execCreateStyles(ruleId, classNameRules as T, options, selector);
         sheetBuffer += regularOutput;
         mediaQueriesBuffer += mediaQueriesOutput;
       }
@@ -71,11 +63,7 @@ export function execCreateStyles<
       guardCloseRuleWrite();
       const generated = noGenerateClassName
         ? classNameOrCSSRule
-        : generateClassName(
-            mapId,
-            `${ruleId}_${classNameOrCSSRule}`,
-            classNameRules,
-          );
+        : generateClassName(`${ruleId}_${classNameOrCSSRule}`, classNameRules);
       // @ts-expect-error - yes, we can index this object here, so be quiet
       out[classNameOrCSSRule] = generated;
       const generatedSelector = `${noGenerateClassName ? '' : '.'}${generated}`;
@@ -83,7 +71,6 @@ export function execCreateStyles<
         mediaQueriesBuffer: mediaQueriesOutput,
         sheetBuffer: regularOutput,
       } = execCreateStyles(
-        mapId,
         ruleId,
         classNameRules as T,
         options,

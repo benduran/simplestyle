@@ -3,7 +3,6 @@ import { flushSheetContents } from './flushSheetContents.js';
 import type { CreateStylesOptions, SimpleStyleRules } from './types.js';
 
 export function createRawStyles<T extends SimpleStyleRules>(
-  mapId: string,
   ruleId: string,
   rulesFnc: () => T,
   options?: Partial<CreateStylesOptions>,
@@ -19,7 +18,7 @@ export function createRawStyles<T extends SimpleStyleRules>(
   const {
     sheetBuffer: sheetContents,
     mediaQueriesBuffer: mediaQueriesContents,
-  } = execCreateStyles(mapId, rawStylesId, rules, coerced, null, true);
+  } = execCreateStyles(rawStylesId, rules, coerced, null, true);
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 

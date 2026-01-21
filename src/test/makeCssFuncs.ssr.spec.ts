@@ -1,15 +1,8 @@
-import { afterAll, describe, expect, it } from 'vitest';
-import {
-  clearClassNameCountsMap,
-  objectToHash,
-} from '../makeStyles/generateClassName.js';
+import { describe, expect, it } from 'vitest';
+import { objectToHash } from '../makeStyles/generateClassName.js';
 import { makeCssFuncs } from '../ssr/index.js';
 
 describe('makeCssFuncs (SSR)', () => {
-  afterAll(() => {
-    clearClassNameCountsMap();
-  });
-
   it('should ensure that a class name is created with rules from our defined variables with no registry', () => {
     const lolBackgroundColor = 'purple-people-eater';
     const lolBackgroundColorSecondary = 'orange orangutan';

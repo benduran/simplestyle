@@ -3,7 +3,6 @@ import { createImports } from './createImports.js';
 import { createKeyframes } from './createKeyframes.js';
 import { createRawStyles } from './createRawStyles.js';
 import { createStyles } from './createStyles.js';
-import { addClassnameCountsMap } from './generateClassName.js';
 import type {
   CreateStylesOptions,
   ImportStringType,
@@ -35,9 +34,6 @@ export function makeCssFuncs<
     vars: V extends undefined | null | never ? never : V,
   ) => ReturnType;
 
-  const mapId = performance.now().toString();
-  addClassnameCountsMap(mapId);
-
   function wrappedCreateStyles<
     T extends SimpleStyleRules,
     K extends keyof T,
@@ -48,7 +44,6 @@ export function makeCssFuncs<
     overrides?: CreateStylesOptions,
   ) {
     return createStyles<T, K, O>(
-      mapId,
       ruleId,
       () => {
         const opts = extractOverridesAndOpts(initialOpts, overrides);
@@ -66,7 +61,6 @@ export function makeCssFuncs<
     overrides?: CreateStylesOptions,
   ) {
     return createKeyframes<T>(
-      mapId,
       ruleId,
       () => {
         const opts = extractOverridesAndOpts(initialOpts, overrides);
@@ -88,7 +82,6 @@ export function makeCssFuncs<
     overrides?: CreateStylesOptions,
   ) {
     return createRawStyles<T>(
-      mapId,
       ruleId,
       () => {
         const opts = extractOverridesAndOpts(initialOpts, overrides);

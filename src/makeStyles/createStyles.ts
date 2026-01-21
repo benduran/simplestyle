@@ -29,12 +29,7 @@ export function createStyles<
   T extends SimpleStyleRules,
   K extends keyof T,
   O extends Record<K, string>,
->(
-  mapId: string,
-  ruleId: string,
-  rulesFnc: () => T,
-  options?: Partial<CreateStylesOptions>,
-) {
+>(ruleId: string, rulesFnc: () => T, options?: Partial<CreateStylesOptions>) {
   const rules = rulesFnc();
   const coerced: NonNullable<typeof options> = {
     ...options,
@@ -45,7 +40,7 @@ export function createStyles<
     classes: out,
     sheetBuffer: sheetContents,
     mediaQueriesBuffer: mediaQueriesContents,
-  } = execCreateStyles(mapId, ruleId, rules, coerced, null);
+  } = execCreateStyles(ruleId, rules, coerced, null);
 
   const mergedContents = `${sheetContents}${mediaQueriesContents}`;
 
@@ -63,7 +58,6 @@ export function createStyles<
         sheetBuffer: updatedSheetContents,
         mediaQueriesBuffer: updatedMediaQueriesContents,
       } = execCreateStyles(
-        mapId,
         ruleId,
         merge(rules, updatedRulesFnc()),
         { flush: false },

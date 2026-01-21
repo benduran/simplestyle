@@ -1,9 +1,6 @@
-import { afterAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { makeCssFuncs } from '../browser/index.js';
-import {
-  clearClassNameCountsMap,
-  objectToHash,
-} from '../makeStyles/generateClassName.js';
+import { objectToHash } from '../makeStyles/generateClassName.js';
 import type { SimpleStyleRules } from '../makeStyles/types.js';
 
 const complexRules: SimpleStyleRules = {
@@ -36,10 +33,6 @@ const complexRules: SimpleStyleRules = {
 
 describe('classname stability and repeatability', () => {
   const { createStyles } = makeCssFuncs();
-
-  afterAll(() => {
-    clearClassNameCountsMap();
-  });
 
   it('should keep the hash portion stable while incrementing suffixes for repeats', () => {
     const expectedCardHash = objectToHash(complexRules.card as object);

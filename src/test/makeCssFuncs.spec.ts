@@ -1,14 +1,8 @@
-import { afterAll, afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { makeCssFuncs } from '../browser/index.js';
-import {
-  clearClassNameCountsMap,
-  objectToHash,
-} from '../makeStyles/generateClassName.js';
+import { objectToHash } from '../makeStyles/generateClassName.js';
 
 describe('makeCssFuncs', () => {
-  afterAll(() => {
-    clearClassNameCountsMap();
-  });
   afterEach(() => {
     document.querySelectorAll('style').forEach((s) => {
       s.remove();

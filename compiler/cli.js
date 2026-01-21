@@ -6,7 +6,7 @@ import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import createCLI from 'yargs';
-import { COLLECTOR, resetCollector } from './collector.js';
+import { COLLECTOR, resetCollector, resetSeenIds } from './collector.js';
 import {
   buildDependencyGraph,
   isStyleFile,
@@ -26,6 +26,7 @@ let watcher = null;
  */
 async function doCompile(cwd, entrypoints, outfile) {
   resetCollector();
+  resetSeenIds();
 
   const absEntrypoints = entrypoints.map((entry) =>
     path.isAbsolute(entry) ? entry : path.join(cwd, entry),
