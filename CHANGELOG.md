@@ -1,3 +1,11 @@
+## 5.5.1-alpha.114 (2026-01-22)
+
+### 🛠️ Fixes 🛠️
+
+- fix: improved typings to be more accurate and fixed the collector (b750c71da650405878ff5f25853b23daf663b775)
+
+---
+
 ## 5.5.1-alpha.113 (2026-01-22)
 
 ### 🛠️ Fixes 🛠️
