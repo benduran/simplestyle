@@ -1,24 +1,23 @@
 {
   "name": "simplestyle-js",
-  "version": "5.5.0",
+  "version": "5.5.1-alpha.114",
   "description": "An incredibly straightforward and simple CSS-in-JS solution with zero runtime dependencies, and out-of-the-box TypeScript support",
   "type": "module",
+  "bin": {
+    "ssjs": "./compiler/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benduran/simplestyle.git"
   },
   "files": [
     "dist/**",
+    "compiler/**",
     "README.md"
   ],
-  "ts-duality": {
-    "extraExports": {
-      "./astro/SimpleStyleProvider": "./dist/esm/astro/SimpleStyleProvider.astro"
-    }
-  },
   "scripts": {
     "build": "bun run clean && bun run build:package",
-    "build:package": "bun run --bun ts-duality --clean --copyOtherFiles",
+    "build:package": "bun run --bun ts-duality --noCjs --clean --copyOtherFiles --indexFilesOnly",
     "clean": "rm -rf ./dist",
     "coveralls": "bun run test:coverage && bun run coverage:pipe",
     "coverage:pipe": "cat ./coverage/lcov.info | coveralls",
@@ -40,27 +39,40 @@
   "devDependencies": {
     "astro": ">=5",
     "@better-builds/lets-version": "^1.6.0",
-    "@testing-library/react": "^16.3.1",
+    "@testing-library/react": "^16.3.2",
     "@types/autoprefixer": "^10.2.4",
+    "@types/fs-extra": "^11.0.4",
     "@types/react": ">=18",
     "@types/react-dom": ">=18",
+    "@types/minimist": "^1.2.5",
+    "@types/yargs": "^17.0.35",
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
-    "@biomejs/biome": "^2.3.10",
+    "@biomejs/biome": "^2.3.11",
     "coveralls": "^3.1.1",
     "husky": "^9.1.7",
-    "jsdom": "^27.3.0",
+    "jsdom": "^27.4.0",
     "postcss": "^8.5.6",
     "react": ">=18",
     "react-dom": ">=18",
-    "@better-builds/ts-duality": "^1.2.5",
+    "@better-builds/ts-duality": "^1.3.2",
     "typescript": "^5.9.3",
-    "vite": "^7.3.0",
-    "vitest": "^4.0.16"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.17"
   },
   "dependencies": {
+    "@babel/core": "^7.28.6",
+    "@babel/preset-env": "^7.28.6",
+    "@babel/preset-typescript": "^7.28.5",
+    "@babel/traverse": "^7.28.6",
     "csstype": "^3.2.3",
-    "deepmerge": "^4.3.1"
+    "chokidar": "^5.0.0",
+    "deepmerge": "^4.3.1",
+    "fast-json-stable-stringify": "^2.1.0",
+    "fs-extra": "^11.3.3",
+    "glob": "^13.0.0",
+    "jiti": "^2.6.1",
+    "yargs": "^18.0.0"
   },
   "optionalDependencies": {
     "astro": ">=5",
@@ -69,134 +81,16 @@
   "peerDependencies": {
     "react": ">=16.8"
   },
+  "trustedDependencies": [],
   "exports": {
-    "./createStyles": {
-      "require": {
-        "types": "./dist/cjs/createStyles.d.ts",
-        "default": "./dist/cjs/createStyles.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/createStyles.d.ts",
-        "default": "./dist/esm/createStyles.mjs"
-      }
+    "./browser": {
+      "types": "./dist/browser/index.d.ts",
+      "default": "./dist/browser/index.mjs"
     },
-    "./generateClassName": {
-      "require": {
-        "types": "./dist/cjs/generateClassName.d.ts",
-        "default": "./dist/cjs/generateClassName.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/generateClassName.d.ts",
-        "default": "./dist/esm/generateClassName.mjs"
-      }
+    "./ssr": {
+      "types": "./dist/ssr/index.d.ts",
+      "default": "./dist/ssr/index.mjs"
     },
-    ".": {
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.mjs"
-      }
-    },
-    "./makeStyles": {
-      "require": {
-        "types": "./dist/cjs/makeStyles.d.ts",
-        "default": "./dist/cjs/makeStyles.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/makeStyles.d.ts",
-        "default": "./dist/esm/makeStyles.mjs"
-      }
-    },
-    "./next/SimpleStyleProvider": {
-      "require": {
-        "types": "./dist/cjs/next/SimpleStyleProvider.d.ts",
-        "default": "./dist/cjs/next/SimpleStyleProvider.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/next/SimpleStyleProvider.d.ts",
-        "default": "./dist/esm/next/SimpleStyleProvider.mjs"
-      }
-    },
-    "./next": {
-      "require": {
-        "types": "./dist/cjs/next/index.d.ts",
-        "default": "./dist/cjs/next/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/next/index.d.ts",
-        "default": "./dist/esm/next/index.mjs"
-      }
-    },
-    "./numToAlpha": {
-      "require": {
-        "types": "./dist/cjs/numToAlpha.d.ts",
-        "default": "./dist/cjs/numToAlpha.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/numToAlpha.d.ts",
-        "default": "./dist/esm/numToAlpha.mjs"
-      }
-    },
-    "./plugins": {
-      "require": {
-        "types": "./dist/cjs/plugins.d.ts",
-        "default": "./dist/cjs/plugins.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/plugins.d.ts",
-        "default": "./dist/esm/plugins.mjs"
-      }
-    },
-    "./simpleStyleRegistry": {
-      "require": {
-        "types": "./dist/cjs/simpleStyleRegistry.d.ts",
-        "default": "./dist/cjs/simpleStyleRegistry.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/simpleStyleRegistry.d.ts",
-        "default": "./dist/esm/simpleStyleRegistry.mjs"
-      }
-    },
-    "./types": {
-      "require": {
-        "types": "./dist/cjs/types.d.ts",
-        "default": "./dist/cjs/types.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/types.d.ts",
-        "default": "./dist/esm/types.mjs"
-      }
-    },
-    "./util/deepEqual": {
-      "require": {
-        "types": "./dist/cjs/util/deepEqual.d.ts",
-        "default": "./dist/cjs/util/deepEqual.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/util/deepEqual.d.ts",
-        "default": "./dist/esm/util/deepEqual.mjs"
-      }
-    },
-    "./util": {
-      "require": {
-        "types": "./dist/cjs/util/index.d.ts",
-        "default": "./dist/cjs/util/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/util/index.d.ts",
-        "default": "./dist/esm/util/index.mjs"
-      }
-    },
-    "./package.json": "./package.json",
-    "./astro/SimpleStyleProvider": "./dist/esm/astro/SimpleStyleProvider.astro"
-  },
-  "module": "./dist/esm/index.mjs",
-  "types": "./dist/cjs/index.d.ts",
-  "main": "./dist/cjs/index.cjs",
-  "trustedDependencies": [
-    "@swc/core"
-  ]
+    "./package.json": "./package.json"
+  }
 }

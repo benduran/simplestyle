@@ -1,14 +1,9 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import { makeCssFuncs } from '../browser/index.js';
+import { describe, expect, it } from 'vitest';
+import { makeCssFuncs } from '../ssr/index.js';
 
-describe('Keyframes generation', () => {
+describe('Keyframes generation (SSR)', () => {
   const { createKeyframes } = makeCssFuncs();
 
-  afterEach(() => {
-    document.querySelectorAll('style').forEach((s) => {
-      s.remove();
-    });
-  });
   it('Should generate simple animation keyframes', () => {
     const { keyframe, stylesheet } = createKeyframes(
       'simple-animation',
@@ -27,7 +22,7 @@ describe('Keyframes generation', () => {
       `@keyframes ${keyframe}{0%{width:100px;}100%{width:200px;}}`,
     );
   });
-  it('Should generate keyframes with options callback and skip flushing', () => {
+  it('Should generate keyframes without flushing', () => {
     const { keyframe, stylesheet } = createKeyframes(
       'simple-animation-callback',
       () => ({
@@ -38,11 +33,9 @@ describe('Keyframes generation', () => {
           width: '200px',
         },
       }),
-      { flush: false },
     );
     expect(stylesheet).toBe(
       `@keyframes ${keyframe}{0%{width:100px;}100%{width:200px;}}`,
     );
-    expect(document.querySelectorAll('style').length).toBe(0);
   });
 });

@@ -1,15 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import type { ImportStringType, SimpleStyleRules } from '../browser/index.js';
-import { makeCssFuncs } from '../browser/index.js';
+import { describe, expect, it } from 'vitest';
+import type { ImportStringType, SimpleStyleRules } from '../ssr/index.js';
+import { makeCssFuncs } from '../ssr/index.js';
 
-describe('createStyles tests', () => {
+describe('createStyles tests (SSR)', () => {
   const { createStyles, createImports, createRawStyles } = makeCssFuncs();
 
-  afterEach(() => {
-    Array.from(document.querySelectorAll('style')).forEach((s) => {
-      s.remove();
-    });
-  });
   it('Should generate some basic styles', () => {
     const rules: SimpleStyleRules = {
       one: {
@@ -266,23 +261,14 @@ describe('createStyles tests', () => {
     const { classes: s1, stylesheet: rendered1 } = createStyles(
       's1',
       () => rules,
-      {
-        flush: false,
-      },
     );
     const { classes: s2, stylesheet: rendered2 } = createStyles(
       's2',
       () => rules,
-      {
-        flush: false,
-      },
     );
     const { classes: s3, stylesheet: rendered3 } = createStyles(
       's3',
       () => rules,
-      {
-        flush: false,
-      },
     );
     expect(s1).not.toEqual(s2);
     expect(s1).not.toEqual(s3);
@@ -291,109 +277,28 @@ describe('createStyles tests', () => {
     expect(rendered1).not.toEqual(rendered3);
     expect(rendered2).not.toEqual(rendered3);
   });
-  it('Should generate styles and allow inserting after a desired element', () => {
-    const insertAfter = document.createElement('div');
-    document.body.appendChild(insertAfter);
-    const { stylesheet: styleContents } = createStyles(
-      'insert-after',
-      () => ({
-        test: {
-          backgroundColor: 'purple',
-          fontSize: '40px',
-        },
-      }),
-      { insertAfter },
-    );
-    const foundStyle = document.body.querySelector('style');
-    expect(foundStyle?.innerHTML).toBe(styleContents);
-    const children = Array.from(document.body.children);
-    let success = false;
-    for (let i = 0; i < children.length; i += 1) {
-      const child = children[i];
-      if (child === insertAfter) {
-        success = true;
-        expect(children[i + 1]).toBe(foundStyle);
-        break;
-      }
-    }
-    expect(success).toBeTruthy();
-  });
-  it('Should generate styles and allow inserting after a desired element with options callback', () => {
-    const insertAfter = document.createElement('div');
-    document.body.appendChild(insertAfter);
-    const { stylesheet: styleContents } = createStyles(
-      'insert-after-callback',
-      () => ({
-        test: {
-          backgroundColor: 'orange',
-          fontSize: '16px',
-        },
-      }),
-      { insertAfter },
-    );
-    const foundStyle = document.body.querySelector('style');
-    expect(foundStyle?.innerHTML).toBe(styleContents);
-    const children = Array.from(document.body.children);
-    let success = false;
-    for (let i = 0; i < children.length; i += 1) {
-      const child = children[i];
-      if (child === insertAfter) {
-        success = true;
-        expect(children[i + 1]).toBe(foundStyle);
-        break;
-      }
-    }
-    expect(success).toBeTruthy();
-  });
-  it('Should generate styles and allow inserting before desired element', () => {
-    const insertBefore = document.createElement('div');
-    document.body.appendChild(insertBefore);
-    const { stylesheet: styleContents } = createStyles(
-      'insert-before',
-      () => ({
-        test: {
-          backgroundColor: 'purple',
-          fontSize: '40px',
-        },
-      }),
-      { insertBefore },
-    );
-    const foundStyle = document.body.querySelector('style');
-    expect(foundStyle?.innerHTML).toBe(styleContents);
-    const children = Array.from(document.body.children);
-    let success = false;
-    for (let i = 0; i < children.length; i += 1) {
-      const child = children[i];
-      if (child === insertBefore) {
-        success = true;
-        expect(children[i - 1]).toBe(foundStyle);
-        break;
-      }
-    }
-    expect(success).toBeTruthy();
-  });
-  it('should add a style tag with @import rules if we use the imports() function', () => {
+  it('should return @import rules when using the imports() function', () => {
     const theImports: ImportStringType[] = [
       "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
       "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
     ];
-    createImports('import-rules', () => theImports);
+    const { stylesheet: importsStylesheet } = createImports(
+      'import-rules',
+      () => theImports,
+    );
 
-    createRawStyles('raw-import-subsequent-rules', () => ({
-      'body, html': {
-        fontFamily: 'Funnel Display',
-        fontSize: '16px',
-      },
-    }));
+    const { stylesheet: rawStylesheet } = createRawStyles(
+      'raw-import-subsequent-rules',
+      () => ({
+        'body, html': {
+          fontFamily: 'Funnel Display',
+          fontSize: '16px',
+        },
+      }),
+    );
 
-    const [importsTag, rawTag] = Array.from(document.querySelectorAll('style'));
-    const contents = importsTag?.innerHTML ?? '';
-
-    for (const imp of theImports) {
-      expect(contents).toContain(imp);
-    }
-
-    expect(rawTag?.innerHTML ?? '').toBe(
+    expect(importsStylesheet).toBe(`${theImports[0]}${theImports[1]};`);
+    expect(rawStylesheet).toBe(
       'body, html{font-family:Funnel Display;font-size:16px;}',
     );
   });

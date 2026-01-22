@@ -1,14 +1,9 @@
-import { beforeAll, describe, expect, it } from 'vitest';
-import { makeCssFuncs } from '../browser/index.js';
+import { describe, expect, it } from 'vitest';
+import { makeCssFuncs } from '../ssr/index.js';
 
-describe('updateStyles tests', () => {
+describe('updateStyles tests (SSR)', () => {
   const { createStyles } = makeCssFuncs();
 
-  beforeAll(() => {
-    document.querySelectorAll('style').forEach((s) => {
-      s.remove();
-    });
-  });
   it('Should create styles, then update them without creating a new sheet', () => {
     const {
       classes: originalStyles,
@@ -24,8 +19,6 @@ describe('updateStyles tests', () => {
       },
     }));
     expect(typeof updateSheet).toBe('function');
-    const sheet = document.head.querySelector('style');
-    expect(sheet?.innerHTML).toBe(originalContents);
     const updates = updateSheet(() => ({
       one: {
         backgroundColor: 'red',
@@ -35,10 +28,6 @@ describe('updateStyles tests', () => {
     const { classes: updatedStyles, stylesheet: updatedContents } = updates!;
     expect(originalStyles).not.toBe(updatedStyles);
     expect(originalContents).not.toBe(updatedContents);
-    expect(document.head.querySelectorAll('style').length).toBe(1);
-    expect(document.head.querySelector('style')?.innerHTML).toBe(
-      updatedContents,
-    );
     expect(updatedContents).toBe(
       `.${updatedStyles.one}{background-color:red;box-sizing:border-box;}.${updatedStyles.two}{height:100px;}`,
     );

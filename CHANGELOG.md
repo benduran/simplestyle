@@ -1,3 +1,149 @@
+## 5.5.1-alpha.114 (2026-01-22)
+
+### 🛠️ Fixes 🛠️
+
+- fix: improved typings to be more accurate and fixed the collector (b750c71da650405878ff5f25853b23daf663b775)
+
+---
+
+## 5.5.1-alpha.113 (2026-01-22)
+
+### 🛠️ Fixes 🛠️
+
+- fix: oops, wrong layer (1e7df4e9bb502a595b5babeb71a22aba1a43c672)
+
+---
+
+## 5.5.1-alpha.112 (2026-01-22)
+
+### 🛠️ Fixes 🛠️
+
+- fix: write the imports layer correctly, since you cannot actually import inside of a layer (e4bbd51df1d934ba27926837a2c4ebf2fe44536c)
+
+---
+
+## 5.5.1-alpha.111 (2026-01-22)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: bumped to latest ts-duality to fix a bug (3b77783f7c4e33589399b5a1be31fbbdfb11e47d)
+
+---
+
+## 5.5.1-alpha.110 (2026-01-21)
+
+### 🛠️ Fixes 🛠️
+
+- fix: more typing issues lol (b201aee933e96566abed42317b6ad4679d11015c)
+
+---
+
+## 5.5.1-alpha.109 (2026-01-21)
+
+### 🛠️ Fixes 🛠️
+
+- fix: use the new helper function (59992f9f64df570b337b0f6a2ec7dc81c83c9a1a)
+
+---
+
+## 5.5.1-alpha.108 (2026-01-21)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: updated tests (952bd146cdc194b1809a51bb81e6edb3c5346f1c)
+- chore: removed classname map and added a duplicate warning (a43fc77a2632146967bf197209b0d9f7701f1209)
+
+---
+
+## 5.5.1-alpha.107 (2026-01-20)
+
+### 🛠️ Fixes 🛠️
+
+- fix: do not kill the process if the watcher fails to compile (8032ee509143fd41ec2b462c4a047d65137911f5)
+
+---
+
+## 5.5.1-alpha.106 (2026-01-20)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: logging tweaks to compiler (4829b33b97b5baf5c6716e446590f400db88306d)
+
+---
+
+## 5.5.1-alpha.105 (2026-01-20)
+
+### 🛠️ Fixes 🛠️
+
+- fix: return all detected files from the topograph for the watcher (befe4dd9dc9c1b98596229f2c4cf070991f66349)
+
+---
+
+## 5.5.1-alpha.104 (2026-01-20)
+
+### 🛠️ Fixes 🛠️
+
+- fix: robot broke the export (4bd965d79a36b026a56113c81bfa9e3057d892f0)
+
+---
+
+## 5.5.1-alpha.103 (2026-01-20)
+
+### 🛠️ Fixes 🛠️
+
+- fix: fixed watcher not reimporting properly (e4a8db4af130939746e3e2353d9d849de4ff1258)
+
+---
+
+## 5.5.1-alpha.102 (2026-01-20)
+
+### ✨ Features ✨
+
+- feat: added layers to ensure style precedence actually works correctly (5a82afeb900d107e3a909cdc0bb0e8220396417f)
+
+
+
+### 🛠️ Fixes 🛠️
+
+- fix: properly detect all inputs in the topo sort (ae747121489d08a172c87ebaa4eb95d8894dd77f)
+- fix: fixed dependency graph walking (9dbfefe2ff7869a904c97f09abb897699fc052ac)
+
+---
+
+## 5.5.1-alpha.101 (2026-01-20)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: 1 (53fd2cf527337ad635ca53ac5e45af97ca955617)
+
+---
+
+## 5.5.1-alpha.100 (2026-01-20)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: I sure hope the compiler works (e80965c0fc367e55c1db6f69dc9784db80f3fac7)
+- chore: updates (8610cc168a7048913430dde92afe258b05e0ee2b)
+- chore: moved the compiler around (2e73fe0e97c921a5bcb6ab39c5334d1be2a63027)
+- chore: compiler export updates (6d176f545144fd40c04343389b347b95ba9cc0a7)
+- chore: omissions (9ec4189a94a210fc97388b4b4e2ebe39472d9394)
+- chore: added tests (7415e7e06c1047e1dc5754a4e846c490895c8a21)
+- chore: omg, jiti and its aliases work (6f72f77bf15fcb8f2ac048cfa1705f62e2258c4b)
+
+
+
+### 🚨 Breaking Changes 🚨
+
+- chore!: dramatically changed the API and moved to a map of maps to maintain isolation between makeCssFuncs usages (d03ee10f0a4740e52a636a6bc81f698e6871c6ab)
+
+
+
+### ✨ Features ✨
+
+- feat: the CLI works and it compiles styles to a single file (32f722a6af590ce714422bafd5d14a0cdda2616e)
+
+---
+
 ## 5.5.0 (2026-01-16)
 
 ### ✨ Features ✨

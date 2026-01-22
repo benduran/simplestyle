@@ -1,35 +1,25 @@
 import type { Properties } from 'csstype';
-import {
-  type CreateStylesOptions,
-  createStyles,
-  imports,
-  keyframes,
-  rawStyles,
-} from './createStyles.js';
-import type { SimpleStyleRegistry } from './simpleStyleRegistry.js';
-import type { ImportStringType, Nullish, SimpleStyleRules } from './types.js';
+import { createImports } from '../makeStyles/createImports.js';
+import { createKeyframes } from '../makeStyles/createKeyframes.js';
+import { createRawStyles } from '../makeStyles/createRawStyles.js';
+import { createStyles } from '../makeStyles/createStyles.js';
+import type {
+  CreateStylesOptions,
+  ImportStringType,
+  MakeCssFuncsOpts,
+  SimpleStyleRules,
+} from '../makeStyles/types.js';
 
-type MakeCssFuncsOpts<T extends object | undefined | null> =
-  | {
-      registry?: Nullish<SimpleStyleRegistry>;
-      variables?: T;
-    }
-  | (() => {
-      registry?: Nullish<SimpleStyleRegistry>;
-      variables?: T;
-    });
+const lockedSSROpts: CreateStylesOptions = {
+  flush: false,
+  insertAfter: null,
+  insertBefore: null,
+};
 
 function extractOverridesAndOpts<T extends object | undefined | null>(
-  optsOrCallback: MakeCssFuncsOpts<T>,
-  overridesOrCallback?: CreateStylesOptions,
+  opts?: MakeCssFuncsOpts<T>,
+  overrides?: CreateStylesOptions,
 ) {
-  const opts =
-    typeof optsOrCallback === 'function' ? optsOrCallback() : optsOrCallback;
-  const overrides =
-    typeof overridesOrCallback === 'function'
-      ? overridesOrCallback()
-      : overridesOrCallback;
-
   return {
     ...opts,
     ...overrides,
@@ -37,6 +27,7 @@ function extractOverridesAndOpts<T extends object | undefined | null>(
 }
 
 /**
+ * SSR variant of makeCssFuncs.
  * Creates all of your CSS functions, createStyles, keframes and rawStyles,
  * and scopes them all to your registry and variables definitions (both are optional).
  * The variants of these functions differ slightly, in that
@@ -45,102 +36,88 @@ function extractOverridesAndOpts<T extends object | undefined | null>(
  */
 export function makeCssFuncs<
   V extends object | undefined | null | never = never,
->(optsOrCallback: MakeCssFuncsOpts<V>) {
+>(initialOpts?: MakeCssFuncsOpts<V>) {
   type RulesCallback<ReturnType> = (
     vars: V extends undefined | null | never ? never : V,
   ) => ReturnType;
-
   function wrappedCreateStyles<
     T extends SimpleStyleRules,
     K extends keyof T,
     O extends Record<K, string>,
-  >(
-    ruleId: string,
-    rulesFnc: RulesCallback<T>,
-    overridesOrCallback?: CreateStylesOptions,
-  ) {
+  >(ruleId: string, rulesFnc: RulesCallback<T>) {
+    const opts = extractOverridesAndOpts(initialOpts);
+
     return createStyles<T, K, O>(
       ruleId,
       () => {
-        const opts = extractOverridesAndOpts(
-          optsOrCallback,
-          overridesOrCallback,
-        );
         return rulesFnc(
           // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      lockedSSROpts,
     );
   }
   function wrappedCreateKeyframes<T extends Record<string, Properties>>(
     ruleId: string,
     rulesFnc: RulesCallback<T>,
-    overridesOrCallback?: CreateStylesOptions,
   ) {
-    return keyframes<T>(
+    const opts = extractOverridesAndOpts(initialOpts);
+
+    return createKeyframes<T>(
       ruleId,
       () => {
-        const opts = extractOverridesAndOpts(
-          optsOrCallback,
-          overridesOrCallback,
-        );
         return rulesFnc(
           // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      lockedSSROpts,
     );
   }
 
   function wrappedRawStyles<T extends SimpleStyleRules>(
     ruleId: string,
     rulesFnc: RulesCallback<T>,
-    overridesOrCallback?: CreateStylesOptions,
   ) {
-    return rawStyles<T>(
+    const opts = extractOverridesAndOpts(initialOpts);
+
+    return createRawStyles<T>(
       ruleId,
       () => {
-        const opts = extractOverridesAndOpts(
-          optsOrCallback,
-          overridesOrCallback,
-        );
         return rulesFnc(
           // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      lockedSSROpts,
     );
   }
 
   function wrappedImports(
     ruleId: string,
     rulesFnc: RulesCallback<ImportStringType[]>,
-    overridesOrCallback?: CreateStylesOptions,
   ) {
-    return imports(
+    const opts = extractOverridesAndOpts(initialOpts);
+
+    return createImports(
       ruleId,
       () => {
-        const opts = extractOverridesAndOpts(
-          optsOrCallback,
-          overridesOrCallback,
-        );
         return rulesFnc(
           // @ts-expect-error - this is a safe operation, even if tsc gets confused right here
           ('variables' in opts ? opts.variables : undefined) as V,
         );
       },
-      () => extractOverridesAndOpts(optsOrCallback, overridesOrCallback),
+      lockedSSROpts,
     );
   }
 
   return {
     createStyles: wrappedCreateStyles,
-    imports: wrappedImports,
-    keyframes: wrappedCreateKeyframes,
-    rawStyles: wrappedRawStyles,
+    createImports: wrappedImports,
+    createKeyframes: wrappedCreateKeyframes,
+    createRawStyles: wrappedRawStyles,
   };
 }
+
+export * from '../makeStyles/types.js';
