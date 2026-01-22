@@ -1,3 +1,11 @@
+## 5.5.1-alpha.112 (2026-01-22)
+
+### 🛠️ Fixes 🛠️
+
+- fix: write the imports layer correctly, since you cannot actually import inside of a layer (e4bbd51df1d934ba27926837a2c4ebf2fe44536c)
+
+---
+
 ## 5.5.1-alpha.111 (2026-01-22)
 
 ### 🔀 Miscellaneous 🔀
