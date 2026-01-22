@@ -64,11 +64,18 @@ async function doCompile(cwd, entrypoints, outfile) {
 
   const header = `@layer ${collectorEntries.map(([layerName]) => layerName).join(', ')};`;
 
-  const styles = collectorEntries.reduce((prev, [layerName, styleChunks]) => {
-    const strChunks = styleChunks.join(os.EOL);
+  let styles = header;
 
-    return `${prev}${os.EOL}@layer ${layerName} {${strChunks}}`;
-  }, header);
+  for (const [layerName, styleChunks] of collectorEntries) {
+    if (layerName === 'ssjs-globals') {
+      for (const chunk of styleChunks) {
+        styles += `${os.EOL}${chunk} layer(${layerName});`;
+      }
+    } else {
+      const strChunks = styleChunks.join(os.EOL);
+      styles += `${os.EOL}@layer ${layerName} {${strChunks}}`;
+    }
+  }
 
   await fs.writeFile(outfile, styles, 'utf-8');
 
