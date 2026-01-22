@@ -1,3 +1,11 @@
+## 5.5.1-alpha.111 (2026-01-22)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: bumped to latest ts-duality to fix a bug (3b77783f7c4e33589399b5a1be31fbbdfb11e47d)
+
+---
+
 ## 5.5.1-alpha.110 (2026-01-21)
 
 ### 🛠️ Fixes 🛠️
