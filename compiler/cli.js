@@ -67,7 +67,7 @@ async function doCompile(cwd, entrypoints, outfile) {
   let styles = header;
 
   for (const [layerName, styleChunks] of collectorEntries) {
-    if (layerName === 'ssjs-globals') {
+    if (layerName === 'ssjs-imports') {
       for (const chunk of styleChunks) {
         styles += `${os.EOL}${chunk} layer(${layerName});`;
       }
