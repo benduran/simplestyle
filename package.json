@@ -28,11 +28,22 @@
     "test:watch": "bun run --bun vitest"
   },
   "keywords": [
-    "CSS-in-JS",
-    "CSS",
-    "Style",
-    "Styled",
-    "Simple"
+    "css-in-js",
+    "css",
+    "styling",
+    "style",
+    "styled",
+    "typescript",
+    "zero-runtime",
+    "runtime-less",
+    "atomic-css",
+    "design-system",
+    "theme",
+    "react",
+    "ssr",
+    "nextjs",
+    "astro",
+    "compiler"
   ],
   "author": "Benjamin Duran <stratodyne@gmail.com>",
   "license": "MIT",
