@@ -69,7 +69,7 @@ async function doCompile(cwd, entrypoints, outfile) {
   for (const [layerName, styleChunks] of collectorEntries) {
     if (layerName === 'ssjs-imports') {
       for (const chunk of styleChunks) {
-        styles += `${os.EOL}${chunk} layer(${layerName});`;
+        styles += `${os.EOL}${chunk.replace(/;$/, '')} layer(${layerName});`;
       }
     } else {
       const strChunks = styleChunks.join(os.EOL);

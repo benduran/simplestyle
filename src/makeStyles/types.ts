@@ -27,7 +27,7 @@ export type SimpleStyleRules = {
 export type RenderableSimpleStyleRules = SimpleStyleRules &
   Record<string, Properties[]>;
 
-export type ImportStringType = `@import ${string}`;
+export type ImportStringType = `@import "${string}"`;
 
 export type MakeCssFuncsOpts<T extends object | undefined | null> = {
   variables?: T;
