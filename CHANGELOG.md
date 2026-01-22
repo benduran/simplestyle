@@ -1,3 +1,11 @@
+## 6.0.0 (2026-01-22)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: updated package.json (17840912af4d4bb06f3c8b56f5ed78358efc785a)
+
+---
+
 ## 5.5.1 (2026-01-22)
 
 ### 📖 Docs 📖
