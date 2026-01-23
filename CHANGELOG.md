@@ -1,3 +1,12 @@
+## 6.1.0 (2026-01-23)
+
+### ✨ Features ✨
+
+- feat: added invalid, nested media query detection and added tests (a1350f1436318d22a6cd7e8b9dbb8379719f4bd2)
+- feat: added container queries support, same as media queries (7d1baed479a444c867a5321422e0a20a8295a539)
+
+---
+
 ## 6.0.0 (2026-01-22)
 
 ### 🔀 Miscellaneous 🔀
