@@ -108,6 +108,28 @@ describe('createStyles tests (SSR)', () => {
       `.${classes.responsive} button{padding:8px;}@media (max-width: 960px){.${classes.responsive} button{padding:24px;}}`,
     );
   });
+  it('Should allow simple container queries', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@container (max-width: 960px)': {
+          '& button': {
+            padding: '24px',
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+    const { classes, stylesheet } = createStyles(
+      'container-queries',
+      () => rules,
+    );
+
+    expect(stylesheet).toBe(
+      `.${classes.responsive} button{padding:8px;}@container (max-width: 960px){.${classes.responsive} button{padding:24px;}}`,
+    );
+  });
   it('Should allow multiple media queries, including deeply-nested selector', () => {
     const rules: SimpleStyleRules = {
       simple: {
@@ -279,8 +301,8 @@ describe('createStyles tests (SSR)', () => {
   });
   it('should return @import rules when using the imports() function', () => {
     const theImports: ImportStringType[] = [
-      "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
-      "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
+      `@import "https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"`,
+      '@import "https://csstools.github.io/normalize.css/11.0.0/normalize.css"',
     ];
     const { stylesheet: importsStylesheet } = createImports(
       'import-rules',
@@ -297,9 +319,99 @@ describe('createStyles tests (SSR)', () => {
       }),
     );
 
-    expect(importsStylesheet).toBe(`${theImports[0]}${theImports[1]};`);
+    console.info(importsStylesheet);
+
+    expect(importsStylesheet).toBe(`${theImports.join(';')};`);
     expect(rawStylesheet).toBe(
       'body, html{font-family:Funnel Display;font-size:16px;}',
+    );
+  });
+  it('should throw an error for nested @media queries (SSR)', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@media (max-width: 960px)': {
+          '@media (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('nested-media-error-ssr', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@media (min-width: 600px)" inside another query.',
+    );
+  });
+  it('should throw an error for nested @container queries (SSR)', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@container (max-width: 960px)': {
+          '@container (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('nested-container-error-ssr', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@container (min-width: 600px)" inside another query.',
+    );
+  });
+  it('should throw an error for mixed nested @media inside @container queries (SSR)', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@container (max-width: 960px)': {
+          '@media (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('mixed-nested-error-ssr', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@media (min-width: 600px)" inside another query.',
+    );
+  });
+  it('should throw an error for mixed nested @container inside @media queries (SSR)', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@media (max-width: 960px)': {
+          '@container (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('mixed-nested-error-reverse-ssr', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@container (min-width: 600px)" inside another query.',
     );
   });
 });

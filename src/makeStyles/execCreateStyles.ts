@@ -16,6 +16,7 @@ export function execCreateStyles<
   options: CreateStylesOptions,
   parentSelector: string | null,
   noGenerateClassName = false,
+  inMediaOrContainerQuery = false,
 ): { classes: O; sheetBuffer: string; mediaQueriesBuffer: string } {
   const out = {} as O;
   let sheetBuffer = '';
@@ -33,6 +34,14 @@ export function execCreateStyles<
         throw new Error(
           'Unable to map @media or @container query because rules / props are an invalid type',
         );
+
+      // Check for nested @media/@container queries (CSS spec doesn't allow this)
+      if (inMediaOrContainerQuery) {
+        throw new Error(
+          `Nested @media or @container queries are not allowed in CSS. Found "${classNameOrCSSRule}" inside another query.`,
+        );
+      }
+
       guardCloseRuleWrite();
       mediaQueriesBuffer += `${classNameOrCSSRule}{`;
       const {
@@ -43,6 +52,8 @@ export function execCreateStyles<
         classNameRules as T,
         options,
         parentSelector,
+        noGenerateClassName,
+        true, // We're now inside a media or container query
       );
       mediaQueriesBuffer += regularOutput;
       mediaQueriesBuffer += '}';
@@ -59,7 +70,14 @@ export function execCreateStyles<
         const {
           mediaQueriesBuffer: mediaQueriesOutput,
           sheetBuffer: regularOutput,
-        } = execCreateStyles(ruleId, classNameRules as T, options, selector);
+        } = execCreateStyles(
+          ruleId,
+          classNameRules as T,
+          options,
+          selector,
+          noGenerateClassName,
+          inMediaOrContainerQuery,
+        );
         sheetBuffer += regularOutput;
         mediaQueriesBuffer += mediaQueriesOutput;
       }
@@ -79,6 +97,8 @@ export function execCreateStyles<
         classNameRules as T,
         options,
         generatedSelector,
+        noGenerateClassName,
+        inMediaOrContainerQuery,
       );
       sheetBuffer += regularOutput;
       mediaQueriesBuffer += mediaQueriesOutput;

@@ -31,6 +31,34 @@ const complexRules: SimpleStyleRules = {
   },
 };
 
+const complexRulesWithContainer: SimpleStyleRules = {
+  card: {
+    padding: 0,
+    lineHeight: 1.2,
+    '&:hover': {
+      opacity: 0.9,
+      padding: 0,
+    },
+    '& .title, & .subtitle': {
+      margin: 0,
+      fontSize: '14px',
+    },
+    '@container (max-width: 600px)': {
+      padding: '8px',
+      '& .title': {
+        fontSize: '12px',
+      },
+    },
+  },
+  grid: {
+    display: 'grid',
+    gap: 0,
+    '& > *': {
+      padding: 0,
+    },
+  },
+};
+
 describe('classname stability and repeatability', () => {
   const { createStyles } = makeCssFuncs();
 
@@ -50,6 +78,34 @@ describe('classname stability and repeatability', () => {
       'prefix-b',
       () => ({
         ...complexRules,
+      }),
+      {
+        flush: false,
+      },
+    );
+
+    expect(primary.card).toBe(`prefix-a_card_${expectedCardHash}`);
+    expect(secondary.card).toBe(`prefix-b_card_${expectedCardHash}`);
+    expect(primary.card).not.toBe(secondary.card);
+  });
+  it('should keep prefixes from colliding while preserving stable hashes with container queries', () => {
+    const expectedCardHash = objectToHash(
+      complexRulesWithContainer.card as object,
+    );
+
+    const { classes: primary } = createStyles(
+      'prefix-a',
+      () => ({
+        ...complexRulesWithContainer,
+      }),
+      {
+        flush: false,
+      },
+    );
+    const { classes: secondary } = createStyles(
+      'prefix-b',
+      () => ({
+        ...complexRulesWithContainer,
       }),
       {
         flush: false,
