@@ -1,6 +1,10 @@
 import { generateClassName } from './generateClassName.js';
 import type { CreateStylesOptions, SimpleStyleRules } from './types.js';
-import { formatCSSRules, isMedia, isNestedSelector } from './utils.js';
+import {
+  formatCSSRules,
+  isMediaOrContainer,
+  isNestedSelector,
+} from './utils.js';
 
 export function execCreateStyles<
   T extends SimpleStyleRules,
@@ -24,10 +28,10 @@ export function execCreateStyles<
   };
   for (const [classNameOrCSSRule, classNameRules] of styleEntries) {
     // if the classNameRules is a string, we are dealing with a display: none; type rule
-    if (isMedia(classNameOrCSSRule)) {
+    if (isMediaOrContainer(classNameOrCSSRule)) {
       if (typeof classNameRules !== 'object')
         throw new Error(
-          'Unable to map @media query because rules / props are an invalid type',
+          'Unable to map @media or @container query because rules / props are an invalid type',
         );
       guardCloseRuleWrite();
       mediaQueriesBuffer += `${classNameOrCSSRule}{`;
