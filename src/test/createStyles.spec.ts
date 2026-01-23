@@ -201,6 +201,116 @@ describe('createStyles tests', () => {
       `${mediaQuery}{.${classes.appBarGrid}{grid-template-columns:1fr 2fr;}}${mediaQuery}{.${classes.appHeaderHomeLink} > b{display:none;}}`,
     );
   });
+  it('Should allow simple container queries', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@container (max-width: 960px)': {
+          '& button': {
+            padding: '24px',
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+    const { classes, stylesheet } = createStyles(
+      'container-queries',
+      () => rules,
+    );
+
+    expect(stylesheet).toBe(
+      `.${classes.responsive} button{padding:8px;}@container (max-width: 960px){.${classes.responsive} button{padding:24px;}}`,
+    );
+  });
+  it('Should allow multiple container queries, including deeply-nested selector', () => {
+    const rules: SimpleStyleRules = {
+      simple: {
+        width: '100%',
+      },
+      deep: {
+        '& > span, & > div': {
+          '& button': {
+            '@container(max-width: 600px)': {
+              padding: '0.5em',
+            },
+            padding: '1em',
+          },
+        },
+        color: 'pink',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+      },
+    };
+    const { classes, stylesheet } = createStyles(
+      'multiple-container-queries',
+      () => rules,
+    );
+
+    expect(stylesheet).toContain(`.${classes.simple}{width:100%;}`);
+    expect(stylesheet).toContain(
+      `.${classes.deep}{color:pink;grid-template-columns:repeat(4, 1fr);}`,
+    );
+    expect(stylesheet).toContain(
+      `.${classes.deep} > span button{padding:1em;}`,
+    );
+    expect(stylesheet).toContain(`.${classes.deep} > div button{padding:1em;}`);
+    expect(stylesheet).toContain(
+      `@container(max-width: 600px){.${classes.deep} > div button{padding:0.5em;}}`,
+    );
+    expect(stylesheet).toContain(
+      `@container(max-width: 600px){.${classes.deep} > span button{padding:0.5em;}}`,
+    );
+  });
+  it('Should allow a container query with multiple children', () => {
+    const rules: SimpleStyleRules = {
+      appHeaderHomeLink: {
+        '@container (max-width: 600px)': {
+          '& > b': {
+            display: 'none',
+          },
+          '& > i': {
+            marginLeft: '0 !important',
+          },
+        },
+        position: 'relative',
+        transition: 'background-color .2s ease',
+      },
+    };
+    const { classes, stylesheet } = createStyles(
+      'container-query-with-children',
+      () => rules,
+    );
+
+    // eslint-disable-next-line max-len
+    expect(stylesheet).toBe(
+      `.${classes.appHeaderHomeLink}{position:relative;transition:background-color .2s ease;}@container (max-width: 600px){.${classes.appHeaderHomeLink} > b{display:none;}.${classes.appHeaderHomeLink} > i{margin-left:0 !important;}}`,
+    );
+  });
+  it("Should ensure that multiple container queries of the same type aren't clobbered", () => {
+    const containerQuery = '@container (max-width: 600px)';
+    const rules: SimpleStyleRules = {
+      appBarGrid: {
+        [containerQuery]: {
+          gridTemplateColumns: '1fr 2fr',
+        },
+      },
+      appHeaderHomeLink: {
+        [containerQuery]: {
+          '& > b': {
+            display: 'none',
+          },
+        },
+      },
+    };
+    const { classes, stylesheet } = createStyles(
+      'container-query-no-clobbering',
+      () => rules,
+    );
+
+    expect(stylesheet).toBe(
+      `${containerQuery}{.${classes.appBarGrid}{grid-template-columns:1fr 2fr;}}${containerQuery}{.${classes.appHeaderHomeLink} > b{display:none;}}`,
+    );
+  });
   it('Should allow creation of top-level "raw" styles that can generically apply globally to HTML tags', () => {
     const rules: SimpleStyleRules = {
       body: {
@@ -374,8 +484,8 @@ describe('createStyles tests', () => {
   });
   it('should add a style tag with @import rules if we use the imports() function', () => {
     const theImports: ImportStringType[] = [
-      "@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');",
-      "@import url('https://csstools.github.io/normalize.css/11.0.0/normalize.css')",
+      `@import "https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"`,
+      '@import "https://csstools.github.io/normalize.css/11.0.0/normalize.css"',
     ];
     createImports('import-rules', () => theImports);
 
@@ -395,6 +505,94 @@ describe('createStyles tests', () => {
 
     expect(rawTag?.innerHTML ?? '').toBe(
       'body, html{font-family:Funnel Display;font-size:16px;}',
+    );
+  });
+  it('should throw an error for nested @media queries', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@media (max-width: 960px)': {
+          '@media (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('nested-media-error', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@media (min-width: 600px)" inside another query.',
+    );
+  });
+  it('should throw an error for nested @container queries', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@container (max-width: 960px)': {
+          '@container (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('nested-container-error', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@container (min-width: 600px)" inside another query.',
+    );
+  });
+  it('should throw an error for mixed nested @media inside @container queries', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@container (max-width: 960px)': {
+          '@media (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('mixed-nested-error', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@media (min-width: 600px)" inside another query.',
+    );
+  });
+  it('should throw an error for mixed nested @container inside @media queries', () => {
+    const rules: SimpleStyleRules = {
+      responsive: {
+        '@media (max-width: 960px)': {
+          '@container (min-width: 600px)': {
+            '& button': {
+              padding: '24px',
+            },
+          },
+        },
+        '& button': {
+          padding: '8px',
+        },
+      },
+    };
+
+    expect(() => {
+      createStyles('mixed-nested-error-reverse', () => rules);
+    }).toThrow(
+      'Nested @media or @container queries are not allowed in CSS. Found "@container (min-width: 600px)" inside another query.',
     );
   });
 });

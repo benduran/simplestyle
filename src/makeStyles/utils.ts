@@ -4,8 +4,10 @@ export function isNestedSelector(r: string): boolean {
   return /&/g.test(r);
 }
 
-export function isMedia(r: string): boolean {
-  return r.toLowerCase().startsWith('@media');
+export function isMediaOrContainer(r: string): boolean {
+  const query = r.toLowerCase();
+
+  return query.startsWith('@media') || query.startsWith('@container');
 }
 
 export function formatCSSRuleName(rule: string): string {
