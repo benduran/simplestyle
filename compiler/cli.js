@@ -91,6 +91,7 @@ async function executeCompiler() {
     cwd: cwdArg,
     entrypoints: entrypointsArg,
     outfile,
+    timeout,
     watch,
   } = await yargs
     .option('cwd', {
@@ -109,6 +110,12 @@ All style imports will be resolved from these starting points, ensuring styles a
       description:
         'location where the final, combined CSS file will be written',
       type: 'string',
+    })
+    .option('timeout', {
+      default: 250,
+      description:
+        'how long to wait after file changes have been made before recompiling, in milliseconds',
+      type: 'number',
     })
     .option('watch', {
       default: false,
@@ -180,7 +187,7 @@ All style imports will be resolved from these starting points, ensuring styles a
         });
 
         changedFiles = new Set();
-      }, 250);
+      }, timeout);
     };
 
     watcher.on('add', determineIfRecompile);
