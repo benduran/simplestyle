@@ -1,3 +1,11 @@
+## 6.1.1 (2026-01-26)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: added new CLI option to tune the recompile timeout delay (f4b851c1750437631b393f36bf5bbaa1a74f42cf)
+
+---
+
 ## 6.1.0 (2026-01-23)
 
 ### ✨ Features ✨
