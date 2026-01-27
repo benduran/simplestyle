@@ -1,3 +1,11 @@
+## 6.1.2 (2026-01-27)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: added supports selector (5f4f3ed6a30c2eea73be584d2ae8a1770e106752)
+
+---
+
 ## 6.1.1 (2026-01-26)
 
 ### 🔀 Miscellaneous 🔀
