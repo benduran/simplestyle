@@ -2,7 +2,7 @@ import { generateClassName } from './generateClassName.js';
 import type { CreateStylesOptions, SimpleStyleRules } from './types.js';
 import {
   formatCSSRules,
-  isMediaOrContainer,
+  isMediaOrContainerOrSupport,
   isNestedSelector,
 } from './utils.js';
 
@@ -29,7 +29,7 @@ export function execCreateStyles<
   };
   for (const [classNameOrCSSRule, classNameRules] of styleEntries) {
     // if the classNameRules is a string, we are dealing with a display: none; type rule
-    if (isMediaOrContainer(classNameOrCSSRule)) {
+    if (isMediaOrContainerOrSupport(classNameOrCSSRule)) {
       if (typeof classNameRules !== 'object')
         throw new Error(
           'Unable to map @media or @container query because rules / props are an invalid type',
