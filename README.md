@@ -1,3 +1,5 @@
+# This project has been moved to Codeberg: https://codeberg.org/benduran/simplestyle
+
 # simplestyle-js
 
 An ultra-tiny, neat, easy-to-use CSS-in-JS library with SSR support,
