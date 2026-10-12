@@ -1,3 +1,11 @@
+## 6.1.3 (2026-10-12)
+
+### 🔀 Miscellaneous 🔀
+
+- chore: migrate to codeberg, because github is a dumpster fire anymore (21b61a0228d1e4a1ff137fdbc484d424a174c4b6)
+
+---
+
 ## 6.1.2 (2026-01-27)
 
 ### 🔀 Miscellaneous 🔀
